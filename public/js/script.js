@@ -81,7 +81,7 @@
   let visitorId;
   const localStorageVisitorIdName = 'actionSpeak-visitor-id';
   const domain = document.currentScript.getAttribute('data-domain');
-  const endpoint = '/api/script';
+  const endpoint = 'https://action-speak.vercel.app/api/script';
 
   const getVisitorId = () => {
     visitorId = localStorage.getItem(localStorageVisitorIdName);
@@ -109,7 +109,7 @@
     document.head.appendChild(link2);
   };
 
-  const fetchData = async () => {
+  const validateWebsite = async () => {
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
@@ -123,13 +123,7 @@
       }),
     });
 
-    const data = await response.json();
-
-    if (response.ok) {
-      return data;
-    }
-
-    console.error(data.error);
+    return response.ok;
   };
 
   function ensureToastContainer() {
@@ -248,19 +242,23 @@
     getVisitorId();
     fetchFont();
 
-    const styleEl = document.createElement('style');
-    styleEl.innerHTML = style;
-    document.head.appendChild(styleEl);
+    const isValid = await validateWebsite();
 
-    // 기존 actionSpeak 메시지 처리
-    if (window.actionSpeak && window.actionSpeak.length > 0) {
-      window.actionSpeak.forEach(config => {
-        if (config.messages) messages = config.messages;
-        if (config.waitFor) waitFor = config.waitFor;
-        if (config.toastEvery) toastEvery = config.toastEvery;
-        if (config.toastDuration) toastDuration = config.toastDuration;
-        processMessages(messages);
-      });
+    if (isValid) {
+      const styleEl = document.createElement('style');
+      styleEl.innerHTML = style;
+      document.head.appendChild(styleEl);
+
+      // 기존 actionSpeak 메시지 처리
+      if (window.actionSpeak && window.actionSpeak.length > 0) {
+        window.actionSpeak.forEach(config => {
+          if (config.messages) messages = config.messages;
+          if (config.waitFor) waitFor = config.waitFor;
+          if (config.toastEvery) toastEvery = config.toastEvery;
+          if (config.toastDuration) toastDuration = config.toastDuration;
+          processMessages(messages);
+        });
+      }
     }
   };
 
