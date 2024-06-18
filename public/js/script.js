@@ -118,9 +118,9 @@
       },
       body: JSON.stringify({
         domain,
-        visitorId,
-        type: 'pageview',
-        referrer: document.referrer,
+        // visitorId,
+        // type: 'pageview',
+        // referrer: document.referrer,
       }),
     });
     console.log('actionSpeak' + response);
