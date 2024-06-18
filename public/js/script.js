@@ -81,6 +81,7 @@
   let visitorId;
   const localStorageVisitorIdName = 'actionSpeak-visitor-id';
   const domain = document.currentScript.getAttribute('data-domain');
+  console.log('actionSpeack' + domain);
   const endpoint = 'https://action-speak.vercel.app/api/script';
 
   const getVisitorId = () => {
@@ -122,6 +123,7 @@
         referrer: document.referrer,
       }),
     });
+    console.log('actionSpeak' + response);
 
     return response.ok;
   };
