@@ -26,8 +26,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Website not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ message: 'Success' }, { status: 200 });
+    const response = NextResponse.json({ message: 'Success' }, { status: 200 });
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Methods', 'POST');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+
+    return response;
   } catch (error) {
-    return NextResponse.json({ error }, { status: 500 });
+    const response = NextResponse.json({ error }, { status: 500 });
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Methods', 'POST');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+
+    return response;
   }
+}
+
+// OPTIONS 메서드도 처리하여 CORS 사전 검사를 통과하도록 합니다.
+export async function OPTIONS() {
+  const response = NextResponse.json({}, { status: 200 });
+  response.headers.set('Access-Control-Allow-Origin', '*');
+  response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+
+  return response;
 }
