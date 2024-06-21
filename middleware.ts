@@ -1,6 +1,7 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { NextResponse, type NextRequest } from 'next/server';
-import { protectedPaths } from './lib/constant';
+import { type NextRequest, NextResponse } from 'next/server';
+
+import { protectedPaths } from '@/lib/constant';
+import { type CookieOptions, createServerClient } from '@supabase/ssr';
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -64,9 +65,7 @@ export async function middleware(request: NextRequest) {
     }
   } else {
     if (protectedPaths.includes(url.pathname)) {
-      return NextResponse.redirect(
-        new URL('/auth?next=' + url.pathname, request.url)
-      );
+      return NextResponse.redirect(new URL('/auth?next=' + url.pathname, request.url));
     }
     return response;
   }

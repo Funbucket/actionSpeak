@@ -81,15 +81,13 @@
   let visitorId;
   const localStorageVisitorIdName = 'actionSpeak-visitor-id';
   const domain = document.currentScript.getAttribute('data-domain');
-  console.log('actionSpeack' + domain);
   const endpoint = 'https://action-speak.vercel.app/api/script';
 
   const getVisitorId = () => {
     visitorId = localStorage.getItem(localStorageVisitorIdName);
 
     if (!visitorId) {
-      visitorId =
-        Date.now().toString(36) + Math.random().toString(36).substr(2);
+      visitorId = Date.now().toString(36) + Math.random().toString(36).substr(2);
       localStorage.setItem(localStorageVisitorIdName, visitorId);
     }
 
@@ -98,14 +96,12 @@
 
   const fetchFont = async () => {
     const link1 = document.createElement('link');
-    link1.href =
-      'https://fonts.googleapis.com/css2?family=Gabarito:wght@400..900&display=swap';
+    link1.href = 'https://fonts.googleapis.com/css2?family=Gabarito:wght@400..900&display=swap';
     link1.rel = 'stylesheet';
     document.head.appendChild(link1);
 
     const link2 = document.createElement('link');
-    link2.href =
-      'https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400&display=swap';
+    link2.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400&display=swap';
     link2.rel = 'stylesheet';
     document.head.appendChild(link2);
   };
@@ -118,12 +114,8 @@
       },
       body: JSON.stringify({
         domain,
-        // visitorId,
-        // type: 'pageview',
-        // referrer: document.referrer,
       }),
     });
-    console.log('actionSpeak' + response);
 
     return response.ok;
   };
@@ -152,7 +144,7 @@
     }
 
     if (window.innerWidth < 640) {
-      toasting.forEach(id => removeToast(id, true));
+      toasting.forEach((id) => removeToast(id, true));
     }
 
     document.querySelector('#actionSpeak-toast-container').prepend(toast);
@@ -172,13 +164,13 @@
 
     if (force) {
       toast.remove();
-      toasting = toasting.filter(t => t !== id);
+      toasting = toasting.filter((t) => t !== id);
     } else {
       toast.className += ' toast-hide';
       setTimeout(() => {
         if (toast) {
           toast.remove();
-          toasting = toasting.filter(t => t !== id);
+          toasting = toasting.filter((t) => t !== id);
         }
       }, 400);
     }
@@ -187,7 +179,7 @@
   function cleanup() {
     toastTimeout && clearTimeout(toastTimeout);
     toastInterval && clearInterval(toastInterval);
-    toasting.forEach(id => removeToast(id));
+    toasting.forEach((id) => removeToast(id));
   }
 
   const toast = {
@@ -197,8 +189,8 @@
     },
   };
 
-  const processMessages = msgs => {
-    msgs.forEach(message => {
+  const processMessages = (msgs) => {
+    msgs.forEach((message) => {
       const img = new Image();
       img.src = message.img;
     });
@@ -253,7 +245,7 @@
 
       // 기존 actionSpeak 메시지 처리
       if (window.actionSpeak && window.actionSpeak.length > 0) {
-        window.actionSpeak.forEach(config => {
+        window.actionSpeak.forEach((config) => {
           if (config.messages) messages = config.messages;
           if (config.waitFor) waitFor = config.waitFor;
           if (config.toastEvery) toastEvery = config.toastEvery;
@@ -268,7 +260,7 @@
   window.actionSpeak = window.actionSpeak || [];
   window.actionSpeak.push = (...args) => {
     console.log('actionSpeak push called with:', args);
-    args.forEach(config => {
+    args.forEach((config) => {
       if (config.messages) messages = config.messages;
       if (config.waitFor) waitFor = config.waitFor;
       if (config.toastEvery) toastEvery = config.toastEvery;
