@@ -82,6 +82,7 @@
     localStorageVisitorIdName: 'actionSpeak-visitor-id',
     endpoint: 'https://action-speak.vercel.app/api/script',
     toastFrequencyKey: 'actionSpeak-toast-frequency',
+    maxFrequencyKey: 'actionSpeak-max-frequency',
   };
 
   let toastTimeout;
@@ -92,7 +93,6 @@
   let toastEvery;
   let toastDuration;
   let visitorId;
-  let frequency;
   let publicImageUrl;
   const domain = document.currentScript.getAttribute('data-domain');
 
@@ -115,6 +115,7 @@
     });
 
     const data = await response.json();
+    console.log(data);
     if (data.imageUrl) {
       publicImageUrl = data.imageUrl;
     }
@@ -264,7 +265,9 @@
       if (config.waitFor) waitFor = config.waitFor;
       if (config.toastEvery) toastEvery = config.toastEvery;
       if (config.toastDuration) toastDuration = config.toastDuration;
-      if (config.frequency) frequency = config.frequency;
+      if (config.frequency) {
+        localStorage.setItem(CONFIG.maxFrequencyKey, config.frequency);
+      }
       processMessages(messages);
     });
   };
@@ -291,6 +294,11 @@
     return frequency ? parseInt(frequency, 10) : 0;
   };
 
+  const getMaxFrequency = () => {
+    const maxFrequency = localStorage.getItem(CONFIG.maxFrequencyKey);
+    return maxFrequency ? parseInt(maxFrequency, 10) : 1;
+  };
+
   const incrementToastFrequency = () => {
     const frequency = getToastFrequency();
     localStorage.setItem(CONFIG.toastFrequencyKey, frequency + 1);
@@ -298,10 +306,7 @@
 
   const shouldShowToast = () => {
     const frequency = getToastFrequency();
-    const maxFrequency =
-      typeof window.actionSpeakConfigFrequency !== 'undefined'
-        ? window.actionSpeakConfigFrequency
-        : 1;
+    const maxFrequency = getMaxFrequency();
     return frequency < maxFrequency;
   };
 
