@@ -113,7 +113,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ domain, img }),
     });
-
+    console.log('helloooooooooooooooooooooooooooooooo', response);
     const data = await response.json();
     console.log(data);
     if (data.imageUrl) {
