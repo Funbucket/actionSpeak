@@ -294,7 +294,7 @@
     document.head.appendChild(styleEl);
 
     if (window.actionSpeak && window.actionSpeak.length > 0) {
-      const img = window.actionSpeak[0].message.img || null;
+      const img = window.actionSpeak.message.img || null;
       const isValid = await validateWebsite(img);
 
       if (isValid) {
