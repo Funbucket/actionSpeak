@@ -80,7 +80,8 @@
 
   const CONFIG = {
     localStorageVisitorIdName: 'actionSpeak-visitor-id',
-    endpoint: 'https://db5b-116-43-183-242.ngrok-free.app/api/script',
+    localStorageImageUrlName: 'actionSpeak-image-url',
+    endpoint: 'https://action-speak.vercel.app/api/script',
     toastFrequencyKey: 'actionSpeak-toast-frequency',
     maxFrequencyKey: 'actionSpeak-max-frequency',
   };
@@ -107,18 +108,27 @@
     return visitorId;
   };
 
+  const getPublicImageUrl = () => {
+    publicImageUrl = localStorage.getItem(CONFIG.localStorageImageUrlName);
+    return publicImageUrl;
+  };
+
+  const setPublicImageUrl = (url) => {
+    publicImageUrl = url;
+    localStorage.setItem(CONFIG.localStorageImageUrlName, url);
+  };
+
   const validateWebsite = async (img) => {
     const response = await fetch(CONFIG.endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ domain, img }),
     });
-    window.actionImg = img;
+
     const data = await response.json();
-    window.actionData = data;
 
     if (data.imageUrl) {
-      publicImageUrl = data.imageUrl;
+      setPublicImageUrl(data.imageUrl);
     }
 
     return response.ok;
@@ -200,9 +210,8 @@
   };
 
   const createMessage = (message) => {
-    window.publicImageUrl = publicImageUrl;
-    const Image = publicImageUrl
-      ? `<img src="${publicImageUrl}" style="width: 48px; height: 48px; object-fit: cover; object-position: center; flex-shrink: 0; border-radius: 8px;" width="48" height="48" alt="" />`
+    const Image = getPublicImageUrl()
+      ? `<img src="${getPublicImageUrl()}" style="width: 48px; height: 48px; object-fit: cover; object-position: center; flex-shrink: 0; border-radius: 8px;" width="48" height="48" alt="" />`
       : '';
     const closeButton = message.closeButton
       ? '<button class="toast-close-btn" aria-label="Close">&times;</button>'
