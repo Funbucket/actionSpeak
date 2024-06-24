@@ -16,9 +16,6 @@ export const PostBody = ({ post }: Props) => {
   return (
     <MDXRemote
       source={post.content}
-      
-      
-
       options={{
         mdxOptions: {
           remarkPlugins: [

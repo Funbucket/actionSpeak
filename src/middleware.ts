@@ -57,6 +57,7 @@ export async function middleware(request: NextRequest) {
   );
 
   const { data } = await supabase.auth.getSession();
+
   const url = new URL(request.url);
 
   if (data.session) {
@@ -64,7 +65,12 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/', request.url));
     }
   } else {
-    if (protectedPaths.includes(url.pathname)) {
+    if (
+      protectedPaths.some((path) => {
+        const regex = new RegExp(`^${path}(/.*)?$`); // '/dashboard'로 시작하는 모든 경로를 일치시키는 정규 표현식
+        return regex.test(url.pathname);
+      })
+    ) {
       return NextResponse.redirect(new URL('/auth?next=' + url.pathname, request.url));
     }
     return response;

@@ -6,8 +6,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
-import { Button } from './ui/button';
-import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import useUser from '@/hook/useUser';
 import { protectedPaths } from '@/lib/constant';
 import { supabaseBrowser } from '@/lib/supabase/browser';
@@ -35,7 +35,7 @@ export default function Navbar() {
   };
 
   return (
-    <div className='mx-3 flex h-2 items-center justify-between'>
+    <div className='fixed left-0 right-0 top-0 z-50 mx-3 flex h-16 items-center justify-between bg-white bg-opacity-75 backdrop-blur-md'>
       <Link href='/' className='flex shrink-0 items-center'>
         <Image src='/imgs/logo-image.png' alt='logo-image' width={30} height={15} />
         <Image src='/imgs/logo-text.png' alt='logo-image' width={120} height={60} />

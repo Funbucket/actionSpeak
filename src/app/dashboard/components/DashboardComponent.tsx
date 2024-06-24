@@ -5,34 +5,26 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-import { Button } from '../../../components/ui/button';
-import { Input } from '../../../components/ui/input';
-import useUser from '../../../hook/useUser';
-import useWebsites from '../../../hook/useWebsites';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import useWebsites from '@/hook/useWebsites';
 
 export default function DashboardComponent() {
-  const [url, setUrl] = useState('');
+  const [domain, setDomain] = useState('');
   const { websites, isLoading, addWebsite } = useWebsites();
-  const { data: user } = useUser();
   const router = useRouter();
 
   const handleAddWebsite = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (user) {
-      if (!user.is_premium && websites.length >= 1) {
+    try {
+      await addWebsite(domain);
+      setDomain('');
+    } catch (error: any) {
+      console.error('Error adding website:', error);
+      if (error.message.includes('Non-premium users can only add up to 2 websites')) {
         router.push('/contact');
-        return;
       }
-
-      try {
-        await addWebsite(url);
-        setUrl('');
-      } catch (error: any) {
-        console.error('Error adding website:', error);
-      }
-    } else {
-      console.error('User data is not available.');
     }
   };
 
@@ -56,8 +48,8 @@ export default function DashboardComponent() {
                   type='text'
                   placeholder='Enter your website URL'
                   className='max-w-lg flex-1'
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
+                  value={domain}
+                  onChange={(e) => setDomain(e.target.value)}
                 />
                 <Button type='submit' disabled={isLoading}>
                   Register
@@ -72,9 +64,9 @@ export default function DashboardComponent() {
                       key={site.id}
                       className='flex items-center justify-between rounded-lg bg-gray-950 px-4 py-3'
                     >
-                      <div className='text-gray-50'>{site.url}</div>
+                      <div className='text-gray-50'>{site.domain}</div>
                       <Link
-                        href={`/dashboard/${site.id}`}
+                        href={`/dashboard/${site.domain}`}
                         className='inline-flex h-8 items-center justify-center rounded-md bg-gray-50 px-4 text-sm font-medium text-gray-950 shadow transition-colors hover:bg-gray-50/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50'
                         prefetch={false}
                       >

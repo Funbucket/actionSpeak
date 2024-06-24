@@ -1,7 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { Button } from '../components/ui/button';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CloudLightning, Info, Tablet, Target } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -23,7 +25,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className='w-full bg-gray-100 py-12 dark:bg-gray-800 md:py-24 lg:py-32'>
+      {/* <section className='w-full bg-gray-100 py-12 dark:bg-gray-800 md:py-24 lg:py-32'>
         <div className='container px-4 md:px-6'>
           <div className='flex flex-col items-center justify-center space-y-4 text-center'>
             <div className='space-y-2'>
@@ -38,6 +40,61 @@ export default function Home() {
                 설명 ...
               </p>
             </div>
+          </div>
+        </div>
+      </section> */}
+      <section className='bg-muted py-16 md:py-24 lg:py-32'>
+        <div className='container grid gap-8 px-4 md:grid-cols-2 md:px-6'>
+          <div className='space-y-4'>
+            <h2 className='text-3xl font-bold md:text-4xl'>전환률을 높이는 강력한 기능</h2>
+            <p className='text-lg text-muted-foreground md:text-xl'>
+              ActionSpeak는 전환을 유도하는 효과적인 팝업을 생성하는데 빠르고 강력합니다.
+            </p>
+            <br />
+            {/* <p className='text-lg text-muted-foreground md:text-xl'>
+              방문자가 지금 당장 구매해야할 이유를 제공하세요.
+            </p> */}
+          </div>
+          <div className='grid gap-4'>
+            <Card>
+              <CardHeader>
+                <CloudLightning className='h-8 w-8 text-primary' />
+                <CardTitle>Quick and Easy Setup</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>
+                  Get started in minutes with our user-friendly interface. No developer support
+                  required.
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <Target className='h-8 w-8 text-primary' />
+                <CardTitle>Behavior-Based Targeting</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>Use real-time visitor data to trigger personalized popups that convert.</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <Tablet className='h-8 w-8 text-primary' />
+                <CardTitle>Responsive Design</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>Ensure your popups look great on any device, from desktop to mobile.</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <Info className='h-8 w-8 text-primary' />
+                <CardTitle>Advanced Analytics</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>Track and optimize your popup performance with detailed analytics.</p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>

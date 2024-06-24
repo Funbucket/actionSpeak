@@ -1,4 +1,4 @@
-import { supabaseBrowser } from '../lib/supabase/browser';
+import { supabaseBrowser } from '@/lib/supabase/browser';
 import { useQuery } from '@tanstack/react-query';
 
 const initUser = {

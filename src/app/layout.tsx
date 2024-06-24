@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 
-import Navbar from '../components/Navbar';
-import QueryProvider from '../components/provider/query-provider';
-import { ThemeProvider } from '../components/provider/theme-provider';
 import './globals.css';
+import Navbar from '@/components/Navbar';
+import QueryProvider from '@/components/provider/query-provider';
+import { ThemeProvider } from '@/components/provider/theme-provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -23,7 +23,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <QueryProvider>
           <ThemeProvider>
-            <main className='mx-auto min-h-screen max-w-6xl space-y-10 py-10'>
+            <main className='mx-auto mt-16 min-h-screen max-w-6xl'>
               <Navbar />
               {children}
             </main>
