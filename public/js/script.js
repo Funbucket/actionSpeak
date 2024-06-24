@@ -115,7 +115,6 @@
     });
 
     const data = await response.json();
-    console.log(data);
     if (data.imageUrl) {
       publicImageUrl = data.imageUrl;
     }
@@ -158,14 +157,12 @@
       closeButton.addEventListener('click', (event) => {
         event.stopPropagation();
         removeToast(id, true);
-        incrementToastFrequency();
       });
     }
 
     if (!options.stay || options.duration) {
       setTimeout(() => {
         removeToast(id);
-        incrementToastFrequency();
       }, options.duration || 10000);
     }
   };
@@ -174,6 +171,11 @@
     const toast = document.getElementById(id);
 
     if (!toast) return;
+
+    if (!toast.dataset.removed) {
+      toast.dataset.removed = true;
+      incrementToastFrequency();
+    }
 
     if (force) {
       toast.remove();
