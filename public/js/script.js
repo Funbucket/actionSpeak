@@ -113,9 +113,10 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ domain, img }),
     });
-    console.log('helloooooooooooooooooooooooooooooooo', response);
+    window.actionImg = img;
     const data = await response.json();
-    console.log(data);
+    window.actionData = data;
+
     if (data.imageUrl) {
       publicImageUrl = data.imageUrl;
     }
@@ -199,6 +200,7 @@
   };
 
   const createMessage = (message) => {
+    window.publicImageUrl = publicImageUrl;
     const Image = publicImageUrl
       ? `<img src="${publicImageUrl}" style="width: 48px; height: 48px; object-fit: cover; object-position: center; flex-shrink: 0; border-radius: 8px;" width="48" height="48" alt="" />`
       : '';
