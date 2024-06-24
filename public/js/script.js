@@ -93,6 +93,7 @@
   let toastDuration;
   let visitorId;
   let frequency;
+  let publicImageUrl;
   const domain = document.currentScript.getAttribute('data-domain');
 
   const getVisitorId = () => {
@@ -106,16 +107,16 @@
     return visitorId;
   };
 
-  const validateWebsite = async (image) => {
+  const validateWebsite = async (img) => {
     const response = await fetch(CONFIG.endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ domain, image }),
+      body: JSON.stringify({ domain, img }),
     });
 
     const data = await response.json();
     if (data.imageUrl) {
-      updateMessagesWithImage(data.imageUrl);
+      publicImageUrl = data.imageUrl;
     }
 
     return response.ok;
@@ -194,8 +195,8 @@
   };
 
   const createMessage = (message) => {
-    const Image = message.img
-      ? `<img src="${message.img}" style="width: 48px; height: 48px; object-fit: cover; object-position: center; flex-shrink: 0; border-radius: 8px;" width="48" height="48" alt="" />`
+    const Image = publicImageUrl
+      ? `<img src="${publicImageUrl}" style="width: 48px; height: 48px; object-fit: cover; object-position: center; flex-shrink: 0; border-radius: 8px;" width="48" height="48" alt="" />`
       : '';
     const closeButton = message.closeButton
       ? '<button class="toast-close-btn" aria-label="Close">&times;</button>'
@@ -226,11 +227,6 @@
   };
 
   const processMessages = (msgs) => {
-    msgs.forEach((message) => {
-      const img = new Image();
-      img.src = message.img;
-    });
-
     toastTimeout = setTimeout(() => {
       if (!toastEvery) {
         // 단일 메시지 처리
@@ -258,13 +254,6 @@
     }, waitFor);
   };
 
-  const updateMessagesWithImage = (imageUrl) => {
-    messages = messages.map((message) => ({
-      ...message,
-      img: imageUrl,
-    }));
-  };
-
   const handleActionSpeakConfig = (configs) => {
     configs.forEach((config) => {
       if (config.message) {
@@ -288,8 +277,8 @@
     document.head.appendChild(styleEl);
 
     if (window.actionSpeak && window.actionSpeak.length > 0) {
-      const image = window.actionSpeak[0].message.image || null;
-      const isValid = await validateWebsite(image);
+      const img = window.actionSpeak[0].message.img || null;
+      const isValid = await validateWebsite(img);
 
       if (isValid) {
         handleActionSpeakConfig(window.actionSpeak);

@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     return setCorsHeaders(NextResponse.json({ error: 'Method not allowed' }, { status: 405 }));
   }
 
-  const { domain, image } = await req.json();
+  const { domain, img } = await req.json();
 
   try {
     const { data, error } = await supabase.from('websites').select('*').eq('domain', domain);
@@ -30,12 +30,12 @@ export async function POST(req: NextRequest) {
     }
 
     let imageUrl = null;
-    if (image) {
+    if (img) {
       const { data: imageData, error: imageError } = await supabase
         .from('website_images')
         .select('image_url')
         .eq('website_domain', domain)
-        .eq('name', image)
+        .eq('name', img)
         .single();
 
       if (imageError) {
