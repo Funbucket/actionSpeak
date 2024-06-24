@@ -80,7 +80,7 @@
 
   const CONFIG = {
     localStorageVisitorIdName: 'actionSpeak-visitor-id',
-    endpoint: 'https://action-speak.vercel.app/api/script',
+    endpoint: 'https://db5b-116-43-183-242.ngrok-free.app/api/script',
     toastFrequencyKey: 'actionSpeak-toast-frequency',
     maxFrequencyKey: 'actionSpeak-max-frequency',
   };
