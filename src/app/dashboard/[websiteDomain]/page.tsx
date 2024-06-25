@@ -118,7 +118,7 @@ const WebsiteMetrics = ({ params }: { params: { websiteDomain: string } }) => {
                   alt={image.description || 'Uploaded image'}
                   width={400}
                   height={300}
-                  className='aspect-[4/3] rounded-md object-cover'
+                  className='aspect-[4/4] rounded-md object-cover'
                 />
                 <div className='flex items-center justify-between'>
                   <p className='text-sm font-medium'>{image.name || 'No description'}</p>

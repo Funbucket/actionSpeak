@@ -23,6 +23,7 @@ const addWebsite = async ({ domain, userId }: { domain: string; userId: string }
     .eq('id', userId)
     .single();
 
+  console.log(userData);
   if (userError) throw new Error(userError.message);
 
   // Check the number of websites already added by the user
@@ -47,6 +48,20 @@ const addWebsite = async ({ domain, userId }: { domain: string; userId: string }
   return data;
 };
 
+const deleteWebsite = async ({ websiteId, userId }: { websiteId: string; userId: string }) => {
+  const supabase = supabaseBrowser();
+
+  const { error } = await supabase
+    .from('websites')
+    .delete()
+    .eq('id', websiteId)
+    .eq('user_id', userId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+};
+
 export default function useWebsites() {
   const { data: user, isLoading: isUserLoading } = useUser();
   const queryClient = useQueryClient();
@@ -64,9 +79,17 @@ export default function useWebsites() {
     },
   });
 
+  const deleteWebsiteMutation = useMutation({
+    mutationFn: (websiteId: string) => deleteWebsite({ websiteId, userId: user?.id as string }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['websites', user?.id] });
+    },
+  });
+
   return {
     websites: websitesQuery.data || [],
     isLoading: websitesQuery.isLoading || isUserLoading,
     addWebsite: addWebsiteMutation.mutateAsync,
+    deleteWebsite: deleteWebsiteMutation.mutateAsync,
   };
 }

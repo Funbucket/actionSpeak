@@ -23,7 +23,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <QueryProvider>
           <ThemeProvider>
-            <main className='mx-auto mt-16 min-h-screen max-w-6xl'>
+            <main className='max-w-screen mt-16 min-h-screen'>
               <Navbar />
               {children}
             </main>

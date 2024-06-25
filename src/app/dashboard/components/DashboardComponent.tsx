@@ -2,19 +2,24 @@
 
 import { useState } from 'react';
 
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import { AlertDialogComponent } from '@/components/ui/AlertDialog';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import useWebsites from '@/hook/useWebsites';
+import { CalendarIcon } from 'lucide-react';
 
 export default function DashboardComponent() {
   const [domain, setDomain] = useState('');
-  const { websites, isLoading, addWebsite } = useWebsites();
+  const { websites, isLoading, addWebsite, deleteWebsite } = useWebsites();
   const router = useRouter();
 
-  const handleAddWebsite = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddWebsite = async (
+    e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>
+  ) => {
     e.preventDefault();
 
     try {
@@ -28,58 +33,75 @@ export default function DashboardComponent() {
     }
   };
 
+  const handleDeleteWebsite = async (websiteId: string) => {
+    try {
+      await deleteWebsite(websiteId);
+    } catch (error: any) {
+      console.error('Error deleting website:', error);
+    }
+  };
+
+  const handleCardClick = (domain: string) => {
+    router.push(`/dashboard/${domain}`);
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-CA'); // This will format the date as YYYY/MM/DD
+  };
+
   return (
-    <div>
-      <section className='w-full py-12 md:py-24 lg:py-32'>
-        <div className='container px-4 md:px-6'>
-          <div className='flex flex-col items-center justify-center space-y-4 text-center'>
-            <div className='space-y-2'>
-              <h2 className='text-3xl font-bold tracking-tighter sm:text-5xl'>
-                Manage Your Websites
-              </h2>
-              <p className='max-w-[900px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed'>
-                The Popup Notifications dashboard allows you to easily register your websites and
-                access the code snippet to integrate with your website.
-              </p>
-            </div>
-            <div className='w-full max-w-sm space-y-2'>
-              <form className='flex space-x-2' onSubmit={handleAddWebsite}>
-                <Input
-                  type='text'
-                  placeholder='Enter your website URL'
-                  className='max-w-lg flex-1'
-                  value={domain}
-                  onChange={(e) => setDomain(e.target.value)}
-                />
-                <Button type='submit' disabled={isLoading}>
-                  Register
-                </Button>
-              </form>
-              {isLoading ? (
-                <p>Loading...</p>
-              ) : (
-                <div className='grid gap-4'>
-                  {websites.map((site) => (
-                    <div
-                      key={site.id}
-                      className='flex items-center justify-between rounded-lg bg-gray-950 px-4 py-3'
-                    >
-                      <div className='text-gray-50'>{site.domain}</div>
-                      <Link
-                        href={`/dashboard/${site.domain}`}
-                        className='inline-flex h-8 items-center justify-center rounded-md bg-gray-50 px-4 text-sm font-medium text-gray-950 shadow transition-colors hover:bg-gray-50/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50'
-                        prefetch={false}
-                      >
-                        View
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
+    <section className='flex flex-1 flex-col gap-8 px-20 py-20 md:px-16'>
+      <div className='mx-auto flex w-full max-w-5xl items-center gap-4'>
+        <form className='flex-1' onSubmit={handleAddWebsite}>
+          <Input
+            placeholder='예) service.com'
+            className='bg-background'
+            value={domain}
+            onChange={(e) => setDomain(e.target.value)}
+          />
+          <Button type='submit' className='sr-only'>
+            추가하기
+          </Button>
+        </form>
+        <Button onClick={(e) => handleAddWebsite(e as any)} disabled={isLoading}>
+          추가하기
+        </Button>
+      </div>
+      <div className='mx-auto grid w-full max-w-5xl gap-6 md:grid-cols-2 lg:grid-cols-3'>
+        {isLoading
+          ? Array.from({ length: 6 }).map((_, index) => (
+              <Card key={index}>
+                <CardHeader className='flex flex-row items-center justify-between gap-4'>
+                  <Skeleton className='h-8 w-1/2' />
+                  <Skeleton className='h-8 w-8' />
+                </CardHeader>
+                <CardContent className='grid gap-2'>
+                  <Skeleton className='h-4 w-1/4' />
+                </CardContent>
+              </Card>
+            ))
+          : websites.map((site) => (
+              <Card
+                key={site.id}
+                onClick={() => handleCardClick(site.domain)}
+                className='hover:scale-20 transform cursor-pointer transition-transform hover:shadow-md'
+              >
+                <CardHeader className='flex flex-row items-center justify-between gap-4'>
+                  <div className='grid gap-1'>
+                    <CardTitle>{site.domain}</CardTitle>
+                  </div>
+                  <AlertDialogComponent onDelete={() => handleDeleteWebsite(site.id)} />
+                </CardHeader>
+                <CardContent className='grid gap-2'>
+                  <div className='flex items-center gap-1 text-sm'>
+                    <CalendarIcon className='h-4 w-4' />
+                    <span className='text-muted-foreground'>{formatDate(site.created_at)}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+      </div>
+    </section>
   );
 }

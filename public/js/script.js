@@ -212,7 +212,7 @@
   const createMessage = async (message) => {
     let image = '';
     if (message.img && imageUrls[message.img]) {
-      image = `<img src="${imageUrls[message.img]}" style="width: 48px; height: 48px; object-fit: cover; object-position: center; flex-shrink: 0; border-radius: 8px;" width="48" height="48" alt="" />`;
+      image = `<img src="${imageUrls[message.img]}" style="width: 3rem; height: 3rem; object-fit: cover; object-position: center; flex-shrink: 0; border-radius: 8px;" width="48" height="48" alt="" />`;
     }
     const closeButton = message.closeButton
       ? '<button class="toast-close-btn" aria-label="Close">&times;</button>'
