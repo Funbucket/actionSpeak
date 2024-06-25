@@ -125,7 +125,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ domain, img }),
     });
-    localStorage.setItem('actiontest2', response);
+
     const data = await response.json();
 
     if (data.imageUrl) {
@@ -210,14 +210,18 @@
     toasting.forEach((id) => removeToast(id));
   };
 
-  const createMessage = (message) => {
-    const Image = publicImageUrl
-      ? `<img src="${publicImageUrl}" style="width: 48px; height: 48px; object-fit: cover; object-position: center; flex-shrink: 0; border-radius: 8px;" width="48" height="48" alt="" />`
-      : '';
+  const createMessage = async (message) => {
+    let image = '';
+    if (message.img) {
+      await getImageUrl(message.img);
+      if (publicImageUrl) {
+        image = `<img src="${publicImageUrl}" style="width: 48px; height: 48px; object-fit: cover; object-position: center; flex-shrink: 0; border-radius: 8px;" width="48" height="48" alt="" />`;
+      }
+    }
     const closeButton = message.closeButton
       ? '<button class="toast-close-btn" aria-label="Close">&times;</button>'
       : '';
-    const Content = `
+    const content = `
           <div style="width: 100%;">
               <div style="font-size: 1rem; font-weight: 600; color: rgb(3 7 18); margin-bottom: 0.25rem;">${message.title}</div>
               <div style="font-size: 1rem; font-weight: 400; line-height: 1.25; color: rgb(55 65 81);">${message.body}</div>
@@ -228,32 +232,32 @@
     if (message.link && message.link.includes('http')) {
       return `
               <div role="button" class="actionSpeak-toast-content" style="pointer-events: auto; width: 100%; cursor: pointer; transition: transform 0.2s ease-in-out;" onmouseover="this.style.transform = 'scale(1.01)';" onmouseout="this.style.transform = 'scale(1)';" onclick="window.open('${message.link}', '_blank')">
-                  ${Image}
-                  ${Content}
+                  ${image}
+                  ${content}
               </div>
           `;
     } else {
       return `
               <div class="actionSpeak-toast-content" style="pointer-events: auto;">
-                  ${Image}
-                  ${Content}
+                  ${image}
+                  ${content}
               </div>
           `;
     }
   };
 
-  const processMessages = (msgs) => {
-    toastTimeout = setTimeout(() => {
+  const processMessages = async (msgs) => {
+    toastTimeout = setTimeout(async () => {
       if (!toastEvery) {
         // 단일 메시지 처리
         const message = msgs[0];
-        const html = createMessage(message);
+        const html = await createMessage(message);
         if (shouldShowToast()) {
           showToast(html, { duration: toastDuration, position: message.position });
         }
       } else {
         // 다중 메시지 처리
-        toastInterval = setInterval(() => {
+        toastInterval = setInterval(async () => {
           const message = msgs.shift();
 
           if (!message) {
@@ -261,7 +265,7 @@
             return;
           }
 
-          const html = createMessage(message);
+          const html = await createMessage(message);
           if (shouldShowToast()) {
             showToast(html, { duration: toastDuration, position: message.position });
           }
@@ -293,15 +297,9 @@
     const styleEl = document.createElement('style');
     styleEl.innerHTML = STYLE;
     document.head.appendChild(styleEl);
-    localStorage.setItem('actiontest1', JSON.stringify(window.actionSpeak));
 
     if (window.actionSpeak && window.actionSpeak.length > 0) {
-      const img = window.actionSpeak.message.img || null;
       const isDomainValid = await validateDomain();
-
-      if (isDomainValid && img) {
-        await getImageUrl(img);
-      }
 
       if (isDomainValid) {
         handleActionSpeakConfig(window.actionSpeak);
@@ -331,8 +329,13 @@
   };
 
   window.actionSpeak = window.actionSpeak || [];
-  window.actionSpeak.push = (...args) => {
-    handleActionSpeakConfig(args);
+  window.actionSpeak.push = async (...args) => {
+    const configs = args;
+    const isDomainValid = await validateDomain();
+
+    if (isDomainValid) {
+      handleActionSpeakConfig(configs);
+    }
   };
 
   initialize();
