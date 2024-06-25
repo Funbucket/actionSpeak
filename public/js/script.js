@@ -125,7 +125,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ domain, img }),
     });
-    localStorage.setItem('actiontest1', response);
+    localStorage.setItem('actiontest2', response);
     const data = await response.json();
 
     if (data.imageUrl) {
@@ -293,6 +293,7 @@
     const styleEl = document.createElement('style');
     styleEl.innerHTML = STYLE;
     document.head.appendChild(styleEl);
+    localStorage.setItem('actiontest1', window.actionSpeak);
 
     if (window.actionSpeak && window.actionSpeak.length > 0) {
       const img = window.actionSpeak.message.img || null;
