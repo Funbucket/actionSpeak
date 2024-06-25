@@ -81,7 +81,8 @@
   const CONFIG = {
     localStorageVisitorIdName: 'actionSpeak-visitor-id',
     localStorageImageUrlName: 'actionSpeak-image-url',
-    endpoint: 'https://action-speak.vercel.app/api/script',
+    validateDomainEndpoint: 'https://action-speak.vercel.app/api/validateDomain',
+    getImageUrlEndpoint: 'https://action-speak.vercel.app/api/getImageUrl',
     toastFrequencyKey: 'actionSpeak-toast-frequency',
     maxFrequencyKey: 'actionSpeak-max-frequency',
   };
@@ -108,18 +109,18 @@
     return visitorId;
   };
 
-  const getPublicImageUrl = () => {
-    publicImageUrl = localStorage.getItem(CONFIG.localStorageImageUrlName);
-    return publicImageUrl;
+  const validateDomain = async () => {
+    const response = await fetch(CONFIG.validateDomainEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ domain }),
+    });
+
+    return response.ok;
   };
 
-  const setPublicImageUrl = (url) => {
-    publicImageUrl = url;
-    localStorage.setItem(CONFIG.localStorageImageUrlName, url);
-  };
-
-  const validateWebsite = async (img) => {
-    const response = await fetch(CONFIG.endpoint, {
+  const getImageUrl = async (img) => {
+    const response = await fetch(CONFIG.getImageUrlEndpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ domain, img }),
@@ -128,7 +129,7 @@
     const data = await response.json();
 
     if (data.imageUrl) {
-      setPublicImageUrl(data.imageUrl);
+      publicImageUrl = data.imageUrl;
     }
 
     return response.ok;
@@ -210,8 +211,8 @@
   };
 
   const createMessage = (message) => {
-    const Image = getPublicImageUrl()
-      ? `<img src="${getPublicImageUrl()}" style="width: 48px; height: 48px; object-fit: cover; object-position: center; flex-shrink: 0; border-radius: 8px;" width="48" height="48" alt="" />`
+    const Image = publicImageUrl
+      ? `<img src="${publicImageUrl}" style="width: 48px; height: 48px; object-fit: cover; object-position: center; flex-shrink: 0; border-radius: 8px;" width="48" height="48" alt="" />`
       : '';
     const closeButton = message.closeButton
       ? '<button class="toast-close-btn" aria-label="Close">&times;</button>'
@@ -295,9 +296,13 @@
 
     if (window.actionSpeak && window.actionSpeak.length > 0) {
       const img = window.actionSpeak.message.img || null;
-      const isValid = await validateWebsite(img);
+      const isDomainValid = await validateDomain();
 
-      if (isValid) {
+      if (isDomainValid && img) {
+        await getImageUrl(img);
+      }
+
+      if (isDomainValid) {
         handleActionSpeakConfig(window.actionSpeak);
       }
     }
