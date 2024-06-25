@@ -293,7 +293,7 @@
     const styleEl = document.createElement('style');
     styleEl.innerHTML = STYLE;
     document.head.appendChild(styleEl);
-    localStorage.setItem('actiontest1', window.actionSpeak);
+    localStorage.setItem('actiontest1', JSON.stringify(window.actionSpeak));
 
     if (window.actionSpeak && window.actionSpeak.length > 0) {
       const img = window.actionSpeak.message.img || null;
