@@ -82,8 +82,8 @@
     localStorageVisitorIdName: 'actionSpeak-visitor-id',
     localStorageImageUrlName: 'actionSpeak-image-url',
     endpoint: 'https://action-speak.vercel.app/api/script',
-    toastFrequencyKey: 'actionSpeak-toast-frequency',
-    maxFrequencyKey: 'actionSpeak-max-frequency',
+    frequencyPrefix: 'actionSpeak-toast-frequency-',
+    maxFrequencyPrefix: 'actionSpeak-max-frequency-',
   };
 
   let toastTimeout;
@@ -96,6 +96,15 @@
   let visitorId;
   let imageUrls = {};
   const domain = document.currentScript.getAttribute('data-domain');
+
+  const generateHash = async (message) => {
+    const msgStr = JSON.stringify(message);
+    const msgUint8 = new TextEncoder().encode(msgStr);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+  };
 
   const getVisitorId = () => {
     visitorId = localStorage.getItem(CONFIG.localStorageVisitorIdName);
@@ -138,12 +147,13 @@
 
   const showToast = (content, options = {}) => {
     const position = options.position || 'top';
+    const id = options.id || '';
 
     ensureToastContainer(position);
 
-    const id = `toast-${Date.now()}`;
+    const toastId = `toast-${Date.now()}`;
     const toast = document.createElement('div');
-    toast.id = id;
+    toast.id = toastId;
     toast.className = 'actionSpeak-toast';
     toast.innerHTML = options.isHTML ? content : content;
 
@@ -152,42 +162,42 @@
     }
 
     document.querySelector('#actionSpeak-toast-container').prepend(toast);
-    toasting.push(id);
+    toasting.push(toastId);
 
     const closeButton = toast.querySelector('.toast-close-btn');
     if (closeButton) {
       closeButton.addEventListener('click', (event) => {
         event.stopPropagation();
-        removeToast(id, true);
+        removeToast(toastId, true, id);
       });
     }
 
     if (!options.stay || options.duration) {
       setTimeout(() => {
-        removeToast(id);
+        removeToast(toastId, false, id);
       }, options.duration || 10000);
     }
   };
 
-  const removeToast = (id, force = false) => {
-    const toast = document.getElementById(id);
+  const removeToast = (toastId, force = false, id = '') => {
+    const toast = document.getElementById(toastId);
 
     if (!toast) return;
 
     if (!toast.dataset.removed) {
       toast.dataset.removed = true;
-      incrementToastFrequency();
+      if (id) incrementToastFrequency(id);
     }
 
     if (force) {
       toast.remove();
-      toasting = toasting.filter((t) => t !== id);
+      toasting = toasting.filter((t) => t !== toastId);
     } else {
       toast.classList.add('toast-hide');
       setTimeout(() => {
         if (toast) {
           toast.remove();
-          toasting = toasting.filter((t) => t !== id);
+          toasting = toasting.filter((t) => t !== toastId);
         }
       }, 400);
     }
@@ -235,46 +245,51 @@
   const processMessages = async (msgs) => {
     toastTimeout = setTimeout(async () => {
       if (!toastEvery) {
-        // 단일 메시지 처리
         const message = msgs[0];
         const html = await createMessage(message);
-        if (shouldShowToast()) {
-          showToast(html, { duration: toastDuration, position: message.position });
+        if (shouldShowToast(message.id, message.frequency)) {
+          showToast(html, { duration: toastDuration, position: message.position, id: message.id });
         }
       } else {
-        // 다중 메시지 처리
         toastInterval = setInterval(async () => {
           const message = msgs.shift();
-
           if (!message) {
             clearInterval(toastInterval);
             return;
           }
-
           const html = await createMessage(message);
-          if (shouldShowToast()) {
-            showToast(html, { duration: toastDuration, position: message.position });
+          if (shouldShowToast(message.id, message.frequency)) {
+            showToast(html, {
+              duration: toastDuration,
+              position: message.position,
+              id: message.id,
+            });
           }
         }, toastEvery);
       }
     }, waitFor);
   };
 
-  const handleActionSpeakConfig = (configs) => {
-    configs.forEach((config) => {
+  const handleActionSpeakConfig = async (configs) => {
+    for (const config of configs) {
       if (config.message) {
+        config.message.id = await generateHash(config.message);
         messages = [config.message];
+        setMaxFrequency(config.message.id, config.frequency);
       } else if (config.messages) {
-        messages = config.messages;
+        messages = await Promise.all(
+          config.messages.map(async (msg) => {
+            msg.id = await generateHash(msg);
+            setMaxFrequency(msg.id, config.frequency);
+            return msg;
+          })
+        );
       }
       if (config.waitFor) waitFor = config.waitFor;
       if (config.toastEvery) toastEvery = config.toastEvery;
       if (config.toastDuration) toastDuration = config.toastDuration;
-      if (config.frequency) {
-        localStorage.setItem(CONFIG.maxFrequencyKey, config.frequency);
-      }
       processMessages(messages);
-    });
+    }
   };
 
   const initialize = async () => {
@@ -291,25 +306,31 @@
     }
   };
 
-  const getToastFrequency = () => {
-    const frequency = localStorage.getItem(CONFIG.toastFrequencyKey);
+  const getToastFrequency = (id) => {
+    const frequency = localStorage.getItem(CONFIG.frequencyPrefix + id);
     return frequency ? parseInt(frequency, 10) : 0;
   };
 
-  const getMaxFrequency = () => {
-    const maxFrequency = localStorage.getItem(CONFIG.maxFrequencyKey);
-    return maxFrequency ? parseInt(maxFrequency, 10) : 1;
+  const incrementToastFrequency = (id) => {
+    const frequency = getToastFrequency(id);
+    localStorage.setItem(CONFIG.frequencyPrefix + id, frequency + 1);
   };
 
-  const incrementToastFrequency = () => {
-    const frequency = getToastFrequency();
-    localStorage.setItem(CONFIG.toastFrequencyKey, frequency + 1);
+  const getMaxFrequency = (id) => {
+    const maxFrequency = localStorage.getItem(CONFIG.maxFrequencyPrefix + id);
+    return maxFrequency ? parseInt(maxFrequency, 10) : 0;
   };
 
-  const shouldShowToast = () => {
-    const frequency = getToastFrequency();
-    const maxFrequency = getMaxFrequency();
-    return frequency < maxFrequency;
+  const setMaxFrequency = (id, maxFrequency) => {
+    if (localStorage.getItem(CONFIG.maxFrequencyPrefix + id) === null) {
+      localStorage.setItem(CONFIG.maxFrequencyPrefix + id, maxFrequency);
+    }
+  };
+
+  const shouldShowToast = (id, maxFrequency) => {
+    setMaxFrequency(id, maxFrequency);
+    const frequency = getToastFrequency(id);
+    return frequency < getMaxFrequency(id);
   };
 
   window.actionSpeak = window.actionSpeak || [];
