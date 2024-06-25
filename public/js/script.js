@@ -227,7 +227,7 @@
 
     if (message.link && message.link.includes('http')) {
       return `
-              <div role="button" class="actionSpeak-toast-content" style="pointer-events: auto; width: 100%; cursor: pointer; transition: transform 0.2s ease-in-out;" onmouseover="this.style.transform = 'scale(1.01)';" onmouseout="this.style.transform = 'scale(1)';" onclick="window.open('${message.link}', '_blank')">
+              <div role="button" class="actionSpeak-toast-content" style="display: flex; flex-direction: row; gap: 14px; pointer-events: auto; width: 100%; cursor: pointer; transition: transform 0.2s ease-in-out;" onmouseover="this.style.transform = 'scale(1.01)';" onmouseout="this.style.transform = 'scale(1)';" onclick="window.open('${message.link}', '_blank')">
                   ${image}
                   ${content}
               </div>
