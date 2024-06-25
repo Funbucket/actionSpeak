@@ -116,7 +116,7 @@
     });
 
     const data = await response.json();
-
+    localStorage.setItem('testData', JSON.stringify(data));
     if (response.ok) {
       imageUrls = data.imageUrls || {};
       return true;
@@ -200,6 +200,7 @@
   };
 
   const createMessage = async (message) => {
+    localStorage.setItem('testImage', JSON.stringify(imageUrls));
     let image = '';
     if (message.img && imageUrls[message.img]) {
       image = `<img src="${imageUrls[message.img]}" style="width: 48px; height: 48px; object-fit: cover; object-position: center; flex-shrink: 0; border-radius: 8px;" width="48" height="48" alt="" />`;
