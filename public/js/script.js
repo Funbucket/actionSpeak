@@ -285,12 +285,10 @@
     styleEl.innerHTML = STYLE;
     document.head.appendChild(styleEl);
 
-    if (window.actionSpeak && window.actionSpeak.length > 0) {
-      const isDomainValid = await validateDomainAndGetImages();
+    const isDomainValid = await validateDomainAndGetImages();
 
-      if (isDomainValid) {
-        handleActionSpeakConfig(window.actionSpeak);
-      }
+    if (isDomainValid) {
+      handleActionSpeakConfig(window.actionSpeak);
     }
   };
 
