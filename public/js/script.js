@@ -81,8 +81,7 @@
   const CONFIG = {
     localStorageVisitorIdName: 'actionSpeak-visitor-id',
     localStorageImageUrlName: 'actionSpeak-image-url',
-    validateDomainEndpoint: 'https://action-speak.vercel.app/api/validateDomain',
-    getImageUrlEndpoint: 'https://action-speak.vercel.app/api/getImageUrl',
+    endpoint: 'https://action-speak.vercel.app/api/script',
     toastFrequencyKey: 'actionSpeak-toast-frequency',
     maxFrequencyKey: 'actionSpeak-max-frequency',
   };
@@ -95,7 +94,7 @@
   let toastEvery;
   let toastDuration;
   let visitorId;
-  let publicImageUrl;
+  let imageUrls = {};
   const domain = document.currentScript.getAttribute('data-domain');
 
   const getVisitorId = () => {
@@ -109,30 +108,20 @@
     return visitorId;
   };
 
-  const validateDomain = async () => {
-    const response = await fetch(CONFIG.validateDomainEndpoint, {
+  const validateDomainAndGetImages = async () => {
+    const response = await fetch(CONFIG.endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ domain }),
     });
 
-    return response.ok;
-  };
-
-  const getImageUrl = async (img) => {
-    const response = await fetch(CONFIG.getImageUrlEndpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ domain, img }),
-    });
-
     const data = await response.json();
 
-    if (data.imageUrl) {
-      publicImageUrl = data.imageUrl;
+    if (response.ok) {
+      imageUrls = data.imageUrls || {};
+      return true;
     }
-
-    return response.ok;
+    return false;
   };
 
   const ensureToastContainer = (position) => {
@@ -212,11 +201,8 @@
 
   const createMessage = async (message) => {
     let image = '';
-    if (message.img) {
-      await getImageUrl(message.img);
-      if (publicImageUrl) {
-        image = `<img src="${publicImageUrl}" style="width: 48px; height: 48px; object-fit: cover; object-position: center; flex-shrink: 0; border-radius: 8px;" width="48" height="48" alt="" />`;
-      }
+    if (message.img && imageUrls[message.img]) {
+      image = `<img src="${imageUrls[message.img]}" style="width: 48px; height: 48px; object-fit: cover; object-position: center; flex-shrink: 0; border-radius: 8px;" width="48" height="48" alt="" />`;
     }
     const closeButton = message.closeButton
       ? '<button class="toast-close-btn" aria-label="Close">&times;</button>'
@@ -299,7 +285,7 @@
     document.head.appendChild(styleEl);
 
     if (window.actionSpeak && window.actionSpeak.length > 0) {
-      const isDomainValid = await validateDomain();
+      const isDomainValid = await validateDomainAndGetImages();
 
       if (isDomainValid) {
         handleActionSpeakConfig(window.actionSpeak);
@@ -331,11 +317,7 @@
   window.actionSpeak = window.actionSpeak || [];
   window.actionSpeak.push = async (...args) => {
     const configs = args;
-    const isDomainValid = await validateDomain();
-
-    if (isDomainValid) {
-      handleActionSpeakConfig(configs);
-    }
+    handleActionSpeakConfig(configs);
   };
 
   initialize();

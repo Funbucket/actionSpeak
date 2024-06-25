@@ -19,17 +19,21 @@ export async function POST(req: NextRequest) {
   const { domain } = await req.json();
 
   try {
-    const { data, error } = await supabase.from('websites').select('*').eq('domain', domain);
+    const { data, error } = await supabase
+      .from('website_images')
+      .select('name, image_url')
+      .eq('website_domain', domain);
 
     if (error) {
       throw error;
     }
 
-    if (data.length === 0) {
-      return setCorsHeaders(NextResponse.json({ error: 'Website not found' }, { status: 404 }));
-    }
+    const imageUrls: { [key: string]: string } = {};
+    data.forEach((item: { name: string; image_url: string }) => {
+      imageUrls[item.name] = item.image_url;
+    });
 
-    return setCorsHeaders(NextResponse.json({ message: 'Success' }, { status: 200 }));
+    return setCorsHeaders(NextResponse.json({ imageUrls }, { status: 200 }));
   } catch (error) {
     return setCorsHeaders(NextResponse.json({ error }, { status: 500 }));
   }
