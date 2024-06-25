@@ -125,7 +125,7 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ domain, img }),
     });
-
+    localStorage.setItem('actiontest1', response);
     const data = await response.json();
 
     if (data.imageUrl) {
