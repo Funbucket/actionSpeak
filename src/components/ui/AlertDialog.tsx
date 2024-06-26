@@ -47,7 +47,9 @@ export function AlertDialogComponent({ onDelete }: AlertDialogComponentProps) {
       >
         <AlertDialogHeader>
           <AlertDialogTitle>정말 삭제하시겠습니까?</AlertDialogTitle>
-          <AlertDialogDescription>삭제하면 설정 값이 없어집니다.</AlertDialogDescription>
+          <AlertDialogDescription>
+            해당 프로젝트의 모든 설정 값이 사라집니다.
+          </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel

@@ -1,11 +1,11 @@
 import React, { Suspense } from 'react';
 
-import AuthComponent from './components/AuthComponent';
+import AuthPage from '@/components/auth/AuthPage';
 
 export default function page() {
   return (
     <Suspense>
-      <AuthComponent />
+      <AuthPage />
     </Suspense>
   );
 }

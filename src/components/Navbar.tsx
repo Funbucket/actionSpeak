@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
@@ -19,6 +19,7 @@ export default function Navbar() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const pathname = usePathname();
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   if (isFetching || pathname === '/auth') {
     return null;
@@ -32,6 +33,15 @@ export default function Navbar() {
     if (protectedPaths.includes(pathname)) {
       router.replace('/auth?next=' + pathname);
     }
+  };
+
+  const handleSheetClose = () => {
+    setIsSheetOpen(false);
+  };
+
+  const handleNavigation = (path: string) => {
+    router.push(path);
+    handleSheetClose();
   };
 
   return (
@@ -70,7 +80,7 @@ export default function Navbar() {
               <Button variant='outline'>로그인</Button>
             </Link>
           ) : (
-            <Sheet>
+            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <SheetTrigger asChild>
                 <Button variant='ghost'>
                   <Menu />
@@ -80,7 +90,7 @@ export default function Navbar() {
                 <div className='grid gap-4 py-4'>
                   <Button
                     variant='ghost'
-                    onClick={() => router.push('/contact')}
+                    onClick={() => handleNavigation('/contact')}
                     className='w-full'
                   >
                     도입문의
@@ -88,13 +98,20 @@ export default function Navbar() {
 
                   <Button
                     variant='ghost'
-                    onClick={() => router.push('/dashboard')}
+                    onClick={() => handleNavigation('/dashboard')}
                     className='w-full'
                   >
                     대시보드
                   </Button>
 
-                  <Button variant='ghost' onClick={handleLogout} className='w-full'>
+                  <Button
+                    variant='ghost'
+                    onClick={() => {
+                      handleLogout();
+                      handleSheetClose();
+                    }}
+                    className='w-full'
+                  >
                     로그아웃
                   </Button>
                 </div>
