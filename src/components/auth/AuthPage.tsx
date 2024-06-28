@@ -15,21 +15,6 @@ export default function AuthPage() {
   const params = useSearchParams();
   const next = params.get('next') || '';
 
-  useEffect(() => {
-    // Remove margin-top for main element on AuthPage
-    const mainElement = document.querySelector('main');
-    if (mainElement) {
-      mainElement.classList.add('mt-0');
-    }
-
-    return () => {
-      // Cleanup: Restore margin-top for main element
-      if (mainElement) {
-        mainElement.classList.remove('mt-0');
-      }
-    };
-  }, []);
-
   const handleLoginWithOAuth = (provider: 'github' | 'google') => {
     const supabase = supabaseBrowser();
     supabase.auth.signInWithOAuth({

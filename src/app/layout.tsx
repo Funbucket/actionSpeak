@@ -23,10 +23,8 @@ export default function RootLayout({
       <body className={inter.className}>
         <QueryProvider>
           <ThemeProvider>
-            <main className='max-w-screen mt-16 min-h-screen'>
-              <Navbar />
-              {children}
-            </main>
+            <Navbar />
+            <main className='max-w-screen min-h-screen'>{children}</main>
           </ThemeProvider>
         </QueryProvider>
       </body>

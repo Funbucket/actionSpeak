@@ -27,7 +27,7 @@ const TableOfContentSidebar = ({ toc }: Props) => {
                   key={item.link}
                   className={cn(
                     isH3 && 'ml-4',
-                    isIntersecting && 'font-medium text-pink-600',
+                    isIntersecting && 'font-medium text-[#1E90FF]',
                     'py-1 transition'
                   )}
                 >

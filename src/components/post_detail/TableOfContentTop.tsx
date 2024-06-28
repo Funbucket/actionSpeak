@@ -16,7 +16,7 @@ const TableOfContentTop = ({ toc }: Props) => {
       <ul>
         {toc.map((item) => (
           <li key={item.link} className={cn(item.indent === 1 && 'ml-4', 'my-0 py-1')}>
-            <Link href={item.link} className='underline-offset-4 hover:text-pink-600'>
+            <Link href={item.link} className='underline-offset-4 hover:text-[#1E90FF]'>
               {item.text}
             </Link>
           </li>

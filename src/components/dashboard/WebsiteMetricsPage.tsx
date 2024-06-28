@@ -118,7 +118,7 @@ const WebsiteMetrics = ({ params }: { params: { websiteDomain: string } }) => {
 
   return (
     <>
-      <section className='mx-auto max-w-2xl px-6 py-8'>
+      <section className='mx-auto mt-16 max-w-2xl px-6 py-8'>
         <Card>
           <CardHeader>
             <CardTitle className='text-2xl font-bold'>actionSpeak 설치하기</CardTitle>

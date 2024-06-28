@@ -220,7 +220,7 @@
     const content = `
           <div style="width: 100%;">
               <div style="font-size: 1rem; font-weight: 600; color: rgb(3 7 18); margin-bottom: 0.25rem;">${message.title}</div>
-              <div style="font-size: 1rem; font-weight: 400; line-height: 1.25; color: rgb(55 65 81);">${message.body}</div>
+              <div style="font-size: 1rem; font-weight: 400; line-height: 1.25; color: rgb(55 65 81);">${message.description}</div>
           </div>
           ${closeButton}
       `;
