@@ -15,10 +15,11 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/components/ui/use-toast';
 import { useWebsiteImages } from '@/hook/useWebsiteImages';
 import useWebsiteMetrics from '@/hook/useWebsiteMetrics';
 import { formatDate } from '@/lib/utils';
-import { CalendarIcon, TrashIcon } from 'lucide-react';
+import { CalendarIcon, EyeIcon, TrashIcon } from 'lucide-react';
 
 const RenderSkeletonMetrics = () => (
   <section className='mx-auto max-w-2xl px-6 py-8'>
@@ -69,7 +70,7 @@ const WebsiteMetrics = ({ params }: { params: { websiteDomain: string } }) => {
   } = useWebsiteImages(params.websiteDomain);
   const [file, setFile] = useState<File | null>(null);
   const [imageName, setImageName] = useState<string>('');
-  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -81,7 +82,37 @@ const WebsiteMetrics = ({ params }: { params: { websiteDomain: string } }) => {
     e.preventDefault();
 
     if (!file) {
-      setError('No file selected');
+      toast({
+        variant: 'destructive',
+        title: '업로드 실패',
+        description: '파일이 선택되지 않았습니다.',
+      });
+      return;
+    }
+
+    if (!imageName.trim()) {
+      toast({
+        variant: 'destructive',
+        title: '업로드 실패',
+        description: '이미지 이름을 입력해주세요.',
+      });
+      return;
+    }
+
+    const validExtensions = ['image/jpeg', 'image/png', 'image/gif'];
+    if (file.size > 500 * 1024) {
+      toast({
+        variant: 'destructive',
+        title: '업로드 실패',
+        description: '파일 크기가 500KB를 초과합니다.',
+      });
+      return;
+    } else if (!validExtensions.includes(file.type)) {
+      toast({
+        variant: 'destructive',
+        title: '업로드 실패',
+        description: '유효하지 않은 파일 형식입니다. 이미지 파일만 업로드 가능합니다.',
+      });
       return;
     }
 
@@ -89,17 +120,32 @@ const WebsiteMetrics = ({ params }: { params: { websiteDomain: string } }) => {
       await addImage({ file, name: imageName });
       setFile(null);
       setImageName('');
-      setError(null);
+      toast({
+        title: '업로드 성공',
+        description: '이미지가 성공적으로 추가되었습니다.',
+      });
     } catch (e: any) {
-      setError(e.message);
+      toast({
+        variant: 'destructive',
+        title: '업로드 실패',
+        description: e.message,
+      });
     }
   };
 
   const handleDelete = async (imageName: string, websiteDomain: string) => {
     try {
       await deleteImage({ imageName, websiteDomain });
+      toast({
+        title: '삭제 성공',
+        description: '이미지가 성공적으로 삭제되었습니다.',
+      });
     } catch (error: any) {
-      setError(error.message);
+      toast({
+        variant: 'destructive',
+        title: '삭제 실패',
+        description: error.message,
+      });
     }
   };
 
@@ -110,10 +156,34 @@ const WebsiteMetrics = ({ params }: { params: { websiteDomain: string } }) => {
   const handleCopy = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      alert('Copied to clipboard!');
+      toast({
+        title: '복사 성공 📋',
+        description: '코드가 클립보드에 복사되었습니다.',
+      });
     } catch (err) {
       console.error('Failed to copy: ', err);
+      toast({
+        title: '복사 실패',
+        description: '코드 복사에 실패했습니다.',
+      });
     }
+  };
+
+  const handlePreview = (imageName: string) => {
+    window.actionSpeak = window.actionSpeak || [];
+    window.actionSpeak.push({
+      message: {
+        title: '14명의 고객님이 보고 있어요 👀',
+        description: '10% 할인된 금액으로 구매하러가기',
+        link: `https://www.actionspeak.kr/dashboard/${params.websiteDomain}`,
+        img: imageName,
+        closeButton: true,
+        position: 'top', // 추가된 위치 설정 인자
+      },
+      waitFor: 1,
+      toastDuration: 5000,
+      frequency: 1000000, // 추가된 빈도 설정 인
+    });
   };
 
   return (
@@ -165,16 +235,19 @@ const WebsiteMetrics = ({ params }: { params: { websiteDomain: string } }) => {
                 추가하기
               </Button>
             </form>
-            {error && <p className='mt-2 text-red-500'>{error}</p>}
             <h2 className='mb-4 mt-8 text-2xl font-bold'>이미지 목록</h2>
-            <div className='grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
-              {isLoadingImages ? (
-                <RenderSkeletonImages count={5} />
-              ) : (
-                images.map((image) => (
+            {isLoadingImages ? (
+              <RenderSkeletonImages count={5} />
+            ) : images.length === 0 ? (
+              <div className='flex items-center justify-center py-10 text-center'>
+                <p className='text-sm text-muted-foreground'>이미지를 추가해서 팝업을 꾸며보세요</p>
+              </div>
+            ) : (
+              <div className='grid grid-cols-1 gap-4'>
+                {images.map((image) => (
                   <div
                     key={image.id}
-                    className='grid grid-cols-[1fr_auto] items-center gap-4 border-b pb-4 last:border-b-0 last:pb-0'
+                    className='grid grid-cols-[1fr_auto_auto] items-center gap-4 border-b pb-4 last:border-b-0 last:pb-0'
                   >
                     <div className='flex items-center gap-4'>
                       <Image
@@ -194,6 +267,10 @@ const WebsiteMetrics = ({ params }: { params: { websiteDomain: string } }) => {
                         </div>
                       </div>
                     </div>
+                    <Button variant='ghost' size='icon' onClick={() => handlePreview(image.name)}>
+                      <EyeIcon className='h-5 w-5' />
+                      <span className='sr-only'>Preview</span>
+                    </Button>
                     <Button
                       variant='ghost'
                       size='icon'
@@ -203,9 +280,9 @@ const WebsiteMetrics = ({ params }: { params: { websiteDomain: string } }) => {
                       <span className='sr-only'>Delete</span>
                     </Button>
                   </div>
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </section>
