@@ -4,8 +4,8 @@ import { supabaseBrowser } from '@/lib/supabase/browser';
 
 const setCorsHeaders = (response: NextResponse) => {
   response.headers.set('Access-Control-Allow-Origin', '*');
-  response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+  response.headers.set('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   return response;
 };
 
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
     return setCorsHeaders(NextResponse.json({ website_id: data.id }, { status: 200 }));
   } catch (error) {
-    return setCorsHeaders(NextResponse.json({ error }, { status: 500 }));
+    return setCorsHeaders(NextResponse.json({ error: error }, { status: 500 }));
   }
 }
 

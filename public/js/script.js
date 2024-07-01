@@ -281,6 +281,7 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ domain }),
+      mode: 'cors',
     });
 
     const data = await response.json();
@@ -295,6 +296,7 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ website_id: websiteId }),
+      mode: 'cors',
     });
 
     const data = await response.json();
