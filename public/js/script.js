@@ -81,7 +81,7 @@
   const CONFIG = {
     localStorageVisitorIdName: 'actionSpeak-visitor-id',
     localStorageImageUrlName: 'actionSpeak-image-url',
-    endpoint: 'https://actionspeak.kr/api',
+    endpoint: 'https://www.actionspeak.kr/api',
     frequencyPrefix: 'actionSpeak-toast-frequency-',
     maxFrequencyPrefix: 'actionSpeak-max-frequency-',
   };
