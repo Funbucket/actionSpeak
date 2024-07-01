@@ -316,7 +316,7 @@
     try {
       // 도메인 유효성 검사 및 website_id 가져오기
       const websiteId = window.location.href.startsWith('https://www.actionspeak.kr/dashboard/')
-        ? domain.split('/').pop()
+        ? window.location.href.split('/').pop()
         : await getWebsiteIdByDomain(domain);
 
       // website_id를 이용해 이미지 가져오기
