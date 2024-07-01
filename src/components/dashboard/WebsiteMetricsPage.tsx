@@ -169,8 +169,9 @@ const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
     }
   };
 
-  const handlePreview = (imageName: string) => {
-    window.actionSpeak = window.actionSpeak || [];
+  const handlePreview = async (imageName: string) => {
+    await window.actionSpeak.triggerImageFetch();
+
     window.actionSpeak.push({
       message: {
         title: '14명의 고객님이 보고 있어요 👀',

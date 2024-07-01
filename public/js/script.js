@@ -354,12 +354,14 @@
     return frequency < getMaxFrequency(id);
   };
 
-  window.actionSpeak = window.actionSpeak || [];
+  window.actionSpeak = window.actionSpeak || {};
+
   window.actionSpeak.push = async (...args) => {
     const configs = args;
     handleActionSpeakConfig(configs);
   };
-  window.previewActionSpeak = async () => {
+
+  window.actionSpeak.triggerImageFetch = async () => {
     try {
       const websiteId = window.location.href.split('/').pop();
       imageUrls = await getImagesByWebsiteId(websiteId);
