@@ -315,7 +315,7 @@
 
     try {
       // 도메인 유효성 검사 및 website_id 가져오기
-      const websiteId = domain.startsWith('https://www.actionspeak.kr/dashboard/')
+      const websiteId = window.location.href.startsWith('https://www.actionspeak.kr/dashboard/')
         ? domain.split('/').pop()
         : await getWebsiteIdByDomain(domain);
 
