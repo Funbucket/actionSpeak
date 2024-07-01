@@ -282,7 +282,6 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ domain }),
       mode: 'cors',
-      credentials: 'include',
     });
 
     const data = await response.json();
@@ -298,7 +297,6 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ website_id: websiteId }),
       mode: 'cors',
-      credentials: 'include',
     });
 
     const data = await response.json();
