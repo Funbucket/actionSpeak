@@ -28,10 +28,20 @@ const FeaturesSection = () => (
   <section className='w-full bg-muted px-6 py-12'>
     <div className='mx-auto grid max-w-7xl gap-8 px-4 md:grid-cols-2 md:px-6'>
       <div className='space-y-4'>
-        <h2 className='text-3xl font-bold md:text-4xl'>구매률을 높이는 강력한 기능</h2>
-        <p className='text-lg text-muted-foreground md:text-xl'>
+        <h2 className='text-3xl font-bold md:text-4xl lg:text-5xl'>구매률을 높이는 강력한 기능</h2>
+        <p className='text-lg text-muted-foreground md:text-xl lg:text-2xl'>
           ActionSpeak는 효과적인 팝업을 생성하는데 빠르고 강력합니다.
         </p>
+        <video
+          controls
+          className='h-auto w-full rounded-lg border border-gray-200'
+          autoPlay
+          loop
+          muted
+        >
+          <source src='/video/popup_preview.mp4' type='video/mp4' />
+          Your browser does not support the video tag.
+        </video>
       </div>
       <div className='grid gap-4'>
         {cardContents.map((card, index) => (

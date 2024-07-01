@@ -174,8 +174,8 @@ const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
 
     window.actionSpeak.push({
       message: {
-        title: '14명의 고객님이 보고 있어요 👀',
-        description: '10% 할인된 금액으로 구매하러가기',
+        title: '14명이 탐내고 있어요 👀',
+        description: '지금 바로 구매하러가기',
         link: `https://www.actionspeak.kr/dashboard/${params.websiteId}`,
         img: imageName,
         closeButton: true,
