@@ -81,7 +81,7 @@
   const CONFIG = {
     localStorageVisitorIdName: 'actionSpeak-visitor-id',
     localStorageImageUrlName: 'actionSpeak-image-url',
-    endpoint: 'https://actionspeak.kr/api/script',
+    endpoint: 'https://actionspeak.kr/api',
     frequencyPrefix: 'actionSpeak-toast-frequency-',
     maxFrequencyPrefix: 'actionSpeak-max-frequency-',
   };
@@ -277,7 +277,7 @@
   };
 
   const getWebsiteIdByDomain = async (domain) => {
-    const response = await fetch('https://actionspeak.kr/api/get-website-id', {
+    const response = await fetch(`${CONFIG.endpoint}/get-website-id`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ domain }),
@@ -291,7 +291,7 @@
   };
 
   const getImagesByWebsiteId = async (websiteId) => {
-    const response = await fetch('https://actionspeak.kr/api/get-images', {
+    const response = await fetch(`${CONFIG.endpoint}/get-images`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ website_id: websiteId }),
