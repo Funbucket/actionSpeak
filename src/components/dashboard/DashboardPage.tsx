@@ -144,7 +144,7 @@ export default function DashboardPage() {
             {websites.map((site) => (
               <Card
                 key={site.id}
-                onClick={() => router.push(`/dashboard/${site.domain}`)}
+                onClick={() => router.push(`/dashboard/${site.id}`)}
                 className='hover:scale-20 transform cursor-pointer transition-transform hover:shadow-md'
               >
                 <CardHeader className='flex flex-row items-center justify-between gap-4'>

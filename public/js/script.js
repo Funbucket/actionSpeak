@@ -81,7 +81,7 @@
   const CONFIG = {
     localStorageVisitorIdName: 'actionSpeak-visitor-id',
     localStorageImageUrlName: 'actionSpeak-image-url',
-    endpoint: 'https://action-speak.vercel.app/api/script',
+    endpoint: 'https://actionspeak.kr/api/script',
     frequencyPrefix: 'actionSpeak-toast-frequency-',
     maxFrequencyPrefix: 'actionSpeak-max-frequency-',
   };
@@ -115,22 +115,6 @@
     }
 
     return visitorId;
-  };
-
-  const validateDomainAndGetImages = async () => {
-    const response = await fetch(CONFIG.endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ domain }),
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      imageUrls = data.imageUrls || {};
-      return true;
-    }
-    return false;
   };
 
   const ensureToastContainer = (position) => {
@@ -292,6 +276,34 @@
     }
   };
 
+  const getWebsiteIdByDomain = async (domain) => {
+    const response = await fetch('https://actionspeak.kr/api/get-website-id', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ domain }),
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      return data.website_id;
+    }
+    throw new Error('Failed to get website ID');
+  };
+
+  const getImagesByWebsiteId = async (websiteId) => {
+    const response = await fetch('https://actionspeak.kr/api/get-images', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ website_id: websiteId }),
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      return data.imageUrls || {};
+    }
+    throw new Error('Failed to get images');
+  };
+
   const initialize = async () => {
     getVisitorId();
 
@@ -299,10 +311,17 @@
     styleEl.innerHTML = STYLE;
     document.head.appendChild(styleEl);
 
-    const isDomainValid = await validateDomainAndGetImages();
+    try {
+      // 도메인 유효성 검사 및 website_id 가져오기
+      const websiteId = await getWebsiteIdByDomain(domain);
 
-    if (isDomainValid) {
+      // website_id를 이용해 이미지 가져오기
+      imageUrls = await getImagesByWebsiteId(websiteId);
+
+      // 유효한 도메인이라면 설정 처리
       handleActionSpeakConfig(window.actionSpeak);
+    } catch (error) {
+      console.error(error);
     }
   };
 

@@ -2,12 +2,12 @@ import { supabaseBrowser } from '@/lib/supabase/browser';
 import { deleteImage, uploadImage } from '@/lib/supabase/storage';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-const fetchWebsiteImages = async (websiteDomain: string) => {
+const fetchWebsiteImages = async (websiteId: string) => {
   const supabase = supabaseBrowser();
   const { data, error } = await supabase
     .from('website_images')
     .select('*')
-    .eq('website_domain', websiteDomain);
+    .eq('website_id', websiteId);
 
   if (error) {
     throw new Error(error.message);
@@ -16,14 +16,14 @@ const fetchWebsiteImages = async (websiteDomain: string) => {
   return data;
 };
 
-const deleteWebsiteImage = async (imageName: string, websiteDomain: string) => {
+const deleteWebsiteImage = async (imageName: string, websiteId: string) => {
   const supabase = supabaseBrowser();
 
   // 데이터베이스에서 id 가져오기
   const { data, error } = await supabase
     .from('website_images')
     .select('id')
-    .eq('website_domain', websiteDomain)
+    .eq('website_id', websiteId)
     .eq('name', imageName)
     .single();
 
@@ -32,7 +32,7 @@ const deleteWebsiteImage = async (imageName: string, websiteDomain: string) => {
   const uniqueName = data.id;
 
   // Supabase Storage에서 이미지 삭제
-  await deleteImage(websiteDomain, uniqueName);
+  await deleteImage(websiteId, uniqueName);
 
   // 데이터베이스에서 이미지 레코드 삭제
   const { error: deleteError } = await supabase
@@ -43,13 +43,13 @@ const deleteWebsiteImage = async (imageName: string, websiteDomain: string) => {
   if (deleteError) throw new Error(deleteError.message);
 };
 
-export const useWebsiteImages = (websiteDomain: string) => {
+export const useWebsiteImages = (websiteId: string) => {
   const queryClient = useQueryClient();
 
   const imagesQuery = useQuery({
-    queryKey: ['website_images', websiteDomain],
-    queryFn: () => fetchWebsiteImages(websiteDomain),
-    enabled: !!websiteDomain,
+    queryKey: ['website_images', websiteId],
+    queryFn: () => fetchWebsiteImages(websiteId),
+    enabled: !!websiteId,
   });
 
   const addImageMutation = useMutation({
@@ -78,7 +78,7 @@ export const useWebsiteImages = (websiteDomain: string) => {
       const { data: imageCount, error: countError } = await supabase
         .from('website_images')
         .select('id', { count: 'exact' })
-        .eq('website_domain', websiteDomain);
+        .eq('website_id', websiteId);
 
       if (countError) throw new Error(countError.message);
 
@@ -88,12 +88,12 @@ export const useWebsiteImages = (websiteDomain: string) => {
       }
 
       // Upload the image and get the public URL
-      const { publicUrl, uniqueName } = await uploadImage(file, websiteDomain);
+      const { publicUrl, uniqueName } = await uploadImage(file, websiteId);
 
       // Insert the image record into the database
       const { error: insertError } = await supabase.from('website_images').insert({
         image_url: publicUrl,
-        website_domain: websiteDomain,
+        website_id: websiteId,
         name,
         id: uniqueName, // UUID로 변환된 파일명
       });
@@ -103,22 +103,16 @@ export const useWebsiteImages = (websiteDomain: string) => {
       return publicUrl;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['website_images', websiteDomain] });
+      queryClient.invalidateQueries({ queryKey: ['website_images', websiteId] });
     },
   });
 
   const deleteImageMutation = useMutation({
-    mutationFn: async ({
-      imageName,
-      websiteDomain,
-    }: {
-      imageName: string;
-      websiteDomain: string;
-    }) => {
-      await deleteWebsiteImage(imageName, websiteDomain);
+    mutationFn: async ({ imageName, websiteId }: { imageName: string; websiteId: string }) => {
+      await deleteWebsiteImage(imageName, websiteId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['website_images', websiteDomain] });
+      queryClient.invalidateQueries({ queryKey: ['website_images', websiteId] });
     },
   });
 

@@ -1,12 +1,12 @@
 import { supabaseBrowser } from '@/lib/supabase/browser';
 import { useQuery } from '@tanstack/react-query';
 
-const fetchWebsiteMetrics = async (websiteDomain: string) => {
+const fetchWebsiteMetrics = async (websiteId: string) => {
   const supabase = supabaseBrowser();
   const { data, error } = await supabase
     .from('website_metrics')
     .select('*')
-    .eq('website_domain', websiteDomain)
+    .eq('website_id', websiteId)
     .single();
 
   if (error) {
@@ -16,10 +16,10 @@ const fetchWebsiteMetrics = async (websiteDomain: string) => {
   return data;
 };
 
-export default function useWebsiteMetrics(websiteDomain: string) {
+export default function useWebsiteMetrics(websiteId: string) {
   return useQuery({
-    queryKey: ['website_metrics', websiteDomain],
-    queryFn: () => fetchWebsiteMetrics(websiteDomain),
-    enabled: !!websiteDomain,
+    queryKey: ['website_metrics', websiteId],
+    queryFn: () => fetchWebsiteMetrics(websiteId),
+    enabled: !!websiteId,
   });
 }

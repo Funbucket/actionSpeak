@@ -20,20 +20,16 @@ export async function POST(req: NextRequest) {
 
   try {
     const { data, error } = await supabase
-      .from('website_images')
-      .select('name, image_url')
-      .eq('website_domain', domain);
+      .from('websites')
+      .select('id')
+      .eq('domain', domain)
+      .single();
 
     if (error) {
       throw error;
     }
 
-    const imageUrls: { [key: string]: string } = {};
-    data.forEach((item: { name: string; image_url: string }) => {
-      imageUrls[item.name] = item.image_url;
-    });
-
-    return setCorsHeaders(NextResponse.json({ imageUrls }, { status: 200 }));
+    return setCorsHeaders(NextResponse.json({ website_id: data.id }, { status: 200 }));
   } catch (error) {
     return setCorsHeaders(NextResponse.json({ error }, { status: 500 }));
   }

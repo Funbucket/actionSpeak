@@ -51,7 +51,7 @@ export type Database = {
           id: string
           image_url: string
           name: string
-          website_domain: string
+          website_id: string | null
         }
         Insert: {
           created_at?: string
@@ -59,7 +59,7 @@ export type Database = {
           id?: string
           image_url: string
           name: string
-          website_domain: string
+          website_id?: string | null
         }
         Update: {
           created_at?: string
@@ -67,15 +67,15 @@ export type Database = {
           id?: string
           image_url?: string
           name?: string
-          website_domain?: string
+          website_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "website_images_website_domain_fkey"
-            columns: ["website_domain"]
-            isOneToOne: true
+            foreignKeyName: "website_images_website_id_fkey"
+            columns: ["website_id"]
+            isOneToOne: false
             referencedRelation: "websites"
-            referencedColumns: ["domain"]
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -84,27 +84,27 @@ export type Database = {
           created_at: string
           id: string
           script: string
-          website_domain: string
+          website_id: string | null
         }
         Insert: {
           created_at?: string
           id?: string
           script: string
-          website_domain: string
+          website_id?: string | null
         }
         Update: {
           created_at?: string
           id?: string
           script?: string
-          website_domain?: string
+          website_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "website_metrics_website_domain_fkey"
-            columns: ["website_domain"]
-            isOneToOne: true
+            foreignKeyName: "website_metrics_website_id_fkey"
+            columns: ["website_id"]
+            isOneToOne: false
             referencedRelation: "websites"
-            referencedColumns: ["domain"]
+            referencedColumns: ["id"]
           },
         ]
       }

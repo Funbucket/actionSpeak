@@ -22,7 +22,7 @@ import { formatDate } from '@/lib/utils';
 import { CalendarIcon, EyeIcon, TrashIcon } from 'lucide-react';
 
 const RenderSkeletonMetrics = () => (
-  <section className='mx-auto max-w-2xl px-6 py-8'>
+  <section className='mx-auto mt-16 max-w-2xl px-6 py-8'>
     <Card>
       <CardHeader>
         <Skeleton className='h-8 w-3/4' />
@@ -60,14 +60,14 @@ const RenderSkeletonImages = ({ count }: { count: number }) => (
   </>
 );
 
-const WebsiteMetrics = ({ params }: { params: { websiteDomain: string } }) => {
-  const { data: metrics, isLoading: isLoadingMetrics } = useWebsiteMetrics(params.websiteDomain);
+const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
+  const { data: metrics, isLoading: isLoadingMetrics } = useWebsiteMetrics(params.websiteId);
   const {
     images,
     isLoading: isLoadingImages,
     addImage,
     deleteImage,
-  } = useWebsiteImages(params.websiteDomain);
+  } = useWebsiteImages(params.websiteId);
   const [file, setFile] = useState<File | null>(null);
   const [imageName, setImageName] = useState<string>('');
   const { toast } = useToast();
@@ -133,9 +133,9 @@ const WebsiteMetrics = ({ params }: { params: { websiteDomain: string } }) => {
     }
   };
 
-  const handleDelete = async (imageName: string, websiteDomain: string) => {
+  const handleDelete = async (imageName: string, websiteId: string) => {
     try {
-      await deleteImage({ imageName, websiteDomain });
+      await deleteImage({ imageName, websiteId });
       toast({
         title: '삭제 성공',
         description: '이미지가 성공적으로 삭제되었습니다.',
@@ -175,13 +175,13 @@ const WebsiteMetrics = ({ params }: { params: { websiteDomain: string } }) => {
       message: {
         title: '14명의 고객님이 보고 있어요 👀',
         description: '10% 할인된 금액으로 구매하러가기',
-        link: `https://www.actionspeak.kr/dashboard/${params.websiteDomain}`,
+        link: `https://www.actionspeak.kr/dashboard/${params.websiteId}`,
         img: imageName,
         closeButton: true,
         position: 'top', // 추가된 위치 설정 인자
       },
       waitFor: 1,
-      toastDuration: 5000,
+      toastDuration: 8000,
       frequency: 1000000, // 추가된 빈도 설정 인
     });
   };
@@ -274,7 +274,7 @@ const WebsiteMetrics = ({ params }: { params: { websiteDomain: string } }) => {
                     <Button
                       variant='ghost'
                       size='icon'
-                      onClick={() => handleDelete(image.name, params.websiteDomain)}
+                      onClick={() => handleDelete(image.name, params.websiteId)}
                     >
                       <TrashIcon className='h-5 w-5' />
                       <span className='sr-only'>Delete</span>
