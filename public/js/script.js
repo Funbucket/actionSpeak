@@ -254,24 +254,26 @@
     }, waitFor);
   };
 
-  const handleActionSpeakConfig = async (config) => {
-    if (config.message) {
-      config.message.id = await generateHash(config.message);
-      messages = [config.message];
-      setMaxFrequency(config.message.id, config.frequency);
-    } else if (config.messages) {
-      messages = await Promise.all(
-        config.messages.map(async (msg) => {
-          msg.id = await generateHash(msg);
-          setMaxFrequency(msg.id, config.frequency);
-          return msg;
-        })
-      );
+  const handleActionSpeakConfig = async (configs) => {
+    for (const config of configs) {
+      if (config.message) {
+        config.message.id = await generateHash(config.message);
+        messages = [config.message];
+        setMaxFrequency(config.message.id, config.frequency);
+      } else if (config.messages) {
+        messages = await Promise.all(
+          config.messages.map(async (msg) => {
+            msg.id = await generateHash(msg);
+            setMaxFrequency(msg.id, config.frequency);
+            return msg;
+          })
+        );
+      }
+      if (config.waitFor) waitFor = config.waitFor;
+      if (config.toastEvery) toastEvery = config.toastEvery;
+      if (config.toastDuration) toastDuration = config.toastDuration;
+      processMessages(messages);
     }
-    if (config.waitFor) waitFor = config.waitFor;
-    if (config.toastEvery) toastEvery = config.toastEvery;
-    if (config.toastDuration) toastDuration = config.toastDuration;
-    processMessages(messages);
   };
 
   const getWebsiteIdByDomain = async (domain) => {
@@ -355,8 +357,8 @@
   window.actionSpeak = window.actionSpeak || {};
 
   window.actionSpeak.push = async (...args) => {
-    const config = args;
-    handleActionSpeakConfig(config);
+    const configs = args;
+    handleActionSpeakConfig(configs);
   };
 
   window.actionSpeak.triggerImageFetch = async () => {
