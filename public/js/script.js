@@ -255,6 +255,8 @@
   };
 
   const handleActionSpeakConfig = async (configs) => {
+    configs = Array.isArray(configs) ? configs : [configs];
+
     for (const config of configs) {
       if (config.message) {
         config.message.id = await generateHash(config.message);
