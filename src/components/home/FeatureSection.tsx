@@ -20,7 +20,7 @@ const cardContents = [
   {
     icon: Joystick,
     title: '사용자의 피로도 고려',
-    content: '팝업 노출 시간, 빈도를 조절하여 피로도를 낮추어 팝업을 추가하세요.',
+    content: '팝업 노출 시간, 빈도를 조절하여 사용자의 피로도를 낮추어 팝업을 추가하세요.',
   },
 ];
 

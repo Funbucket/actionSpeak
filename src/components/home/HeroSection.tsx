@@ -14,9 +14,14 @@ const HeroSection = () => (
           <br />
           팝업을 통해 이탈을 막고 고객을 구매로 유도하세요.
         </p>
-        <Button asChild>
-          <Link href='/dashboard'>무료로 도입하기</Link>
-        </Button>
+        <div className='flex space-x-4'>
+          <Button asChild>
+            <Link href='/dashboard'>무료로 도입하기</Link>
+          </Button>
+          <Button variant='outline' asChild>
+            <Link href='/contact'>도입 문의하기</Link>
+          </Button>
+        </div>
       </div>
     </div>
   </section>
