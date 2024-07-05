@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CloudLightning, Joystick, Tablet, Target } from 'lucide-react';
 
@@ -32,16 +34,14 @@ const FeaturesSection = () => (
         <p className='text-lg text-muted-foreground md:text-xl lg:text-2xl'>
           ActionSpeak는 효과적인 팝업을 생성하는데 빠르고 강력합니다.
         </p>
-        <video
-          controls
+        <Image
+          width='300'
+          height='300'
+          unoptimized
+          src='/imgs/popup_preview.gif'
+          alt='Popup Preview'
           className='h-auto w-full rounded-lg border border-gray-200'
-          autoPlay
-          loop
-          muted
-        >
-          <source src='/video/popup_preview.mp4' type='video/mp4' />
-          Your browser does not support the video tag.
-        </video>
+        />
       </div>
       <div className='grid gap-4'>
         {cardContents.map((card, index) => (
