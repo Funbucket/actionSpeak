@@ -1,5 +1,6 @@
 (() => {
   const STYLE = `
+    /* Toast styles */
     .actionSpeak-toast-container {
         position: fixed;
         z-index: 2147483647;
@@ -29,7 +30,7 @@
         padding: 14px;
         background-color: rgba(220, 220, 220, 0.7);
         backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px); 
+        -webkit-backdrop-filter: blur(8px);
         box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         border-radius: 10px;
         font-size: 1rem;
@@ -76,23 +77,67 @@
         padding: 0;
         margin-left: 0.5rem;
     }
+
+    /* Popup styles */
+    .actionSpeak-popup-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+    .actionSpeak-popup {
+        position: relative;
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        width: 300px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .actionSpeak-popup-close-btn {
+        background: #000;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    .actionSpeak-popup-close-btn-top-right {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: transparent;
+        color: #000;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+    }
+    .actionSpeak-popup img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
   `;
 
   const CONFIG = {
     localStorageVisitorIdName: 'actionSpeak-visitor-id',
     localStorageImageUrlName: 'actionSpeak-image-url',
     endpoint: 'https://www.actionspeak.kr/api',
-    frequencyPrefix: 'actionSpeak-toast-frequency-',
+    frequencyPrefix: 'actionSpeak-frequency-',
     maxFrequencyPrefix: 'actionSpeak-max-frequency-',
   };
 
   let toastTimeout;
   let toastInterval;
   let toasting = [];
-  let messages = [];
-  let waitFor;
-  let toastEvery;
-  let toastDuration;
   let visitorId;
   let imageUrls = {};
   const domain = document.currentScript.getAttribute('data-domain');
@@ -117,6 +162,8 @@
     return visitorId;
   };
 
+  /* Toast functions */
+
   const ensureToastContainer = (position) => {
     let container = document.querySelector('#actionSpeak-toast-container');
     if (!container) {
@@ -129,71 +176,7 @@
     container.style.bottom = position === 'bottom' ? '3rem' : 'auto';
   };
 
-  const showToast = (content, options = {}) => {
-    const position = options.position || 'top';
-    const id = options.id || '';
-
-    ensureToastContainer(position);
-
-    const toastId = `toast-${Date.now()}`;
-    const toast = document.createElement('div');
-    toast.id = toastId;
-    toast.className = 'actionSpeak-toast';
-    toast.innerHTML = options.isHTML ? content : content;
-
-    if (window.innerWidth < 640) {
-      toasting.forEach((id) => removeToast(id, true));
-    }
-
-    document.querySelector('#actionSpeak-toast-container').prepend(toast);
-    toasting.push(toastId);
-
-    const closeButton = toast.querySelector('.toast-close-btn');
-    if (closeButton) {
-      closeButton.addEventListener('click', (event) => {
-        event.stopPropagation();
-        removeToast(toastId, true, id);
-      });
-    }
-
-    if (!options.stay || options.duration) {
-      setTimeout(() => {
-        removeToast(toastId, false, id);
-      }, options.duration || 10000);
-    }
-  };
-
-  const removeToast = (toastId, force = false, id = '') => {
-    const toast = document.getElementById(toastId);
-
-    if (!toast) return;
-
-    if (!toast.dataset.removed) {
-      toast.dataset.removed = true;
-      if (id) incrementToastFrequency(id);
-    }
-
-    if (force) {
-      toast.remove();
-      toasting = toasting.filter((t) => t !== toastId);
-    } else {
-      toast.classList.add('toast-hide');
-      setTimeout(() => {
-        if (toast) {
-          toast.remove();
-          toasting = toasting.filter((t) => t !== toastId);
-        }
-      }, 400);
-    }
-  };
-
-  const cleanupToasts = () => {
-    if (toastTimeout) clearTimeout(toastTimeout);
-    if (toastInterval) clearInterval(toastInterval);
-    toasting.forEach((id) => removeToast(id));
-  };
-
-  const createMessage = async (message) => {
+  const createToast = async (message) => {
     let image = '';
     if (message.img && imageUrls[message.img]) {
       image = `<img src="${imageUrls[message.img]}" style="width: 3rem; height: 3rem; object-fit: cover; object-position: center; flex-shrink: 0; border-radius: 8px;" width="48" height="48" alt="" />`;
@@ -226,57 +209,103 @@
     }
   };
 
-  const processMessages = async (msgs) => {
-    toastTimeout = setTimeout(async () => {
-      if (!toastEvery) {
-        const message = msgs[0];
-        const html = await createMessage(message);
-        if (shouldShowToast(message.id, message.frequency)) {
-          showToast(html, { duration: toastDuration, position: message.position, id: message.id });
+  const showToast = async (options = {}) => {
+    const { message, waitFor, toastDuration, frequency } = options;
+
+    setTimeout(async () => {
+      if (shouldShowToast(message.id, frequency)) {
+        ensureToastContainer(message.position);
+
+        const toastId = `toast-${Date.now()}`;
+        const toast = document.createElement('div');
+        toast.id = toastId;
+        toast.className = 'actionSpeak-toast';
+        toast.innerHTML = await createToast(message);
+
+        if (window.innerWidth < 640) {
+          toasting.forEach((id) => removeToast(id, true));
         }
-      } else {
-        toastInterval = setInterval(async () => {
-          const message = msgs.shift();
-          if (!message) {
-            clearInterval(toastInterval);
-            return;
-          }
-          const html = await createMessage(message);
-          if (shouldShowToast(message.id, message.frequency)) {
-            showToast(html, {
-              duration: toastDuration,
-              position: message.position,
-              id: message.id,
-            });
-          }
-        }, toastEvery);
+
+        document.querySelector('#actionSpeak-toast-container').prepend(toast);
+        toasting.push(toastId);
+
+        const closeButton = toast.querySelector('.toast-close-btn');
+        if (closeButton) {
+          closeButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            removeToast(toastId, true, message.id);
+          });
+        }
+
+        setTimeout(() => {
+          removeToast(toastId, false, message.id);
+        }, toastDuration || 10000);
+
+        incrementToastFrequency(message.id);
       }
-    }, waitFor);
+    }, waitFor || 0);
   };
 
-  const handleActionSpeakConfig = async (configs) => {
-    configs = Array.isArray(configs) ? configs : [configs];
+  const removeToast = (toastId, force = false, id = '') => {
+    const toast = document.getElementById(toastId);
 
-    for (const config of configs) {
-      if (config.message) {
-        config.message.id = await generateHash(config.message);
-        messages = [config.message];
-        setMaxFrequency(config.message.id, config.frequency);
-      } else if (config.messages) {
-        messages = await Promise.all(
-          config.messages.map(async (msg) => {
-            msg.id = await generateHash(msg);
-            setMaxFrequency(msg.id, config.frequency);
-            return msg;
-          })
-        );
-      }
-      if (config.waitFor) waitFor = config.waitFor;
-      if (config.toastEvery) toastEvery = config.toastEvery;
-      if (config.toastDuration) toastDuration = config.toastDuration;
-      processMessages(messages);
+    if (!toast) return;
+
+    if (!toast.dataset.removed) {
+      toast.dataset.removed = true;
+      if (id) incrementToastFrequency(id);
+    }
+
+    if (force) {
+      toast.remove();
+      toasting = toasting.filter((t) => t !== toastId);
+    } else {
+      toast.classList.add('toast-hide');
+      setTimeout(() => {
+        if (toast) {
+          toast.remove();
+          toasting = toasting.filter((t) => t !== toastId);
+        }
+      }, 400);
     }
   };
+
+  const cleanupToasts = () => {
+    if (toastTimeout) clearTimeout(toastTimeout);
+    if (toastInterval) clearInterval(toastInterval);
+    toasting.forEach((id) => removeToast(id));
+  };
+
+  /* Popup functions */
+
+  const createPopup = (message) => {
+    const popupOverlay = document.createElement('div');
+    popupOverlay.className = 'actionSpeak-popup-overlay';
+    popupOverlay.innerHTML = `
+        <div class="actionSpeak-popup">
+            <button class="actionSpeak-popup-close-btn-top-right" onclick="this.parentNode.parentNode.remove()">×</button>
+            ${message.img ? `<img src="${imageUrls[message.img]}" alt="${message.title}">` : ''}
+            <h2>${message.title}</h2>
+            <p>${message.description}</p>
+            ${message.link ? `<a href="${message.link}" target="_blank" class="actionSpeak-popup-close-btn">${message.button || 'Close'}</a>` : `<button class="actionSpeak-popup-close-btn" onclick="this.parentNode.parentNode.remove()">${message.button || 'Close'}</button>`}
+        </div>
+    `;
+    return popupOverlay;
+  };
+
+  const showPopup = (options = {}) => {
+    const { message, waitFor, frequency } = options;
+
+    setTimeout(() => {
+      if (shouldShowPopup(message.id, frequency)) {
+        const popupOverlay = createPopup(message);
+        document.body.appendChild(popupOverlay);
+        incrementPopupFrequency(message.id);
+      }
+    }, waitFor || 0);
+  };
+
+  /* Utility functions */
 
   const getWebsiteIdByDomain = async (domain) => {
     const response = await fetch(`${CONFIG.endpoint}/get-website-id`, {
@@ -308,34 +337,18 @@
     throw new Error('Failed to get images');
   };
 
-  const initialize = async () => {
-    getVisitorId();
-
-    const styleEl = document.createElement('style');
-    styleEl.innerHTML = STYLE;
-    document.head.appendChild(styleEl);
-
-    try {
-      // 도메인 유효성 검사 및 website_id 가져오기
-      const websiteId = await getWebsiteIdByDomain(domain);
-
-      // website_id를 이용해 이미지 가져오기
-      imageUrls = await getImagesByWebsiteId(websiteId);
-
-      // 유효한 도메인이라면 설정 처리
-      handleActionSpeakConfig(window.actionSpeak);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const getToastFrequency = (id) => {
+  const getFrequency = (id) => {
     const frequency = localStorage.getItem(CONFIG.frequencyPrefix + id);
     return frequency ? parseInt(frequency, 10) : 0;
   };
 
   const incrementToastFrequency = (id) => {
-    const frequency = getToastFrequency(id);
+    const frequency = getFrequency(id);
+    localStorage.setItem(CONFIG.frequencyPrefix + id, frequency + 1);
+  };
+
+  const incrementPopupFrequency = (id) => {
+    const frequency = getFrequency(id);
     localStorage.setItem(CONFIG.frequencyPrefix + id, frequency + 1);
   };
 
@@ -352,24 +365,45 @@
 
   const shouldShowToast = (id, maxFrequency) => {
     setMaxFrequency(id, maxFrequency);
-    const frequency = getToastFrequency(id);
+    const frequency = getFrequency(id);
     return frequency < getMaxFrequency(id);
   };
 
-  window.actionSpeak = window.actionSpeak || {};
-
-  window.actionSpeak.push = async (...args) => {
-    const configs = args;
-    handleActionSpeakConfig(configs);
+  const shouldShowPopup = (id, maxFrequency) => {
+    setMaxFrequency(id, maxFrequency);
+    const frequency = getFrequency(id);
+    return frequency < getMaxFrequency(id);
   };
 
-  window.actionSpeak.triggerImageFetch = async () => {
+  const initialize = async () => {
+    getVisitorId();
+
+    const styleEl = document.createElement('style');
+    styleEl.innerHTML = STYLE;
+    document.head.appendChild(styleEl);
+
     try {
-      const websiteId = window.location.href.split('/').pop();
+      const websiteId = await getWebsiteIdByDomain(domain);
       imageUrls = await getImagesByWebsiteId(websiteId);
     } catch (error) {
       console.error(error);
     }
+  };
+
+  window.actionSpeak = window.actionSpeak || {};
+
+  window.actionSpeak.showToast = async (...args) => {
+    const [config] = args;
+    config.message.id = await generateHash(config.message);
+    setMaxFrequency(config.message.id, config.frequency);
+    showToast(config);
+  };
+
+  window.actionSpeak.showPopup = async (...args) => {
+    const [config] = args;
+    config.message.id = await generateHash(config.message);
+    setMaxFrequency(config.message.id, config.frequency);
+    showPopup(config);
   };
 
   initialize();
