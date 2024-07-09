@@ -1,145 +1,203 @@
 (() => {
   const STYLE = `
+    /* Global styles */
+    .as-container {
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Roboto, "system-ui", "sans-serif";
+    }
+ 
     /* Toast styles */
-    .actionSpeak-toast-container {
-        position: fixed;
-        z-index: 2147483647;
-        left: 3rem;
-        right: 3rem;
-        user-select: none;
-        pointer-events: none;
-    }
-    @media (max-width: 640px) {
-        .actionSpeak-toast-container {
-            left: 1.5rem;
-            right: 1.5rem;
-        }
-    }
-    .actionSpeak-toast {
-        background: transparent;
-        padding: 0 0 16px 0;
-        display: flex;
-        justify-content: flex-end;
-        animation: slideIn 0.3s ease-in-out;
-    }
-    .actionSpeak-toast-content {
-        width: 100%;
-        display: flex;
-        align-items: start;
-        justify-content: space-between;
-        padding: 14px;
-        background-color: rgba(220, 220, 220, 0.7);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-        border-radius: 10px;
-        font-size: 1rem;
-        line-height: 1.5rem;
-        z-index: 50;
-        color: rgb(47, 48, 60);
-        box-sizing: border-box;
-        font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Roboto, "system-ui", "sans-serif";
-        text-align: left;
+    .as-toast-container {
+      position: fixed;
+      z-index: 2147483647;
+      left: 1.5rem;
+      right: 1.5rem;
+      user-select: none;
+      pointer-events: none;
     }
     @media (min-width: 640px) {
-        .actionSpeak-toast-content {
-            max-width: 350px;
-        }
+      .as-toast-container {
+        left: 3rem;
+        right: 3rem;
+      }
     }
-    .toast-hide {
-        animation: fadeOut 0.4s forwards;
+    .as-toast {
+      background: transparent;
+      padding: 0 0 1rem;
+      display: flex;
+      justify-content: flex-end;
+      animation: as-slide-in 0.3s ease-in-out;
     }
-    @keyframes slideIn {
-        from {
-            opacity: 0.8;
-            transform: translateX(5%);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
+    .as-toast-content {
+      width: 100%;
+      max-width: 350px;
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      padding: 14px;
+      background-color: rgba(220, 220, 220, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      border-radius: 10px;
+      font-size: 1rem;
+      line-height: 1.5;
+      z-index: 50;
+      color: rgb(47, 48, 60);
+      box-sizing: border-box;
+      text-align: left;
     }
-    @keyframes fadeOut {
-        from {
-            opacity: 1;
-        }
-        to {
-            opacity: 0;
-        }
+    .as-toast-content-link {
+      display: flex;
+      flex-direction: row;
+      gap: 14px;
+      pointer-events: auto;
+      width: 100%;
+      cursor: pointer;
+      transition: transform 0.2s ease-in-out;
     }
-    .toast-close-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: rgb(55 65 81);
-        font-size: 1.25rem;
-        line-height: 1;
-        padding: 0;
-        margin-left: 0.5rem;
+    .as-toast-content-link:hover {
+      transform: scale(1.01);
     }
-
+    .as-toast-hide {
+      animation: as-fade-out 0.4s forwards;
+    }
+    @keyframes as-slide-in {
+      from {
+        opacity: 0.8;
+        transform: translateX(5%);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    @keyframes as-fade-out {
+      from {
+        opacity: 1;
+      }
+      to {
+        opacity: 0;
+      }
+    }
+    .as-toast-close-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: rgb(55, 65, 81);
+      font-size: 1.25rem;
+      line-height: 1;
+      padding: 0;
+      margin-left: 0.5rem;
+    }
+    .as-toast-content-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: rgb(3, 7, 18);
+      margin-bottom: 0.25rem;
+    }
+    .as-toast-content-description {
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.25;
+      color: rgb(55, 65, 81);
+    }
+    .as-toast-image {
+      width: 48px;
+      height: 48px;
+      object-fit: cover;
+      object-position: center;
+      flex-shrink: 0;
+      border-radius: 8px;
+    }
+ 
     /* Popup styles */
-    .actionSpeak-popup-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
+    .as-popup-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
     }
-    .actionSpeak-popup {
-        position: relative;
-        background: #fff;
-        padding: 20px;
-        border-radius: 10px;
-        text-align: center;
-        width: 300px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    .as-popup-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.15);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      pointer-events: auto;
     }
-    .actionSpeak-popup-close-btn {
-        background: #000;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-top: 10px;
+    .as-popup {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      width: 300px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      color: #000;
     }
-    .actionSpeak-popup-close-btn-top-right {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background: transparent;
-        color: #000;
-        border: none;
-        font-size: 20px;
-        cursor: pointer;
+    .as-popup-btn-bottom {
+      background: #000;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 87%;
+      display: inline-block;
+      text-decoration: none;
     }
-    .actionSpeak-popup img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 10px;
-        margin-bottom: 15px;
+    .as-popup-close-btn-top-right {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: transparent;
+      color: #000;
+      border: none;
+      font-size: 32px;
+      cursor: pointer;
+    }
+    .as-popup img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .as-popup h2 {
+      color: #000;
+      margin-top: 0;
+      margin-bottom: 9px;
+    }
+    .as-popup p {
+      color: rgb(55, 65, 81);
+      margin-top: 0;
+      margin-bottom: 24px;
     }
   `;
 
   const CONFIG = {
-    localStorageVisitorIdName: 'actionSpeak-visitor-id',
-    localStorageImageUrlName: 'actionSpeak-image-url',
+    localStorageVisitorIdName: 'as-visitor-id',
+    localStorageImageUrlName: 'as-image-url',
     endpoint: 'https://www.actionspeak.kr/api',
-    frequencyPrefix: 'actionSpeak-frequency-',
-    maxFrequencyPrefix: 'actionSpeak-max-frequency-',
+    frequencyPrefix: 'as-frequency-',
+    maxFrequencyPrefix: 'as-max-frequency-',
   };
 
   let toastTimeout;
   let toastInterval;
-  let toasting = [];
+  let toastingQueue = [];
   let visitorId;
   let imageUrls = {};
+  let websiteId;
   const domain = document.currentScript.getAttribute('data-domain');
 
   const generateHash = async (message) => {
@@ -162,109 +220,118 @@
     return visitorId;
   };
 
+  const showMessage = async (type, options = {}) => {
+    if (!websiteId) {
+      console.error(`Your website is not registered. Cannot show ${type}.`);
+      return;
+    }
+
+    const { message, waitFor, duration, frequency } = options;
+    message.id = await generateHash(message);
+    setMaxFrequency(message.id, frequency);
+
+    setTimeout(() => {
+      if (shouldShowMessage(message.id, frequency)) {
+        if (type === 'toast') {
+          showToast({ message, duration });
+        } else if (type === 'popup') {
+          showPopup({ message });
+        }
+        incrementFrequency(message.id);
+      }
+    }, waitFor || 0);
+  };
+
   /* Toast functions */
 
   const ensureToastContainer = (position) => {
-    let container = document.querySelector('#actionSpeak-toast-container');
+    let container = document.querySelector('#as-toast-container');
     if (!container) {
       container = document.createElement('div');
-      container.id = 'actionSpeak-toast-container';
-      container.className = 'actionSpeak-toast-container';
+      container.id = 'as-toast-container';
+      container.className = 'as-toast-container as-container';
       document.body.appendChild(container);
     }
-    container.style.top = position === 'top' ? '3rem' : 'auto';
-    container.style.bottom = position === 'bottom' ? '3rem' : 'auto';
+    container.style.top = position === 'top' ? '1.5rem' : 'auto';
+    container.style.bottom = position === 'bottom' ? '1.5rem' : 'auto';
   };
 
   const createToast = async (message) => {
     let image = '';
     if (message.img && imageUrls[message.img]) {
-      image = `<img src="${imageUrls[message.img]}" style="width: 3rem; height: 3rem; object-fit: cover; object-position: center; flex-shrink: 0; border-radius: 8px;" width="48" height="48" alt="" />`;
+      image = `<img class="as-toast-image" src="${imageUrls[message.img]}" alt="" />`;
     }
     const closeButton = message.closeButton
-      ? '<button class="toast-close-btn" aria-label="Close">&times;</button>'
+      ? '<button class="as-toast-close-btn" aria-label="Close">&times;</button>'
       : '';
     const content = `
-          <div style="width: 100%;">
-              <div style="font-size: 1rem; font-weight: 600; color: rgb(3 7 18); margin-bottom: 0.25rem;">${message.title}</div>
-              <div style="font-size: 1rem; font-weight: 400; line-height: 1.25; color: rgb(55 65 81);">${message.description}</div>
-          </div>
-          ${closeButton}
-      `;
+      <div style="width: 100%;">
+        <div class="as-toast-content-title">${message.title}</div>
+        <div class="as-toast-content-description">${message.description}</div>
+      </div>
+      ${closeButton}
+    `;
 
     if (message.link && message.link.includes('http')) {
       return `
-              <div role="button" class="actionSpeak-toast-content" style="display: flex; flex-direction: row; gap: 14px; pointer-events: auto; width: 100%; cursor: pointer; transition: transform 0.2s ease-in-out;" onmouseover="this.style.transform = 'scale(1.01)';" onmouseout="this.style.transform = 'scale(1)';" onclick="window.open('${message.link}', '_blank')">
-                  ${image}
-                  ${content}
-              </div>
-          `;
+        <div role="button" class="as-toast-content as-toast-content-link" onclick="window.open('${message.link}', '_blank')">
+          ${image}
+          ${content}
+        </div>
+      `;
     } else {
       return `
-              <div class="actionSpeak-toast-content" style="pointer-events: auto;">
-                  ${image}
-                  ${content}
-              </div>
-          `;
+        <div class="as-toast-content" style="pointer-events: auto;">
+          ${image}
+          ${content}
+        </div>
+      `;
     }
   };
 
-  const showToast = async (options = {}) => {
-    const { message, waitFor, toastDuration, frequency } = options;
+  const showToast = async ({ message, duration }) => {
+    ensureToastContainer(message.position);
 
-    setTimeout(async () => {
-      if (shouldShowToast(message.id, frequency)) {
-        ensureToastContainer(message.position);
+    const toastId = `as-toast-${Date.now()}`;
+    const toast = document.createElement('div');
+    toast.id = toastId;
+    toast.className = 'as-toast';
+    toast.innerHTML = await createToast(message);
 
-        const toastId = `toast-${Date.now()}`;
-        const toast = document.createElement('div');
-        toast.id = toastId;
-        toast.className = 'actionSpeak-toast';
-        toast.innerHTML = await createToast(message);
+    if (window.innerWidth < 640) {
+      toastingQueue.forEach((id) => removeToast(id, true));
+    }
 
-        if (window.innerWidth < 640) {
-          toasting.forEach((id) => removeToast(id, true));
-        }
+    document.querySelector('#as-toast-container').prepend(toast);
+    toastingQueue.push(toastId);
 
-        document.querySelector('#actionSpeak-toast-container').prepend(toast);
-        toasting.push(toastId);
+    const closeButton = toast.querySelector('.as-toast-close-btn');
+    if (closeButton) {
+      closeButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+        removeToast(toastId, true);
+      });
+    }
 
-        const closeButton = toast.querySelector('.toast-close-btn');
-        if (closeButton) {
-          closeButton.addEventListener('click', (event) => {
-            event.stopPropagation();
-            removeToast(toastId, true, message.id);
-          });
-        }
-
-        setTimeout(() => {
-          removeToast(toastId, false, message.id);
-        }, toastDuration || 10000);
-
-        incrementToastFrequency(message.id);
-      }
-    }, waitFor || 0);
+    setTimeout(() => {
+      removeToast(toastId, false);
+    }, duration || 10000);
   };
 
-  const removeToast = (toastId, force = false, id = '') => {
+  const removeToast = (toastId, force = false) => {
     const toast = document.getElementById(toastId);
 
     if (!toast) return;
 
-    if (!toast.dataset.removed) {
-      toast.dataset.removed = true;
-      if (id) incrementToastFrequency(id);
-    }
-
     if (force) {
       toast.remove();
-      toasting = toasting.filter((t) => t !== toastId);
+      toastingQueue = toastingQueue.filter((t) => t !== toastId);
     } else {
-      toast.classList.add('toast-hide');
+      toast.classList.add('as-toast-hide');
       setTimeout(() => {
         if (toast) {
           toast.remove();
-          toasting = toasting.filter((t) => t !== toastId);
+          toastingQueue = toastingQueue.filter((t) => t !== toastId);
         }
       }, 400);
     }
@@ -273,37 +340,61 @@
   const cleanupToasts = () => {
     if (toastTimeout) clearTimeout(toastTimeout);
     if (toastInterval) clearInterval(toastInterval);
-    toasting.forEach((id) => removeToast(id));
+    toastingQueue.forEach((id) => removeToast(id));
   };
 
   /* Popup functions */
 
-  const createPopup = (message) => {
-    const popupOverlay = document.createElement('div');
-    popupOverlay.className = 'actionSpeak-popup-overlay';
-    popupOverlay.innerHTML = `
-        <div class="actionSpeak-popup">
-            <button class="actionSpeak-popup-close-btn-top-right" onclick="this.parentNode.parentNode.style.display = 'none'">×</button>
-            ${message.img ? `<img src="${imageUrls[message.img]}" alt="${message.title}">` : ''}
-            <h2>${message.title}</h2>
-            <p>${message.description}</p>
-            ${message.link ? `<a href="${message.link}" target="_blank" class="actionSpeak-popup-close-btn" onclick="this.parentNode.parentNode.style.display = 'none'">${message.button || 'Close'}</a>` : `<button class="actionSpeak-popup-close-btn" onclick="this.parentNode.parentNode.style.display = 'none'">${message.button || 'Close'}</button>`}
-        </div>
-    `;
-    return popupOverlay;
+  const ensurePopupContainer = () => {
+    let container = document.querySelector('#as-popup-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'as-popup-container';
+      container.className = 'as-popup-container as-container';
+      document.body.appendChild(container);
+    }
+    return container;
   };
 
-  const showPopup = (options = {}) => {
-    const { message, waitFor, frequency } = options;
+  const createPopup = (message, popupId) => {
+    return `
+      <div class="as-popup-overlay" id="${popupId}-overlay">
+        <div class="as-popup">
+          <button class="as-popup-close-btn-top-right" onclick="window.actionSpeak.closePopup('${popupId}')">&times;</button>
+          ${message.img ? `<img src="${imageUrls[message.img]}" alt="${message.title}">` : ''}
+          <h2>${message.title}</h2>
+          <p>${message.description}</p>
+          ${message.button && message.buttonLink ? `<a href="${message.buttonLink}" target="_blank" class="as-popup-btn-bottom" onclick="window.actionSpeak.closePopup('${popupId}')">${message.button}</a>` : ''}
+        </div>
+      </div>
+    `;
+  };
 
-    setTimeout(() => {
-      if (shouldShowPopup(message.id, frequency)) {
-        const popupOverlay = createPopup(message);
-        document.body.appendChild(popupOverlay);
-        popupOverlay.style.display = 'flex';
-        incrementPopupFrequency(message.id);
+  const showPopup = ({ message }) => {
+    const container = ensurePopupContainer();
+    const popupId = `as-popup-${Date.now()}`;
+    const popupContent = createPopup(message, popupId);
+
+    container.insertAdjacentHTML('beforeend', popupContent);
+
+    const overlay = document.getElementById(`${popupId}-overlay`);
+    overlay.style.display = 'flex';
+
+    overlay.addEventListener('click', (event) => {
+      if (event.target === overlay) {
+        window.actionSpeak.closePopup(popupId);
       }
-    }, waitFor || 0);
+    });
+  };
+
+  const closePopup = (popupId) => {
+    const overlay = document.getElementById(`${popupId}-overlay`);
+    if (overlay) {
+      overlay.style.display = 'none';
+      setTimeout(() => {
+        overlay.remove();
+      }, 300); // 애니메이션을 위한 지연 시간
+    }
   };
 
   /* Utility functions */
@@ -343,16 +434,10 @@
     return frequency ? parseInt(frequency, 10) : 0;
   };
 
-  const incrementToastFrequency = (id) => {
+  const incrementFrequency = (id) => {
     const frequency = getFrequency(id);
     localStorage.setItem(CONFIG.frequencyPrefix + id, frequency + 1);
   };
-
-  const incrementPopupFrequency = (id) => {
-    const frequency = getFrequency(id);
-    localStorage.setItem(CONFIG.frequencyPrefix + id, frequency + 1);
-  };
-
   const getMaxFrequency = (id) => {
     const maxFrequency = localStorage.getItem(CONFIG.maxFrequencyPrefix + id);
     return maxFrequency ? parseInt(maxFrequency, 10) : 0;
@@ -364,13 +449,7 @@
     }
   };
 
-  const shouldShowToast = (id, maxFrequency) => {
-    setMaxFrequency(id, maxFrequency);
-    const frequency = getFrequency(id);
-    return frequency < getMaxFrequency(id);
-  };
-
-  const shouldShowPopup = (id, maxFrequency) => {
+  const shouldShowMessage = (id, maxFrequency) => {
     setMaxFrequency(id, maxFrequency);
     const frequency = getFrequency(id);
     return frequency < getMaxFrequency(id);
@@ -384,8 +463,12 @@
     document.head.appendChild(styleEl);
 
     try {
-      const websiteId = await getWebsiteIdByDomain(domain);
-      imageUrls = await getImagesByWebsiteId(websiteId);
+      websiteId = await getWebsiteIdByDomain(domain);
+      if (websiteId) {
+        imageUrls = await getImagesByWebsiteId(websiteId);
+      } else {
+        console.error('Website is not registered');
+      }
     } catch (error) {
       console.error(error);
     }
@@ -394,18 +477,16 @@
   window.actionSpeak = window.actionSpeak || {};
 
   window.actionSpeak.showToast = async (...args) => {
-    const [config] = args;
-    config.message.id = await generateHash(config.message);
-    setMaxFrequency(config.message.id, config.frequency);
-    showToast(config);
+    const [options] = args;
+    await showMessage('toast', options);
   };
 
   window.actionSpeak.showPopup = async (...args) => {
-    const [config] = args;
-    config.message.id = await generateHash(config.message);
-    setMaxFrequency(config.message.id, config.frequency);
-    showPopup(config);
+    const [options] = args;
+    await showMessage('popup', options);
   };
+
+  window.actionSpeak.closePopup = closePopup;
 
   initialize();
 })();
