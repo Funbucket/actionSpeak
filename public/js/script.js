@@ -283,11 +283,11 @@
     popupOverlay.className = 'actionSpeak-popup-overlay';
     popupOverlay.innerHTML = `
         <div class="actionSpeak-popup">
-            <button class="actionSpeak-popup-close-btn-top-right" onclick="this.parentNode.parentNode.remove()">×</button>
+            <button class="actionSpeak-popup-close-btn-top-right" onclick="this.parentNode.parentNode.style.display = 'none'">×</button>
             ${message.img ? `<img src="${imageUrls[message.img]}" alt="${message.title}">` : ''}
             <h2>${message.title}</h2>
             <p>${message.description}</p>
-            ${message.link ? `<a href="${message.link}" target="_blank" class="actionSpeak-popup-close-btn">${message.button || 'Close'}</a>` : `<button class="actionSpeak-popup-close-btn" onclick="this.parentNode.parentNode.remove()">${message.button || 'Close'}</button>`}
+            ${message.link ? `<a href="${message.link}" target="_blank" class="actionSpeak-popup-close-btn" onclick="this.parentNode.parentNode.style.display = 'none'">${message.button || 'Close'}</a>` : `<button class="actionSpeak-popup-close-btn" onclick="this.parentNode.parentNode.style.display = 'none'">${message.button || 'Close'}</button>`}
         </div>
     `;
     return popupOverlay;
@@ -300,6 +300,7 @@
       if (shouldShowPopup(message.id, frequency)) {
         const popupOverlay = createPopup(message);
         document.body.appendChild(popupOverlay);
+        popupOverlay.style.display = 'flex';
         incrementPopupFrequency(message.id);
       }
     }, waitFor || 0);
