@@ -177,8 +177,8 @@ const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
     await window.actionSpeak.imageFetch();
 
     const baseMessage = {
-      title: '미리보기 용 제목',
-      description: '미리보기 용 본문',
+      title: 'Preview Title',
+      description: 'Preview Description',
       img: imageName,
     };
 
@@ -198,7 +198,7 @@ const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
       window.actionSpeak.showPopup({
         message: {
           ...baseMessage,
-          button: '미리보기',
+          button: 'Preview',
           buttonLink: `https://www.actionspeak.kr/dashboard/${params.websiteId}`,
         },
         waitFor: 1,

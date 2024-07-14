@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 import PostListPage from '@/components/post_list/PostListPage';
-import { baseDomain, blogName, blogThumbnailURL } from '@/lib/constant';
+import { META } from '@/lib/constant';
 import { getCategoryList, getCategoryPublicName } from '@/lib/post';
 
 type Props = {
@@ -19,19 +19,19 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params: { category } }: Props): Promise<Metadata> {
   const cg = getCategoryPublicName(category);
-  const title = `${cg} | ${blogName}`;
-  const url = `${baseDomain}/${category}`;
+  const title = `${cg} | ${META.siteName}`;
+  const url = `${META.url}/${category}`;
 
   return {
     title,
     openGraph: {
       title,
       url,
-      images: [blogThumbnailURL],
+      images: [META.ogImage],
     },
     twitter: {
       title,
-      images: [blogThumbnailURL],
+      images: [META.ogImage],
     },
   };
 }

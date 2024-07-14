@@ -4,7 +4,7 @@ import { PostBody } from '@/components/post_detail/PostBody';
 import { PostHeader } from '@/components/post_detail/PostHeader';
 import TableOfContentSidebar from '@/components/post_detail/TableOfContentSidebar';
 import TableOfContentTop from '@/components/post_detail/TableOfContentTop';
-import { baseDomain } from '@/lib/constant';
+import { META } from '@/lib/constant';
 import { getPostDetail, getPostPaths, parsePostAbstract, parseToc } from '@/lib/post';
 
 type Props = {
@@ -18,7 +18,7 @@ export async function generateMetadata({ params: { category, slug } }: Props): P
   const post = await getPostDetail(category, slug);
 
   const title = `${post.title} | D5BL5G`;
-  const imageURL = `${baseDomain}${post.thumbnail}`;
+  const imageURL = `${META.url}${post.thumbnail}`;
 
   return {
     title,
@@ -29,7 +29,7 @@ export async function generateMetadata({ params: { category, slug } }: Props): P
       description: post.desc,
       type: 'article',
       publishedTime: post.date.toISOString(),
-      url: `${baseDomain}${post.url}`,
+      url: `${META.url}${post.url}`,
       images: [imageURL],
     },
     twitter: {

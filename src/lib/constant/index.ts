@@ -1,7 +1,42 @@
 export const protectedPaths = ['/dashboard'];
-export const baseDomain = 'https://www.d5br5.dev';
 
-export const blogName = '김도형 개발 블로그';
-export const blogDesc = '개발 지식과 경험을 공유합니다.';
-
-export const blogThumbnailURL = `${baseDomain}/blog_thumbnail.png`;
+export const META = {
+  title: 'actionspeak: Speak to customers via actionspeak',
+  siteName: 'actionspeak',
+  description: 'Speak to customers via actionspeak',
+  keyword: [
+    'actionspeak',
+    'conversion',
+    'popup',
+    'toast box',
+    'website optimization',
+    'user behavior',
+    'customer engagement',
+    'conversion rate optimization',
+    'saas',
+    'web analytics',
+    'user experience',
+    'marketing automation',
+    'personalization',
+    'visitor tracking',
+    'website customization',
+    '전환율',
+    '팝업',
+    '토스트 박스',
+    '웹사이트 최적화',
+    '사용자 행동',
+    '고객 참여',
+    '전환율 최적화',
+    'SaaS',
+    '웹 분석',
+    '사용자 경험',
+    '마케팅 자동화',
+    '개인화',
+    '방문자 추적',
+    '웹사이트 맞춤화',
+  ],
+  url: 'https://www.actionspeak.kr',
+  // googleVerification: 'xxx',
+  // naverVerification: 'xxx',
+  ogImage: '/imgs/logo-image.png',
+} as const;
