@@ -3,7 +3,8 @@ export {};
 declare global {
   interface Window {
     actionSpeak: {
-      push: (...args: any[]) => Promise<void>;
+      showToast: (...args: any[]) => Promise<void>;
+      showPopup: (...args: any[]) => Promise<void>;
       imageFetch: () => Promise<void>;
     };
   }

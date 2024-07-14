@@ -14,6 +14,13 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
 import { useWebsiteImages } from '@/hook/useWebsiteImages';
@@ -71,6 +78,7 @@ const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
   const [file, setFile] = useState<File | null>(null);
   const [imageName, setImageName] = useState<string>('');
   const { toast } = useToast();
+  const [previewType, setPreviewType] = useState<'toast' | 'popup'>('toast');
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -149,10 +157,6 @@ const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
     }
   };
 
-  if (isLoadingMetrics || !metrics) {
-    return <RenderSkeletonMetrics />;
-  }
-
   const handleCopy = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -172,20 +176,41 @@ const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
   const handlePreview = async (imageName: string) => {
     await window.actionSpeak.imageFetch();
 
-    window.actionSpeak.push({
-      message: {
-        title: '14명이 탐내고 있어요 👀',
-        description: '지금 바로 구매하러가기',
-        link: `https://www.actionspeak.kr/dashboard/${params.websiteId}`,
-        img: imageName,
-        closeButton: true,
-        position: 'top', // 추가된 위치 설정 인자
-      },
-      waitFor: 1,
-      toastDuration: 8000,
-      frequency: 1000000, // 추가된 빈도 설정 인
-    });
+    const baseMessage = {
+      title: '미리보기 용 제목',
+      description: '미리보기 용 본문',
+      img: imageName,
+    };
+
+    if (previewType === 'toast') {
+      window.actionSpeak.showToast({
+        message: {
+          ...baseMessage,
+          link: `https://www.actionspeak.kr/dashboard/${params.websiteId}`,
+          closeButton: true,
+          position: 'top',
+        },
+        waitFor: 1,
+        toastDuration: 5000,
+        frequency: 10000,
+      });
+    } else {
+      window.actionSpeak.showPopup({
+        message: {
+          ...baseMessage,
+          button: '미리보기',
+          buttonLink: `https://www.actionspeak.kr/dashboard/${params.websiteId}`,
+        },
+        waitFor: 1,
+
+        frequency: 10000,
+      });
+    }
   };
+
+  if (isLoadingMetrics || !metrics) {
+    return <RenderSkeletonMetrics />;
+  }
 
   return (
     <>
@@ -248,7 +273,7 @@ const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
                 {images.map((image) => (
                   <div
                     key={image.id}
-                    className='grid grid-cols-[1fr_auto_auto] items-center gap-4 border-b pb-4 last:border-b-0 last:pb-0'
+                    className='grid grid-cols-[1fr_auto_auto_auto] items-center gap-4 border-b pb-4 last:border-b-0 last:pb-0'
                   >
                     <div className='flex items-center gap-4'>
                       <Image
@@ -267,6 +292,20 @@ const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
                           </span>
                         </div>
                       </div>
+                    </div>
+                    <div className='flex flex-col gap-2'>
+                      <Select
+                        value={previewType}
+                        onValueChange={(value: 'toast' | 'popup') => setPreviewType(value)}
+                      >
+                        <SelectTrigger className='w-[100px]'>
+                          <SelectValue placeholder='미리보기 타입' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='toast'>Toast</SelectItem>
+                          <SelectItem value='popup'>Popup</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <Button variant='ghost' size='icon' onClick={() => handlePreview(image.name)}>
                       <EyeIcon className='h-5 w-5' />
