@@ -170,7 +170,7 @@ const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
   };
 
   const handlePreview = async (imageName: string) => {
-    await window.actionSpeak.triggerImageFetch();
+    await window.actionSpeak.imageFetch();
 
     window.actionSpeak.push({
       message: {

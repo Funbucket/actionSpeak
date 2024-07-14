@@ -488,5 +488,14 @@
 
   window.actionSpeak.closePopup = closePopup;
 
+  window.actionSpeak.imageFetch = async () => {
+    try {
+      const websiteId = window.location.href.split('/').pop();
+      imageUrls = await getImagesByWebsiteId(websiteId);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   initialize();
 })();
