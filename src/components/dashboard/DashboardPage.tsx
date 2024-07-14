@@ -51,12 +51,12 @@ export default function DashboardPage() {
       return;
     }
 
-    let cleanDomain = domain.replace(/^(https?:\/\/)?(www\.)?/, '');
+    let cleanDomain = domain.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '');
 
     if (cleanDomain !== domain) {
       toast({
         title: 'URL을 자동 수정 🔧',
-        description: 'URL에서 https://, http://, www.이 제거되었습니다.',
+        description: 'URL에서 https://, http://, www. 및 마지막 슬래시(/)가 제거되었습니다.',
       });
       setDomain(cleanDomain);
       return;
