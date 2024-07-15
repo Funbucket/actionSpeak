@@ -112,11 +112,11 @@ const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
     }
 
     const validExtensions = ['image/jpeg', 'image/png', 'image/gif'];
-    if (file.size > 500 * 1024) {
+    if (file.size > 1 * 1024 * 1024) {
       toast({
         variant: 'destructive',
         title: '업로드 실패',
-        description: '파일 크기가 500KB를 초과합니다.',
+        description: '파일 크기가 1MB를 초과합니다.',
       });
       return;
     } else if (!validExtensions.includes(file.type)) {
