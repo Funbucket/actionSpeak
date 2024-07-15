@@ -132,7 +132,7 @@ export default function DashboardPage() {
             <p className='text-base text-muted-foreground'>
               아직 웹사이트를 추가하지 않았네요!
               <br />
-              멋진 팝업을 통해 고객의 마음을 사로잡아 보세요 🚀
+              멋진 팝업으로 고객의 마음을 사로잡아 보세요 🚀
             </p>
           </div>
         ) : (
