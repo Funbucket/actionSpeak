@@ -32,7 +32,7 @@ const FeaturesSection = () => (
       <div className='space-y-4'>
         <h2 className='text-3xl font-bold md:text-4xl lg:text-5xl'>구매률을 높이는 강력한 기능</h2>
         <p className='text-lg text-muted-foreground md:text-xl lg:text-2xl'>
-          ActionSpeak는 효과적인 팝업을 생성하는데 빠르고 강력합니다.
+          actionSpeak는 효과적인 팝업을 생성하는데 빠르고 강력합니다.
         </p>
         <Image
           width='300'
