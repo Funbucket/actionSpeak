@@ -539,6 +539,8 @@
     } catch (error) {
       console.error(error);
     }
+
+    window.actionSpeak.isReady = true;
   };
 
   window.actionSpeak = window.actionSpeak || {};
