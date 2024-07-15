@@ -118,7 +118,7 @@
       width: 100%;
       height: 100%;
       pointer-events: none;
-      z-index: 9999;
+      z-index: 2147483647;
     }
     .as-popup-overlay {
       position: absolute;
@@ -138,49 +138,104 @@
       align-items: center;
       position: relative;
       background: #fff;
-      padding: 20px;
       border-radius: 10px;
       text-align: center;
-      width: 300px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      color: #000;
+      width: 86%;
+      max-width: 520px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      color: rgb(47, 48, 60);
+      overflow: hidden;
+    }
+    .as-popup-image-container {
+      width: 100%;
+      position: relative;
+    }
+    .as-popup-image {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .as-popup-close-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: rgba(220, 220, 220, 0.7);
+      color: rgb(55, 65, 81);
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .as-popup-content {
+      padding: 24px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .as-popup h2 {
+      color: rgb(3, 7, 18);
+      margin-top: 0;
+      margin-bottom: 9px;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    .as-popup p {
+      color: rgb(55, 65, 81);
+      margin-top: 0;
+      margin-bottom: 20px;
+      font-size: 1rem;
+      line-height: 1.4;
     }
     .as-popup-btn-bottom {
       background: #000;
       color: white;
       border: none;
-      padding: 10px 20px;
+      padding: 13px 16px;
       border-radius: 5px;
       cursor: pointer;
-      width: 87%;
-      display: inline-block;
+      display: block;
       text-decoration: none;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: background-color 0.2s ease-in-out;
+      margin: 0 auto;
     }
-    .as-popup-close-btn-top-right {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: transparent;
-      color: #000;
-      border: none;
-      font-size: 32px;
-      cursor: pointer;
+    .as-popup-btn-bottom:hover {
+      background-color: #333;
     }
-    .as-popup img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
-    .as-popup h2 {
-      color: #000;
-      margin-top: 0;
-      margin-bottom: 9px;
-    }
-    .as-popup p {
-      color: rgb(55, 65, 81);
-      margin-top: 0;
-      margin-bottom: 24px;
+
+    @media (min-width: 640px) {
+      .as-popup {
+        width: 520px;
+      }
+      .as-popup-close-btn {
+        top: 1rem;
+        right: 1rem;
+        width: 36px;
+        height: 36px;
+        font-size: 24px;
+      }
+      .as-popup-content {
+        padding: 20px;
+      }
+      .as-popup h2 {
+        font-size: 1.25rem;
+      }
+      .as-popup p {
+        font-size: 1rem;
+        line-height: 1.5;
+        margin-bottom: 24px;
+      }
+      .as-popup-btn-bottom {
+        padding: 14px 20px;
+        font-size: 1rem;
+      }
     }
   `;
 
@@ -358,16 +413,28 @@
 
   const createPopup = (message, popupId) => {
     return `
-      <div class="as-popup-overlay" id="${popupId}-overlay">
-        <div class="as-popup">
-          <button class="as-popup-close-btn-top-right" onclick="window.actionSpeak.closePopup('${popupId}')">&times;</button>
-          ${message.img ? `<img src="${imageUrls[message.img]}" alt="${message.title}">` : ''}
+    <div class="as-popup-overlay" id="${popupId}-overlay">
+      <div class="as-popup">
+        <div class="as-popup-image-container">
+          ${message.img ? `<img class="as-popup-image" src="${imageUrls[message.img]}" alt="${message.title}">` : ''}
+          <button class="as-popup-close-btn" onclick="window.actionSpeak.closePopup('${popupId}')">&times;</button>
+        </div>
+        <div class="as-popup-content">
           <h2>${message.title}</h2>
           <p>${message.description}</p>
-          ${message.button && message.buttonLink ? `<a href="${message.buttonLink}" target="_blank" class="as-popup-btn-bottom" onclick="window.actionSpeak.closePopup('${popupId}')">${message.button}</a>` : ''}
+          ${
+            message.button && message.buttonLink
+              ? `
+            <a href="${message.buttonLink}" target="_blank" class="as-popup-btn-bottom" onclick="window.actionSpeak.closePopup('${popupId}')">
+              ${message.button}
+            </a>
+          `
+              : ''
+          }
         </div>
       </div>
-    `;
+    </div>
+  `;
   };
 
   const showPopup = ({ message }) => {
