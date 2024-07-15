@@ -62,7 +62,6 @@ export default function DashboardPage() {
       return;
     }
 
-    // 전체 도메인 중복 확인
     if (allWebsites.some((site) => site.domain === cleanDomain)) {
       toast({
         variant: 'destructive',
@@ -106,50 +105,47 @@ export default function DashboardPage() {
   };
 
   return (
-    <section className='flex flex-1 flex-col gap-8 px-20 py-20 md:px-16'>
+    <section className='flex flex-1 flex-col gap-8 px-4 pb-8 pt-20 sm:px-8 md:px-16 lg:px-20'>
       <div className='text-center'>
-        <h1 className='text-2xl font-bold'>고객과 소통할 웹사이트를 추가하세요</h1>
+        <h1 className='text-2xl font-bold sm:text-3xl'>고객과 소통할 웹사이트를 추가하세요</h1>
       </div>
-      <div className='mx-auto flex w-full max-w-5xl items-center gap-4'>
-        <form className='flex-1' onSubmit={handleAddWebsite}>
+      <div className='mx-auto w-full max-w-5xl'>
+        <form className='flex flex-col items-center gap-4 sm:flex-row' onSubmit={handleAddWebsite}>
           <Input
             placeholder='예) service.com'
-            className='bg-background'
+            className='flex-1 bg-background'
             value={domain}
             onChange={(e) => setDomain(e.target.value)}
           />
-          <Button type='submit' className='sr-only'>
+          <Button type='submit' disabled={isLoading} className='w-full sm:w-auto'>
             추가하기
           </Button>
         </form>
-        <Button onClick={(e) => handleAddWebsite(e as any)} disabled={isLoading}>
-          추가하기
-        </Button>
       </div>
       <div className='mx-auto w-full max-w-5xl'>
         {isLoading ? (
-          <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
+          <div className='grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3'>
             <RenderSkeletonCards count={6} />
           </div>
         ) : websites.length === 0 ? (
-          <div className='flex items-center justify-center py-40 text-center'>
-            <p className='text-sm text-muted-foreground'>
+          <div className='flex items-center justify-center py-20 text-center sm:py-40'>
+            <p className='text-base text-muted-foreground'>
               아직 웹사이트를 추가하지 않았네요!
               <br />
               멋진 팝업을 통해 고객의 마음을 사로잡아 보세요 🚀
             </p>
           </div>
         ) : (
-          <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
+          <div className='grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3'>
             {websites.map((site) => (
               <Card
                 key={site.id}
                 onClick={() => router.push(`/dashboard/${site.id}`)}
-                className='hover:scale-20 transform cursor-pointer transition-transform hover:shadow-md'
+                className='transform cursor-pointer transition-transform hover:scale-[1.02] hover:shadow-md'
               >
                 <CardHeader className='flex flex-row items-center justify-between gap-4'>
                   <div className='grid gap-1'>
-                    <CardTitle>{site.domain}</CardTitle>
+                    <CardTitle className='text-base sm:text-lg'>{site.domain}</CardTitle>
                   </div>
                   <AlertDialogComponent
                     onDelete={() => {

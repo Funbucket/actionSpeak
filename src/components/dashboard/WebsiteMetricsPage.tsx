@@ -52,7 +52,7 @@ const RenderSkeletonImages = ({ count }: { count: number }) => (
     {Array.from({ length: count }).map((_, index) => (
       <div
         key={index}
-        className='grid grid-cols-[1fr_auto] items-center gap-4 border-b pb-4 last:border-b-0 last:pb-0'
+        className='grid grid-cols-1 items-center gap-4 border-b pb-4 last:border-b-0 last:pb-0 sm:grid-cols-[1fr_auto]'
       >
         <div className='flex items-center gap-4'>
           <Skeleton className='h-16 w-16 rounded-md' />
@@ -61,7 +61,11 @@ const RenderSkeletonImages = ({ count }: { count: number }) => (
             <Skeleton className='h-4 w-1/2' />
           </div>
         </div>
-        <Skeleton className='h-8 w-8' />
+        <div className='flex flex-wrap justify-end gap-2'>
+          <Skeleton className='h-8 w-24' />
+          <Skeleton className='h-8 w-8' />
+          <Skeleton className='h-8 w-8' />
+        </div>
       </div>
     ))}
   </>
@@ -202,7 +206,6 @@ const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
           buttonLink: `https://www.actionspeak.kr/dashboard/${params.websiteId}`,
         },
         waitFor: 1,
-
         frequency: 10000,
       });
     }
@@ -223,13 +226,8 @@ const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div
-              className='flex items-center justify-between rounded-lg bg-gray-100 p-4 dark:bg-gray-800'
-              data-id='6'
-            >
-              <pre className='flex-1 overflow-auto font-mono text-sm' data-id='7'>
-                {metrics.script}
-              </pre>
+            <div className='flex items-center justify-between rounded-lg bg-gray-100 p-4 dark:bg-gray-800'>
+              <pre className='flex-1 overflow-auto font-mono text-sm'>{metrics.script}</pre>
             </div>
           </CardContent>
           <CardFooter className='flex justify-end'>
@@ -273,7 +271,7 @@ const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
                 {images.map((image) => (
                   <div
                     key={image.id}
-                    className='grid grid-cols-[1fr_auto_auto_auto] items-center gap-4 border-b pb-4 last:border-b-0 last:pb-0'
+                    className='grid grid-cols-1 gap-4 border-b pb-4 last:border-b-0 last:pb-0 sm:grid-cols-[1fr_auto]'
                   >
                     <div className='flex items-center gap-4'>
                       <Image
@@ -281,7 +279,7 @@ const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
                         alt={image.description || 'Uploaded image'}
                         width={64}
                         height={64}
-                        className='object-position: center h-14 w-14 rounded-md border border-gray-300 object-cover'
+                        className='h-14 w-14 rounded-md border border-gray-300 object-cover object-center'
                       />
                       <div className='grid gap-1'>
                         <p className='font-medium'>{image.name || 'No description'}</p>
@@ -293,7 +291,7 @@ const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
                         </div>
                       </div>
                     </div>
-                    <div className='flex flex-col gap-2'>
+                    <div className='flex flex-wrap items-center gap-2 sm:justify-end'>
                       <Select
                         value={previewType}
                         onValueChange={(value: 'toast' | 'popup') => setPreviewType(value)}
@@ -306,19 +304,19 @@ const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
                           <SelectItem value='popup'>Popup</SelectItem>
                         </SelectContent>
                       </Select>
+                      <Button variant='ghost' size='icon' onClick={() => handlePreview(image.name)}>
+                        <EyeIcon className='h-5 w-5' />
+                        <span className='sr-only'>Preview</span>
+                      </Button>
+                      <Button
+                        variant='ghost'
+                        size='icon'
+                        onClick={() => handleDelete(image.name, params.websiteId)}
+                      >
+                        <TrashIcon className='h-5 w-5' />
+                        <span className='sr-only'>Delete</span>
+                      </Button>
                     </div>
-                    <Button variant='ghost' size='icon' onClick={() => handlePreview(image.name)}>
-                      <EyeIcon className='h-5 w-5' />
-                      <span className='sr-only'>Preview</span>
-                    </Button>
-                    <Button
-                      variant='ghost'
-                      size='icon'
-                      onClick={() => handleDelete(image.name, params.websiteId)}
-                    >
-                      <TrashIcon className='h-5 w-5' />
-                      <span className='sr-only'>Delete</span>
-                    </Button>
                   </div>
                 ))}
               </div>
