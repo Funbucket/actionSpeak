@@ -4,7 +4,7 @@
     .as-container {
       font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Roboto, "system-ui", "sans-serif";
     }
- 
+
     /* Toast styles */
     .as-toast-container {
       position: fixed;
@@ -20,6 +20,7 @@
         right: 3rem;
       }
     }
+
     .as-toast {
       background: transparent;
       padding: 0 0 1rem;
@@ -27,6 +28,7 @@
       justify-content: flex-end;
       animation: as-slide-in 0.3s ease-in-out;
     }
+
     .as-toast-content {
       width: 100%;
       max-width: 350px;
@@ -46,6 +48,7 @@
       box-sizing: border-box;
       text-align: left;
     }
+
     .as-toast-content-link {
       display: flex;
       flex-direction: row;
@@ -55,12 +58,15 @@
       cursor: pointer;
       transition: transform 0.2s ease-in-out;
     }
+
     .as-toast-content-link:hover {
       transform: scale(1.01);
     }
+
     .as-toast-hide {
       animation: as-fade-out 0.4s forwards;
     }
+
     @keyframes as-slide-in {
       from {
         opacity: 0.8;
@@ -79,6 +85,7 @@
         opacity: 0;
       }
     }
+
     .as-toast-close-btn {
       background: none;
       border: none;
@@ -89,18 +96,21 @@
       padding: 0;
       margin-left: 0.5rem;
     }
+
     .as-toast-content-title {
       font-size: 1rem;
       font-weight: 600;
       color: rgb(3, 7, 18);
       margin-bottom: 0.25rem;
     }
+
     .as-toast-content-description {
       font-size: 1rem;
       font-weight: 400;
       line-height: 1.25;
       color: rgb(55, 65, 81);
     }
+
     .as-toast-image {
       width: 48px;
       height: 48px;
@@ -109,7 +119,7 @@
       flex-shrink: 0;
       border-radius: 8px;
     }
- 
+
     /* Popup styles */
     .as-popup-container {
       position: fixed;
@@ -120,6 +130,7 @@
       pointer-events: none;
       z-index: 2147483647;
     }
+
     .as-popup-overlay {
       position: absolute;
       top: 0;
@@ -132,6 +143,7 @@
       align-items: center;
       pointer-events: auto;
     }
+
     .as-popup {
       display: flex;
       flex-direction: column;
@@ -146,15 +158,18 @@
       color: rgb(47, 48, 60);
       overflow: hidden;
     }
+
     .as-popup-image-container {
       width: 100%;
       position: relative;
     }
+
     .as-popup-image {
       width: 100%;
       height: auto;
       display: block;
     }
+
     .as-popup-close-btn {
       position: absolute;
       top: 0.5rem;
@@ -172,12 +187,35 @@
       justify-content: center;
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
+      padding: 0; /* 패딩 제거 */
+      line-height: 1; /* 라인 높이 조정 */
     }
+      
+    .as-popup-close-icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    @media (min-width: 640px) {
+      .as-popup-close-btn {
+        top: 1rem;
+        right: 1rem;
+        width: 36px;
+        height: 36px;
+      }
+      
+      .as-popup-close-icon {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
     .as-popup-content {
       padding: 24px;
       width: 100%;
       box-sizing: border-box;
     }
+
     .as-popup h2 {
       color: rgb(3, 7, 18);
       margin-top: 0;
@@ -185,6 +223,7 @@
       font-size: 1.5rem;
       font-weight: 600;
     }
+
     .as-popup p {
       color: rgb(55, 65, 81);
       margin-top: 0;
@@ -192,6 +231,7 @@
       font-size: 1rem;
       line-height: 1.4;
     }
+
     .as-popup-btn-bottom {
       background: #000;
       color: white;
@@ -206,6 +246,7 @@
       transition: background-color 0.2s ease-in-out;
       margin: 0 auto;
     }
+
     .as-popup-btn-bottom:hover {
       background-color: #333;
     }
@@ -296,8 +337,6 @@
       }
     }, waitFor || 0);
   };
-
-  /* Toast functions */
 
   const ensureToastContainer = (position) => {
     let container = document.querySelector('#as-toast-container');
@@ -398,8 +437,6 @@
     toastingQueue.forEach((id) => removeToast(id));
   };
 
-  /* Popup functions */
-
   const ensurePopupContainer = () => {
     let container = document.querySelector('#as-popup-container');
     if (!container) {
@@ -412,12 +449,22 @@
   };
 
   const createPopup = (message, popupId) => {
+    const imageHtml =
+      message.img && imageUrls[message.img]
+        ? `<img class="as-popup-image" src="${imageUrls[message.img]}" alt="${message.title}">`
+        : '';
+
     return `
     <div class="as-popup-overlay" id="${popupId}-overlay">
       <div class="as-popup">
         <div class="as-popup-image-container">
-          ${message.img ? `<img class="as-popup-image" src="${imageUrls[message.img]}" alt="${message.title}">` : ''}
-          <button class="as-popup-close-btn" onclick="window.actionSpeak.closePopup('${popupId}')">&times;</button>
+          ${imageHtml}
+          <button class="as-popup-close-btn" onclick="window.actionSpeak.closePopup('${popupId}')">
+            <svg class="as-popup-close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
         </div>
         <div class="as-popup-content">
           <h2>${message.title}</h2>
@@ -460,11 +507,9 @@
       overlay.style.display = 'none';
       setTimeout(() => {
         overlay.remove();
-      }, 300); // 애니메이션을 위한 지연 시간
+      }, 300);
     }
   };
-
-  /* Utility functions */
 
   const getWebsiteIdByDomain = async (domain) => {
     const response = await fetch(`${CONFIG.endpoint}/get-website-id`, {
@@ -505,6 +550,7 @@
     const frequency = getFrequency(id);
     localStorage.setItem(CONFIG.frequencyPrefix + id, frequency + 1);
   };
+
   const getMaxFrequency = (id) => {
     const maxFrequency = localStorage.getItem(CONFIG.maxFrequencyPrefix + id);
     return maxFrequency ? parseInt(maxFrequency, 10) : 0;
@@ -522,6 +568,15 @@
     return frequency < getMaxFrequency(id);
   };
 
+  const preloadImage = (src) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = resolve;
+      img.onerror = reject;
+      img.src = src;
+    });
+  };
+
   const initialize = async () => {
     getVisitorId();
 
@@ -533,11 +588,14 @@
       websiteId = await getWebsiteIdByDomain(domain);
       if (websiteId) {
         imageUrls = await getImagesByWebsiteId(websiteId);
+        console.log('Image URLs:', imageUrls); // 이미지 URL 로깅
+        // 이미지 프리로드
+        await Promise.all(Object.values(imageUrls).map(preloadImage));
       } else {
         console.error('Website is not registered');
       }
     } catch (error) {
-      console.error(error);
+      console.error('Error during initialization:', error);
     }
 
     window.actionSpeak.isReady = true;
@@ -561,6 +619,8 @@
     try {
       const websiteId = window.location.href.split('/').pop();
       imageUrls = await getImagesByWebsiteId(websiteId);
+      // 이미지 프리로드
+      await Promise.all(Object.values(imageUrls).map(preloadImage));
     } catch (error) {
       console.error(error);
     }
