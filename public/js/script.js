@@ -30,10 +30,11 @@
     }
 
     .as-toast-content {
+      position: relative;
       width: 100%;
       max-width: 350px;
       display: flex;
-      align-items: start;
+      align-items: flex-start;
       justify-content: space-between;
       padding: 14px;
       background-color: rgba(220, 220, 220, 0.7);
@@ -52,6 +53,7 @@
     .as-toast-content-link {
       display: flex;
       flex-direction: row;
+      align-items: center;
       gap: 14px;
       pointer-events: auto;
       width: 100%;
@@ -65,6 +67,20 @@
 
     .as-toast-hide {
       animation: as-fade-out 0.4s forwards;
+    }
+
+    .as-toast-image-container {
+      flex-shrink: 0;
+      width: 55px;
+      height: 55px;
+      overflow: hidden;
+      border-radius: 8px;
+    }
+
+    .as-toast-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     @keyframes as-slide-in {
@@ -87,6 +103,9 @@
     }
 
     .as-toast-close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
       background: none;
       border: none;
       cursor: pointer;
@@ -94,7 +113,14 @@
       font-size: 1.25rem;
       line-height: 1;
       padding: 0;
-      margin-left: 0.5rem;
+      z-index: 1;
+    }
+
+    .as-toast-content-wrapper {
+      gap: 14px;
+      display: flex;
+      align-items: center;
+      width: 100%;
     }
 
     .as-toast-content-title {
@@ -109,15 +135,6 @@
       font-weight: 400;
       line-height: 1.25;
       color: rgb(55, 65, 81);
-    }
-
-    .as-toast-image {
-      width: 48px;
-      height: 48px;
-      object-fit: cover;
-      object-position: center;
-      flex-shrink: 0;
-      border-radius: 8px;
     }
 
     /* Popup styles */
@@ -187,8 +204,8 @@
       justify-content: center;
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-      padding: 0; /* 패딩 제거 */
-      line-height: 1; /* 라인 높이 조정 */
+      padding: 0;
+      line-height: 1;
     }
       
     .as-popup-close-icon {
@@ -353,30 +370,38 @@
   const createToast = async (message) => {
     let image = '';
     if (message.img && imageUrls[message.img]) {
-      image = `<img class="as-toast-image" src="${imageUrls[message.img]}" alt="" />`;
+      image = `
+        <div class="as-toast-image-container">
+          <img class="as-toast-image" src="${imageUrls[message.img]}" alt="" />
+        </div>
+      `;
     }
+
     const closeButton = message.closeButton
       ? '<button class="as-toast-close-btn" aria-label="Close">&times;</button>'
       : '';
+
     const content = `
-      <div style="width: 100%;">
-        <div class="as-toast-content-title">${message.title}</div>
-        <div class="as-toast-content-description">${message.description}</div>
+      <div class="as-toast-content-wrapper">
+        ${image}
+        <div style="width: 100%;">
+          <div class="as-toast-content-title">${message.title}</div>
+          <div class="as-toast-content-description">${message.description}</div>
+        </div>
       </div>
-      ${closeButton}
     `;
 
     if (message.link && message.link.includes('http')) {
       return `
         <div role="button" class="as-toast-content as-toast-content-link" onclick="window.open('${message.link}', '_blank')">
-          ${image}
+          ${closeButton}
           ${content}
         </div>
       `;
     } else {
       return `
         <div class="as-toast-content" style="pointer-events: auto;">
-          ${image}
+          ${closeButton}
           ${content}
         </div>
       `;
