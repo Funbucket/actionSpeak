@@ -68,7 +68,7 @@ const adoptionBenefitCards = [
 const FeaturesSection = () => (
   <>
     <section className='w-full bg-muted px-6 py-12'>
-      <div className='mx-auto grid max-w-7xl gap-8 px-4 md:grid-cols-2 md:px-6'>
+      <div className='mx-auto grid max-w-[83rem] gap-8 px-4 md:grid-cols-2 md:px-6'>
         <div className='space-y-4'>
           <h2 className='text-3xl font-bold md:text-4xl lg:text-5xl'>
             구매률을 높이는 강력한 기능
@@ -78,24 +78,30 @@ const FeaturesSection = () => (
           </p>
           <div className='grid gap-4 sm:grid-cols-7'>
             <div className='sm:col-span-4'>
-              <Image
-                width='400'
-                height='300'
-                unoptimized
-                src='/imgs/toast_preview.gif'
-                alt='Toast Preview'
-                className='h-auto w-full rounded-lg border border-gray-200'
-              />
+              <div className='relative'>
+                <Image
+                  width='400'
+                  height='300'
+                  unoptimized
+                  src='/imgs/toast_preview.gif'
+                  alt='Toast Preview'
+                  className='h-auto w-full rounded-lg border border-gray-200'
+                />
+                <p className='mt-1 text-center text-sm text-muted-foreground'>토스트박스 예시</p>
+              </div>
             </div>
             <div className='sm:col-span-3'>
-              <Image
-                width='300'
-                height='300'
-                unoptimized
-                src='/imgs/popup_preview.gif'
-                alt='Popup Preview'
-                className='h-auto w-full rounded-lg border border-gray-200'
-              />
+              <div className='relative'>
+                <Image
+                  width='300'
+                  height='300'
+                  unoptimized
+                  src='/imgs/popup_preview.gif'
+                  alt='Popup Preview'
+                  className='h-auto w-full rounded-lg border border-gray-200'
+                />
+                <p className='mt-1 text-center text-sm text-muted-foreground'>팝업 예시</p>
+              </div>
             </div>
           </div>
         </div>
@@ -121,7 +127,7 @@ const FeaturesSection = () => (
           <h2 className='text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl'>
             도입을 고민하지 마세요
           </h2>
-          <p className='mt-4 text-lg text-muted-foreground md:text-xl lg:text-2xl'>
+          <p className='mt-4 text-lg text-gray-800 dark:text-gray-400 md:text-xl lg:text-2xl'>
             온라인 비즈니스 성장을 도와드릴게요.
           </p>
         </div>
