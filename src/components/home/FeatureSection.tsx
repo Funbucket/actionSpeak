@@ -34,14 +34,28 @@ const FeaturesSection = () => (
         <p className='text-lg text-muted-foreground md:text-xl lg:text-2xl'>
           actionSpeak는 효과적인 팝업을 생성하는데 빠르고 강력합니다.
         </p>
-        <Image
-          width='300'
-          height='300'
-          unoptimized
-          src='/imgs/popup_preview.gif'
-          alt='Popup Preview'
-          className='h-auto w-full rounded-lg border border-gray-200'
-        />
+        <div className='grid gap-4 sm:grid-cols-7'>
+          <div className='sm:col-span-4'>
+            <Image
+              width='400'
+              height='300'
+              unoptimized
+              src='/imgs/toast_preview.gif'
+              alt='Toast Preview'
+              className='h-auto w-full rounded-lg border border-gray-200'
+            />
+          </div>
+          <div className='sm:col-span-3'>
+            <Image
+              width='300'
+              height='300'
+              unoptimized
+              src='/imgs/popup_preview.gif'
+              alt='Popup Preview'
+              className='h-auto w-full rounded-lg border border-gray-200'
+            />
+          </div>
+        </div>
       </div>
       <div className='grid gap-4'>
         {cardContents.map((card, index) => (
