@@ -1,7 +1,5 @@
 import Link from 'next/link';
 
-import { Button } from '@/components/ui/button';
-
 const Footer = () => (
   <footer className='w-full border-t bg-muted'>
     <div className='container flex flex-col items-center justify-between gap-4 py-8 md:flex-row md:gap-0'>
