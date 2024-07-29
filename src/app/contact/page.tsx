@@ -28,6 +28,7 @@ export default function Page() {
         src='https://tally.so/r/mYOgJ6?transparentBackground=1'
         width='100%'
         height='100%'
+        style={{ marginTop: '16px' }}
         title='도입 문의'
       ></iframe>
     </div>
