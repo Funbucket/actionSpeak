@@ -52,15 +52,15 @@ export default function Navbar() {
           <Image src='/imgs/logo-text.png' alt='logo-image' width={120} height={60} />
         </Link>
         <div className='hidden items-center space-x-2 md:flex'>
+          <Button variant='ghost' onClick={() => router.push('/blog')}>
+            블로그
+          </Button>
           {!data?.id ? (
             <Link href='/auth' className='animate-fade'>
               <Button variant='outline'>로그인</Button>
             </Link>
           ) : (
             <>
-              <Button variant='ghost' onClick={handleLogout}>
-                로그아웃
-              </Button>
               {pathname !== '/contact' && (
                 <Button variant='ghost' onClick={() => router.push('/contact')}>
                   도입문의
@@ -71,6 +71,9 @@ export default function Navbar() {
                   대시보드
                 </Button>
               )}
+              <Button variant='ghost' onClick={handleLogout}>
+                로그아웃
+              </Button>
             </>
           )}
         </div>
@@ -90,12 +93,18 @@ export default function Navbar() {
                 <div className='grid gap-4 py-4'>
                   <Button
                     variant='ghost'
+                    onClick={() => handleNavigation('/blog')}
+                    className='w-full'
+                  >
+                    블로그
+                  </Button>
+                  <Button
+                    variant='ghost'
                     onClick={() => handleNavigation('/contact')}
                     className='w-full'
                   >
                     도입문의
                   </Button>
-
                   <Button
                     variant='ghost'
                     onClick={() => handleNavigation('/dashboard')}
@@ -103,7 +112,6 @@ export default function Navbar() {
                   >
                     대시보드
                   </Button>
-
                   <Button
                     variant='ghost'
                     onClick={() => {

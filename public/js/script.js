@@ -333,24 +333,26 @@
     return visitorId;
   };
 
-  const showMessage = async (type, options = {}) => {
+  const show = async (type, config) => {
     if (!websiteId) {
       console.error(`Your website is not registered. Cannot show ${type}.`);
       return;
     }
 
-    const { message, waitFor, duration, frequency } = options;
-    message.id = await generateHash(message);
-    setMaxFrequency(message.id, frequency);
+    const { options, ...content } = config;
+    const { waitFor, duration, frequency } = options || {};
+
+    content.id = await generateHash(content);
+    setMaxFrequency(content.id, frequency);
 
     setTimeout(() => {
-      if (shouldShowMessage(message.id, frequency)) {
+      if (shouldShowBasedOnFrequency(content.id, frequency)) {
         if (type === 'toast') {
-          showToast({ message, duration });
-        } else if (type === 'popup') {
-          showPopup({ message });
+          showToast(content, duration);
+        } else if (type === 'basicPopup') {
+          showBasicPopup(content);
         }
-        incrementFrequency(message.id);
+        incrementFrequency(content.id);
       }
     }, waitFor || 0);
   };
@@ -367,55 +369,55 @@
     container.style.bottom = position === 'bottom' ? '1.5rem' : 'auto';
   };
 
-  const createToast = async (message) => {
+  const createToastElement = (content) => {
     let image = '';
-    if (message.img && imageUrls[message.img]) {
+    if (content.imageName && imageUrls[content.imageName]) {
       image = `
         <div class="as-toast-image-container">
-          <img class="as-toast-image" src="${imageUrls[message.img]}" alt="" />
+          <img class="as-toast-image" src="${imageUrls[content.imageName]}" alt="" />
         </div>
       `;
     }
 
-    const closeButton = message.closeButton
+    const closeButton = content.closeButton
       ? '<button class="as-toast-close-btn" aria-label="Close">&times;</button>'
       : '';
 
-    const content = `
+    const contentHtml = `
       <div class="as-toast-content-wrapper">
         ${image}
         <div style="width: 100%;">
-          <div class="as-toast-content-title">${message.title}</div>
-          <div class="as-toast-content-description">${message.description}</div>
+          <div class="as-toast-content-title">${content.title}</div>
+          <div class="as-toast-content-description">${content.description}</div>
         </div>
       </div>
     `;
 
-    if (message.link && message.link.includes('http')) {
+    if (content.link && content.link.includes('http')) {
       return `
-        <div role="button" class="as-toast-content as-toast-content-link" onclick="window.open('${message.link}', '_blank')">
+        <div role="button" class="as-toast-content as-toast-content-link" onclick="window.open('${content.link}', '_blank')">
           ${closeButton}
-          ${content}
+          ${contentHtml}
         </div>
       `;
     } else {
       return `
         <div class="as-toast-content" style="pointer-events: auto;">
           ${closeButton}
-          ${content}
+          ${contentHtml}
         </div>
       `;
     }
   };
 
-  const showToast = async ({ message, duration }) => {
-    ensureToastContainer(message.position);
+  const showToast = (content, duration) => {
+    ensureToastContainer(content.position);
 
     const toastId = `as-toast-${Date.now()}`;
     const toast = document.createElement('div');
     toast.id = toastId;
     toast.className = 'as-toast';
-    toast.innerHTML = await createToast(message);
+    toast.innerHTML = createToastElement(content);
 
     if (window.innerWidth < 640) {
       toastingQueue.forEach((id) => removeToast(id, true));
@@ -462,7 +464,7 @@
     toastingQueue.forEach((id) => removeToast(id));
   };
 
-  const ensurePopupContainer = () => {
+  const createPopupContainer = () => {
     let container = document.querySelector('#as-popup-container');
     if (!container) {
       container = document.createElement('div');
@@ -473,11 +475,21 @@
     return container;
   };
 
-  const createPopup = (message, popupId) => {
+  const createBasicPopupElement = (content, popupId) => {
     const imageHtml =
-      message.img && imageUrls[message.img]
-        ? `<img class="as-popup-image" src="${imageUrls[message.img]}" alt="${message.title}">`
+      content.imageName && imageUrls[content.imageName]
+        ? `<img class="as-popup-image" src="${imageUrls[content.imageName]}" alt="${content.title}">`
         : '';
+
+    const buttons = content.buttons
+      .map(
+        (button) => `
+      <a href="${button.link}" target="_blank" class="as-popup-btn-bottom" onclick="window.actionSpeak.closePopup('${popupId}')">
+        ${button.label}
+      </a>
+    `
+      )
+      .join('');
 
     return `
     <div class="as-popup-overlay" id="${popupId}-overlay">
@@ -492,29 +504,21 @@
           </button>
         </div>
         <div class="as-popup-content">
-          <h2>${message.title}</h2>
-          <p>${message.description}</p>
-          ${
-            message.button && message.buttonLink
-              ? `
-            <a href="${message.buttonLink}" target="_blank" class="as-popup-btn-bottom" onclick="window.actionSpeak.closePopup('${popupId}')">
-              ${message.button}
-            </a>
-          `
-              : ''
-          }
+          <h2>${content.title}</h2>
+          <p>${content.description}</p>
+          ${buttons}
         </div>
       </div>
     </div>
-  `;
+    `;
   };
 
-  const showPopup = ({ message }) => {
-    const container = ensurePopupContainer();
+  const showBasicPopup = (content) => {
+    const container = createPopupContainer();
     const popupId = `as-popup-${Date.now()}`;
-    const popupContent = createPopup(message, popupId);
+    const basicPopupElement = createBasicPopupElement(content, popupId);
 
-    container.insertAdjacentHTML('beforeend', popupContent);
+    container.insertAdjacentHTML('beforeend', basicPopupElement);
 
     const overlay = document.getElementById(`${popupId}-overlay`);
     overlay.style.display = 'flex';
@@ -587,7 +591,7 @@
     }
   };
 
-  const shouldShowMessage = (id, maxFrequency) => {
+  const shouldShowBasedOnFrequency = (id, maxFrequency) => {
     setMaxFrequency(id, maxFrequency);
     const frequency = getFrequency(id);
     return frequency < getMaxFrequency(id);
@@ -628,14 +632,12 @@
 
   window.actionSpeak = window.actionSpeak || {};
 
-  window.actionSpeak.showToast = async (...args) => {
-    const [options] = args;
-    await showMessage('toast', options);
+  window.actionSpeak.showToast = async (config) => {
+    await show('toast', config);
   };
 
-  window.actionSpeak.showPopup = async (...args) => {
-    const [options] = args;
-    await showMessage('popup', options);
+  window.actionSpeak.showBasicPopup = async (config) => {
+    await show('basicPopup', config);
   };
 
   window.actionSpeak.closePopup = closePopup;
