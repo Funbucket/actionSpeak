@@ -315,7 +315,7 @@ const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value='toast'>Toast</SelectItem>
-                          <SelectItem value='popup'>BasicPopup</SelectItem>
+                          <SelectItem value='basicPopup'>BasicPopup</SelectItem>
                           <SelectItem value='macWindowPopup'>MacWindowPopup</SelectItem>
                         </SelectContent>
                       </Select>

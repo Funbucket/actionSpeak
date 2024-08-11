@@ -360,7 +360,6 @@
     }
 
     .as-mac-window.maximize {
-      height: 100% !important;
       width: 100% !important;
       max-width: 100% !important;
       border-radius: 0;

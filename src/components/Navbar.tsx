@@ -52,9 +52,9 @@ export default function Navbar() {
           <Image src='/imgs/logo-text.png' alt='logo-image' width={120} height={60} />
         </Link>
         <div className='hidden items-center space-x-2 md:flex'>
-          <Button variant='ghost' onClick={() => router.push('/blog')}>
+          {/* <Button variant='ghost' onClick={() => router.push('/blog')}>
             블로그
-          </Button>
+          </Button> */}
           {!data?.id ? (
             <Link href='/auth' className='animate-fade'>
               <Button variant='outline'>로그인</Button>
@@ -91,13 +91,13 @@ export default function Navbar() {
               </SheetTrigger>
               <SheetContent>
                 <div className='grid gap-4 py-4'>
-                  <Button
+                  {/* <Button
                     variant='ghost'
                     onClick={() => handleNavigation('/blog')}
                     className='w-full'
                   >
                     블로그
-                  </Button>
+                  </Button> */}
                   <Button
                     variant='ghost'
                     onClick={() => handleNavigation('/contact')}
