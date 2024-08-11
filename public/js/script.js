@@ -423,7 +423,7 @@
 
     .as-mac-window .title-bar .buttons .close::before,
     .as-mac-window .title-bar .buttons .close::after {
-      width: 9px;
+      width: 8px;
       height: 1px;
       background: rgb(54,0,0);
       top: 50%;
@@ -439,7 +439,7 @@
     }
 
     .as-mac-window .title-bar .buttons .minimize::before {
-      width: 9px;
+      width: 7px;
       height: 1px;
       background: rgb(134,69,2);
       top: 50%;
