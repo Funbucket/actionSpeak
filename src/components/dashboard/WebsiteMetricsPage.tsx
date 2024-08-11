@@ -82,7 +82,9 @@ const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
   const [file, setFile] = useState<File | null>(null);
   const [imageName, setImageName] = useState<string>('');
   const { toast } = useToast();
-  const [previewType, setPreviewType] = useState<'toast' | 'popup'>('toast');
+  const [previewType, setPreviewType] = useState<'toast' | 'basicPopup' | 'macWindowPopup'>(
+    'toast'
+  );
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -180,33 +182,43 @@ const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
   const handlePreview = async (imageName: string) => {
     await window.actionSpeak.imageFetch();
 
-    const baseMessage = {
-      title: 'Preview Title',
-      description: 'Preview Description',
-      img: imageName,
-    };
-
     if (previewType === 'toast') {
       window.actionSpeak.showToast({
-        message: {
-          ...baseMessage,
-          link: `https://www.actionspeak.kr/dashboard/${params.websiteId}`,
-          closeButton: true,
-          position: 'top',
+        title: 'Preview Title',
+        description: 'Preview Description',
+        imageName: imageName,
+        link: `https://www.actionspeak.kr/dashboard/${params.websiteId}`,
+        closeButton: true,
+        position: 'top',
+        options: {
+          waitFor: 1,
+          toastDuration: 5000,
+          frequency: 10000,
         },
-        waitFor: 1,
-        toastDuration: 5000,
-        frequency: 10000,
       });
-    } else {
-      window.actionSpeak.showPopup({
-        message: {
-          ...baseMessage,
-          button: 'Preview',
-          buttonLink: `https://www.actionspeak.kr/dashboard/${params.websiteId}`,
+    } else if (previewType === 'basicPopup') {
+      window.actionSpeak.showBasicPopup({
+        title: 'Preview Title',
+        description: 'Preview Description',
+        imageName: imageName,
+        button: {
+          label: 'Preview',
+          link: `https://www.actionspeak.kr/dashboard/${params.websiteId}`,
         },
-        waitFor: 1,
-        frequency: 10000,
+        options: {
+          waitFor: 1,
+          frequency: 10000,
+        },
+      });
+    } else if (previewType === 'macWindowPopup') {
+      window.actionSpeak.showMacWindowPopup({
+        title: 'Preview Title',
+        imageName: imageName,
+        link: `https://www.actionspeak.kr/dashboard/${params.websiteId}`,
+        options: {
+          waitFor: 1,
+          frequency: 100,
+        },
       });
     }
   };
@@ -294,14 +306,17 @@ const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
                     <div className='flex flex-wrap items-center gap-2 sm:justify-end'>
                       <Select
                         value={previewType}
-                        onValueChange={(value: 'toast' | 'popup') => setPreviewType(value)}
+                        onValueChange={(value: 'toast' | 'basicPopup' | 'macWindowPopup') =>
+                          setPreviewType(value)
+                        }
                       >
                         <SelectTrigger className='w-[100px]'>
                           <SelectValue placeholder='미리보기 타입' />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value='toast'>Toast</SelectItem>
-                          <SelectItem value='popup'>Popup</SelectItem>
+                          <SelectItem value='popup'>BasicPopup</SelectItem>
+                          <SelectItem value='macWindowPopup'>MacWindowPopup</SelectItem>
                         </SelectContent>
                       </Select>
                       <Button variant='ghost' size='icon' onClick={() => handlePreview(image.name)}>

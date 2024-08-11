@@ -295,6 +295,217 @@
         font-size: 1rem;
       }
     }
+
+    /* Mac Window styles */
+    .as-macwindow-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2147483647;
+    }
+
+    .as-macwindow-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .as-macwindow-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .as-mac-window {
+      border-radius: 5px;
+      overflow: hidden;
+      width: 600px;
+      max-width: 90%;
+      height: auto;
+      box-shadow: 0 15px 20px rgba(0, 0, 0, 0.25);
+      background: white;
+      transform: scale(0.9) translate(-50%, -50%);
+      opacity: 0;
+      transition: all 0.3s ease;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+    }
+
+    .as-mac-window.active {
+      transform: scale(1) translate(-50%, -50%);
+      opacity: 1;
+    }
+
+    .as-mac-window.minimize {
+      transform: translate(-50%, 50%) scale(1);
+      opacity: 1;
+      transition: all 0.5s;
+    }
+
+    .as-mac-window.minimize:hover {
+      transform: translate(-50%, 45%) scale(1);
+      transition: all 0.5s;
+    }
+
+    .as-mac-window.maximize {
+      height: 100% !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      border-radius: 0;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .as-mac-window .title-bar {
+      background: linear-gradient(to top, rgb(200,197,200), rgb(234,231,234));
+      height: 20px;
+      border-bottom: 1px solid rgb(180, 180, 180);
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .as-mac-window .title-bar .buttons {
+      position: absolute;
+      left: 9px;
+      top: 5px;
+      height: 10px;
+    }
+
+    .as-mac-window .title-bar .buttons div {
+      float: left;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 4px;
+      position: relative;
+    }
+
+    .as-mac-window .title-bar .buttons .close {
+      background: rgb(251, 73, 72);
+      border: solid 1px rgba(214, 46, 48, 0.15);
+    }
+
+    .as-mac-window .title-bar .buttons .minimize {
+      background: rgb(253, 178, 37);
+      border: solid 1px rgba(213, 142, 27, 0.15);
+    }
+
+    .as-mac-window .title-bar .buttons .maximize {
+      background: rgb(42, 200, 51);
+      border: solid 1px rgba(30, 159, 32, 0.15);
+    }
+
+    .as-mac-window .title-bar .buttons div::before,
+    .as-mac-window .title-bar .buttons div::after {
+      content: '';
+      position: absolute;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .as-mac-window .title-bar .buttons:hover div::before,
+    .as-mac-window .title-bar .buttons:hover div::after {
+      opacity: 1;
+    }
+
+    .as-mac-window .title-bar .buttons .close::before,
+    .as-mac-window .title-bar .buttons .close::after {
+      width: 8px;
+      height: 1px;
+      background: rgb(54,0,0);
+      top: 50%;
+      left: 50%;
+    }
+
+    .as-mac-window .title-bar .buttons .close::before {
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    .as-mac-window .title-bar .buttons .close::after {
+      transform: translate(-50%, -50%) rotate(-45deg);
+    }
+
+    .as-mac-window .title-bar .buttons .minimize::before {
+      width: 8px;
+      height: 1px;
+      background: rgb(134,69,2);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .as-mac-window .title-bar .buttons .maximize::before {
+      content: '';
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: rgb(11, 84, 1);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: solid 1px rgb(42, 200, 51);
+      border-radius: 2px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+
+    .as-mac-window .title-bar .buttons .maximize::after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 2px;
+      background: rgb(42, 200, 51);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(45deg);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+
+    .as-mac-window .title-bar .title {
+      text-align: center;
+      line-height: 20px;
+      font-family: 'Helvetica Neue', helvetica, arial, sans-serif;
+      font-size: 13px;
+      font-weight: 300;
+      color: rgb(34,32,34);
+    }
+
+    .as-mac-window .window {
+      background: white;
+      overflow: hidden;
+    }
+
+    .as-mac-window .window img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    @media (max-width: 640px) {
+      .as-mac-window.minimize {
+        transform: translate(-50%, 100%) scale(1);
+      }
+
+      .as-mac-window.minimize:hover {
+        transform: translate(-50%, 95%) scale(1);
+        transition: all 0.5s;
+      }
+    }
   `;
 
   const CONFIG = {
@@ -351,13 +562,16 @@
           showToast(content, duration);
         } else if (type === 'basicPopup') {
           showBasicPopup(content);
+        } else if (type === 'macWindowPopup') {
+          showMacWindowPopup(content);
         }
         incrementFrequency(content.id);
       }
     }, waitFor || 0);
   };
 
-  const ensureToastContainer = (position) => {
+  /* Toast */
+  const createToastContainer = (position) => {
     let container = document.querySelector('#as-toast-container');
     if (!container) {
       container = document.createElement('div');
@@ -411,7 +625,7 @@
   };
 
   const showToast = (content, duration) => {
-    ensureToastContainer(content.position);
+    createToastContainer(content.position);
 
     const toastId = `as-toast-${Date.now()}`;
     const toast = document.createElement('div');
@@ -464,7 +678,8 @@
     toastingQueue.forEach((id) => removeToast(id));
   };
 
-  const createPopupContainer = () => {
+  /* Basic Popup */
+  const createBasicPopupContainer = () => {
     let container = document.querySelector('#as-popup-container');
     if (!container) {
       container = document.createElement('div');
@@ -481,15 +696,13 @@
         ? `<img class="as-popup-image" src="${imageUrls[content.imageName]}" alt="${content.title}">`
         : '';
 
-    const buttons = content.buttons
-      .map(
-        (button) => `
-      <a href="${button.link}" target="_blank" class="as-popup-btn-bottom" onclick="window.actionSpeak.closePopup('${popupId}')">
-        ${button.label}
+    const buttonHtml = content.button
+      ? `
+      <a href="${content.button.link}" target="_blank" class="as-popup-btn-bottom" onclick="window.actionSpeak.closePopup('${popupId}')">
+        ${content.button.label}
       </a>
     `
-      )
-      .join('');
+      : '';
 
     return `
     <div class="as-popup-overlay" id="${popupId}-overlay">
@@ -506,7 +719,7 @@
         <div class="as-popup-content">
           <h2>${content.title}</h2>
           <p>${content.description}</p>
-          ${buttons}
+          ${buttonHtml}
         </div>
       </div>
     </div>
@@ -514,7 +727,7 @@
   };
 
   const showBasicPopup = (content) => {
-    const container = createPopupContainer();
+    const container = createBasicPopupContainer();
     const popupId = `as-popup-${Date.now()}`;
     const basicPopupElement = createBasicPopupElement(content, popupId);
 
@@ -534,6 +747,112 @@
     const overlay = document.getElementById(`${popupId}-overlay`);
     if (overlay) {
       overlay.style.display = 'none';
+      setTimeout(() => {
+        overlay.remove();
+      }, 300);
+    }
+  };
+
+  /* Mac Window Popup */
+  const createMacWindowPopupContainer = () => {
+    let container = document.querySelector('#as-macwindow-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'as-macwindow-container';
+      container.className = 'as-macwindow-container';
+      document.body.appendChild(container);
+    }
+    return container;
+  };
+
+  const createMacWindowPopupElement = (content, popupId) => {
+    const imageHtml =
+      content.imageName && imageUrls[content.imageName]
+        ? `<img src="${imageUrls[content.imageName]}" alt="${content.title}" style="width: 100%; height: auto;">`
+        : '';
+
+    return `
+      <div class="as-macwindow-overlay" id="${popupId}-overlay">
+        <div class="as-mac-window" id="${popupId}">
+          <div class="title-bar">
+            <div class="buttons">
+              <div class="close"></div>
+              <div class="minimize"></div>
+              <div class="maximize"></div>
+            </div>
+            <div class="title">${content.title}</div>
+          </div>
+          <div class="window">
+            ${imageHtml}
+          </div>
+        </div>
+      </div>
+    `;
+  };
+
+  const showMacWindowPopup = (content) => {
+    const container = createMacWindowPopupContainer();
+    const popupId = `as-macpopup-${Date.now()}`;
+    const macPopupElement = createMacWindowPopupElement(content, popupId);
+
+    container.insertAdjacentHTML('beforeend', macPopupElement);
+
+    const overlay = document.getElementById(`${popupId}-overlay`);
+    const popup = document.getElementById(popupId);
+    const windowContent = popup.querySelector('.window');
+    const image = windowContent.querySelector('img');
+
+    if (image) {
+      image.onload = () => {
+        overlay.classList.add('active');
+        popup.classList.add('active');
+      };
+    } else {
+      overlay.classList.add('active');
+      popup.classList.add('active');
+    }
+
+    const closeButton = popup.querySelector('.close');
+    const minimizeButton = popup.querySelector('.minimize');
+    const maximizeButton = popup.querySelector('.maximize');
+
+    closeButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeMacWindowPopup(popupId);
+    });
+
+    minimizeButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      popup.classList.toggle('minimize');
+      popup.classList.remove('maximize');
+    });
+
+    maximizeButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      popup.classList.toggle('maximize');
+      popup.classList.remove('minimize');
+    });
+
+    if (content.link) {
+      windowContent.style.cursor = 'pointer';
+      windowContent.addEventListener('click', () => {
+        window.open(content.link, '_blank');
+      });
+    }
+
+    overlay.addEventListener('click', (event) => {
+      if (event.target === overlay) {
+        closeMacWindowPopup(popupId);
+      }
+    });
+  };
+
+  const closeMacWindowPopup = (popupId) => {
+    const overlay = document.getElementById(`${popupId}-overlay`);
+    const popup = document.getElementById(popupId);
+    if (overlay && popup) {
+      overlay.classList.remove('active');
+      popup.classList.remove('active');
       setTimeout(() => {
         overlay.remove();
       }, 300);
@@ -640,7 +959,12 @@
     await show('basicPopup', config);
   };
 
+  window.actionSpeak.showMacWindowPopup = async (config) => {
+    await show('macWindowPopup', config);
+  };
+
   window.actionSpeak.closePopup = closePopup;
+  window.actionSpeak.closeMacWindowPopup = closeMacWindowPopup;
 
   window.actionSpeak.imageFetch = async () => {
     try {
