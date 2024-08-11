@@ -368,26 +368,28 @@
 
     .as-mac-window .title-bar {
       background: linear-gradient(to top, rgb(200,197,200), rgb(234,231,234));
-      height: 20px;
+      height: 29px; /* Updated height */
       border-bottom: 1px solid rgb(180, 180, 180);
       width: 100%;
       overflow: hidden;
       position: relative;
+      display: flex; /* Added for vertical centering */
+      align-items: center; /* Added for vertical centering */
     }
 
     .as-mac-window .title-bar .buttons {
       position: absolute;
-      left: 9px;
-      top: 5px;
-      height: 10px;
+      left: 8px;
+      height: 12px;
+      display: flex; /* Added for vertical centering */
+      align-items: center; /* Added for vertical centering */
     }
 
     .as-mac-window .title-bar .buttons div {
-      float: left;
-      width: 10px;
-      height: 10px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
-      margin-right: 4px;
+      margin-right: 5px;
       position: relative;
     }
 
@@ -421,7 +423,7 @@
 
     .as-mac-window .title-bar .buttons .close::before,
     .as-mac-window .title-bar .buttons .close::after {
-      width: 8px;
+      width: 9px;
       height: 1px;
       background: rgb(54,0,0);
       top: 50%;
@@ -437,7 +439,7 @@
     }
 
     .as-mac-window .title-bar .buttons .minimize::before {
-      width: 8px;
+      width: 9px;
       height: 1px;
       background: rgb(134,69,2);
       top: 50%;
@@ -460,11 +462,10 @@
       transition: opacity 0.2s ease;
     }
 
-
     .as-mac-window .title-bar .buttons .maximize::after {
       content: '';
       position: absolute;
-      width: 10px;
+      width: 11px;
       height: 2px;
       background: rgb(42, 200, 51);
       top: 50%;
@@ -474,14 +475,13 @@
       transition: opacity 0.2s ease;
     }
 
-
     .as-mac-window .title-bar .title {
       text-align: center;
-      line-height: 20px;
       font-family: 'Helvetica Neue', helvetica, arial, sans-serif;
       font-size: 13px;
-      font-weight: 300;
+      font-weight: 400;
       color: rgb(34,32,34);
+      width: 100%; /* Added to ensure title takes full width */
     }
 
     .as-mac-window .window {
