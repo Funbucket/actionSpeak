@@ -448,8 +448,8 @@
     .as-mac-window .title-bar .buttons .maximize::before {
       content: '';
       position: absolute;
-      width: 6px;
-      height: 6px;
+      width: 7px;
+      height: 7px;
       background: rgb(11, 84, 1);
       top: 50%;
       left: 50%;
