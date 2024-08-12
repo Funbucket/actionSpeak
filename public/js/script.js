@@ -362,6 +362,7 @@
     .as-mac-window.maximize {
       width: 100% !important;
       max-width: 100% !important;
+      max-height: 100% !important;
       border-radius: 0;
       transform: translate(-50%, -50%) scale(1);
     }
