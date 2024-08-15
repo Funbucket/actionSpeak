@@ -862,8 +862,8 @@
   };
 
   // API
-  const getWebsiteIdByDomain = async (domain) => {
-    const response = await fetch(`${CONFIG.endpoint}/get-website-id`, {
+  const getWebsiteDataByDomain = async (domain) => {
+    const response = await fetch(`${CONFIG.endpoint}/get-website-data`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ domain }),
@@ -872,9 +872,9 @@
 
     const data = await response.json();
     if (response.ok) {
-      return data.website_id;
+      return data;
     }
-    throw new Error('Failed to get website ID');
+    throw new Error('Failed to get website data');
   };
 
   const getImagesByWebsiteId = async (websiteId) => {
@@ -939,9 +939,10 @@
     document.head.appendChild(styleEl);
 
     try {
-      websiteId = await getWebsiteIdByDomain(domain);
-      if (websiteId) {
-        imageUrls = await getImagesByWebsiteId(websiteId);
+      const websiteData = await getWebsiteDataByDomain(domain);
+      if (websiteData.website_id) {
+        websiteId = websiteData.website_id;
+        imageUrls = websiteData.imageUrls;
 
         await Promise.all(Object.values(imageUrls).map(preloadImage));
       } else {
@@ -976,7 +977,7 @@
     try {
       const websiteId = window.location.href.split('/').pop();
       imageUrls = await getImagesByWebsiteId(websiteId);
-      // Preload images
+
       await Promise.all(Object.values(imageUrls).map(preloadImage));
     } catch (error) {
       console.error(error);
