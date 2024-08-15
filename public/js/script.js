@@ -508,6 +508,7 @@
     }
   `;
 
+  // Configuration
   const CONFIG = {
     localStorageVisitorIdName: 'as-visitor-id',
     localStorageImageUrlName: 'as-image-url',
@@ -524,6 +525,7 @@
   let websiteId;
   const domain = document.currentScript.getAttribute('data-domain');
 
+  // Util
   const generateHash = async (message) => {
     const msgStr = JSON.stringify(message);
     const msgUint8 = new TextEncoder().encode(msgStr);
@@ -570,7 +572,7 @@
     }, waitFor || 0);
   };
 
-  /* Toast */
+  // Toast
   const createToastContainer = (position) => {
     let container = document.querySelector('#as-toast-container');
     if (!container) {
@@ -678,7 +680,7 @@
     toastingQueue.forEach((id) => removeToast(id));
   };
 
-  /* Basic Popup */
+  // Basic popup
   const createBasicPopupContainer = () => {
     let container = document.querySelector('#as-popup-container');
     if (!container) {
@@ -753,7 +755,7 @@
     }
   };
 
-  /* Mac Window Popup */
+  // Mac window popup
   const createMacWindowPopupContainer = () => {
     let container = document.querySelector('#as-macwindow-container');
     if (!container) {
@@ -859,6 +861,7 @@
     }
   };
 
+  // API
   const getWebsiteIdByDomain = async (domain) => {
     const response = await fetch(`${CONFIG.endpoint}/get-website-id`, {
       method: 'POST',
@@ -889,6 +892,7 @@
     throw new Error('Failed to get images');
   };
 
+  // Frequency
   const getFrequency = (id) => {
     const frequency = localStorage.getItem(CONFIG.frequencyPrefix + id);
     return frequency ? parseInt(frequency, 10) : 0;
@@ -916,6 +920,7 @@
     return frequency < getMaxFrequency(id);
   };
 
+  // Image load
   const preloadImage = (src) => {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -925,6 +930,7 @@
     });
   };
 
+  // Initialization
   const initialize = async () => {
     getVisitorId();
 
@@ -936,8 +942,7 @@
       websiteId = await getWebsiteIdByDomain(domain);
       if (websiteId) {
         imageUrls = await getImagesByWebsiteId(websiteId);
-        console.log('Image URLs:', imageUrls); // 이미지 URL 로깅
-        // 이미지 프리로드
+
         await Promise.all(Object.values(imageUrls).map(preloadImage));
       } else {
         console.error('Website is not registered');
@@ -949,6 +954,7 @@
     window.actionSpeak.isReady = true;
   };
 
+  // Global
   window.actionSpeak = window.actionSpeak || {};
 
   window.actionSpeak.showToast = async (config) => {
@@ -970,7 +976,7 @@
     try {
       const websiteId = window.location.href.split('/').pop();
       imageUrls = await getImagesByWebsiteId(websiteId);
-      // 이미지 프리로드
+      // Preload images
       await Promise.all(Object.values(imageUrls).map(preloadImage));
     } catch (error) {
       console.error(error);
