@@ -219,7 +219,7 @@ const ImageManagementSection: React.FC<ImageManagementSectionProps> = ({ website
                 <div className='flex items-center gap-4'>
                   <Image
                     src={image.image_url}
-                    alt={image.description || 'Uploaded image'}
+                    alt='Uploaded image'
                     width={64}
                     height={64}
                     className='h-14 w-14 rounded-md border border-gray-300 object-cover object-center'
