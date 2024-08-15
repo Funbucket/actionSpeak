@@ -47,27 +47,24 @@ export type Database = {
       website_images: {
         Row: {
           created_at: string
-          description: string | null
           id: string
           image_url: string
           name: string
-          website_id: string | null
+          website_id: string
         }
         Insert: {
           created_at?: string
-          description?: string | null
           id?: string
           image_url: string
           name: string
-          website_id?: string | null
+          website_id: string
         }
         Update: {
           created_at?: string
-          description?: string | null
           id?: string
           image_url?: string
           name?: string
-          website_id?: string | null
+          website_id?: string
         }
         Relationships: [
           {
@@ -101,6 +98,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "website_metrics_website_id_fkey"
+            columns: ["website_id"]
+            isOneToOne: false
+            referencedRelation: "websites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      website_popups: {
+        Row: {
+          content: Json | null
+          created_at: string
+          duration: number | null
+          frequency: number | null
+          id: string
+          path: string | null
+          popup_type: string
+          wait_for: number | null
+          website_id: string
+        }
+        Insert: {
+          content?: Json | null
+          created_at?: string
+          duration?: number | null
+          frequency?: number | null
+          id?: string
+          path?: string | null
+          popup_type: string
+          wait_for?: number | null
+          website_id: string
+        }
+        Update: {
+          content?: Json | null
+          created_at?: string
+          duration?: number | null
+          frequency?: number | null
+          id?: string
+          path?: string | null
+          popup_type?: string
+          wait_for?: number | null
+          website_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "website_popups_website_id_fkey"
             columns: ["website_id"]
             isOneToOne: false
             referencedRelation: "websites"

@@ -32,6 +32,16 @@ export async function POST(req: NextRequest) {
 
     const websiteId = websiteData.id;
 
+    // Second, get the popup data for this website_id
+    const { data: popupOption, error: popupError } = await supabase
+      .from('website_popups')
+      .select('popup_type, wait_for, frequency, duration, content, path')
+      .eq('website_id', websiteId);
+
+    if (popupError) {
+      throw popupError;
+    }
+
     // Then, get the images for this website_id
     const { data: imageData, error: imageError } = await supabase
       .from('website_images')
@@ -47,7 +57,12 @@ export async function POST(req: NextRequest) {
       imageUrls[item.name] = item.image_url;
     });
 
-    return setCorsHeaders(NextResponse.json({ website_id: websiteId, imageUrls }, { status: 200 }));
+    return setCorsHeaders(
+      NextResponse.json(
+        { website_id: websiteId, image_urls: imageUrls, popup_option: popupOption },
+        { status: 200 }
+      )
+    );
   } catch (error) {
     return setCorsHeaders(NextResponse.json({ error: error }, { status: 500 }));
   }
