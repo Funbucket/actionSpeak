@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 
-import WebsiteMetricsPage from '@/components/dashboard/WebsiteMetricsPage';
+import WebsiteMetricsPage from '@/components/dashboard/website/WebsiteMetricsPage';
 
 const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
   return (
