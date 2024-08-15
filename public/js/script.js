@@ -942,7 +942,7 @@
       const websiteData = await getWebsiteDataByDomain(domain);
       if (websiteData.website_id) {
         websiteId = websiteData.website_id;
-        popupData = websiteData.popup_option;
+        popupOption = websiteData.popup_option;
         imageUrls = websiteData.image_urls;
 
         await Promise.all(Object.values(imageUrls).map(preloadImage));

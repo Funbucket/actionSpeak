@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     // Second, get the popup data for this website_id
     const { data: popupOption, error: popupError } = await supabase
       .from('website_popups')
-      .select('popup_type, wait_for, frequency, duration, content, path')
+      .select('*')
       .eq('website_id', websiteId);
 
     if (popupError) {
