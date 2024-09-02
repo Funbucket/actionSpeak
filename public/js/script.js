@@ -572,27 +572,6 @@
     }, waitFor || 0);
   };
 
-  // 플레이스홀더 이미지 생성 함수 추가
-  const createPlaceholderImage = (width, height) => {
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#E0E0E0';
-    ctx.fillRect(0, 0, width, height);
-    return canvas.toDataURL();
-  };
-
-  // 이미지 로드 함수 수정
-  const loadImage = (src, placeholder) => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = () => resolve(placeholder);
-      img.src = src;
-    });
-  };
-
   // Toast
   const createToastContainer = (position) => {
     let container = document.querySelector('#as-toast-container');
@@ -609,10 +588,9 @@
   const createToastElement = (content) => {
     let image = '';
     if (content.imageName && imageUrls[content.imageName]) {
-      const placeholderSrc = createPlaceholderImage(100, 100); // 적절한 크기로 조정
       image = `
         <div class="as-toast-image-container">
-          <img class="as-toast-image" src="${placeholderSrc}" data-src="${imageUrls[content.imageName]}" alt="" />
+          <img class="as-toast-image" src="${imageUrls[content.imageName]}" alt="" />
         </div>
       `;
     }
@@ -672,14 +650,6 @@
       });
     }
 
-    // 이미지 로드
-    const img = toast.querySelector('.as-toast-image');
-    if (img) {
-      loadImage(img.dataset.src, img.src).then((loadedImg) => {
-        img.src = loadedImg.src;
-      });
-    }
-
     setTimeout(() => {
       removeToast(toastId, false);
     }, duration || 10000);
@@ -723,10 +693,9 @@
   };
 
   const createBasicPopupElement = (content, popupId) => {
-    const placeholderSrc = createPlaceholderImage(400, 300); // 적절한 크기로 조정
     const imageHtml =
       content.imageName && imageUrls[content.imageName]
-        ? `<img class="as-popup-image" src="${placeholderSrc}" data-src="${imageUrls[content.imageName]}" alt="${content.title}">`
+        ? `<img class="as-popup-image" src="${imageUrls[content.imageName]}" alt="${content.title}">`
         : '';
 
     const buttonHtml = content.button
@@ -769,14 +738,6 @@
     const overlay = document.getElementById(`${popupId}-overlay`);
     overlay.style.display = 'flex';
 
-    // 이미지 로드
-    const img = overlay.querySelector('.as-popup-image');
-    if (img) {
-      loadImage(img.dataset.src, img.src).then((loadedImg) => {
-        img.src = loadedImg.src;
-      });
-    }
-
     overlay.addEventListener('click', (event) => {
       if (event.target === overlay) {
         window.actionSpeak.closePopup(popupId);
@@ -807,10 +768,9 @@
   };
 
   const createMacWindowPopupElement = (content, popupId) => {
-    const placeholderSrc = createPlaceholderImage(400, 300); // 적절한 크기로 조정
     const imageHtml =
       content.imageName && imageUrls[content.imageName]
-        ? `<img src="${placeholderSrc}" data-src="${imageUrls[content.imageName]}" alt="${content.title}" style="width: 100%; height: auto;">`
+        ? `<img src="${imageUrls[content.imageName]}" alt="${content.title}" style="width: 100%; height: auto;">`
         : '';
 
     return `
@@ -844,13 +804,14 @@
     const windowContent = popup.querySelector('.window');
     const image = windowContent.querySelector('img');
 
-    overlay.classList.add('active');
-    popup.classList.add('active');
-
     if (image) {
-      loadImage(image.dataset.src, image.src).then((loadedImg) => {
-        image.src = loadedImg.src;
-      });
+      image.onload = () => {
+        overlay.classList.add('active');
+        popup.classList.add('active');
+      };
+    } else {
+      overlay.classList.add('active');
+      popup.classList.add('active');
     }
 
     const closeButton = popup.querySelector('.close');
@@ -959,10 +920,21 @@
     return frequency < getMaxFrequency(id);
   };
 
-  // Handle Popup Option
+  // Image load
+  const preloadImage = (src) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = resolve;
+      img.onerror = reject;
+      img.src = src;
+    });
+  };
+
+  // Handle Popup Opion
   const handlePopupOption = (popupOption) => {
     const { popup_type, wait_for, frequency, duration, content, path } = popupOption;
 
+    // 현재 페이지 경로가 지정된 path와 일치하거나 path가 null인 경우에만 팝업 표시
     if (!path || window.location.pathname === path) {
       const config = {
         options: {
@@ -1005,6 +977,9 @@
         websiteId = websiteData.website_id;
         imageUrls = websiteData.image_urls;
 
+        await Promise.all(Object.values(imageUrls).map(preloadImage));
+
+        // 팝업 옵션이 있는 경우 처리
         if (websiteData.popup_option) {
           handlePopupOption(websiteData.popup_option);
         }
@@ -1040,6 +1015,8 @@
     try {
       const websiteId = window.location.href.split('/').pop();
       imageUrls = await getImagesByWebsiteId(websiteId);
+
+      await Promise.all(Object.values(imageUrls).map(preloadImage));
     } catch (error) {
       console.error(error);
     }
