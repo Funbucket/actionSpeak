@@ -930,6 +930,39 @@
     });
   };
 
+  // Handle Popup Opion
+  const handlePopupOption = (popupOption) => {
+    const { popup_type, wait_for, frequency, duration, content, path } = popupOption;
+
+    // 현재 페이지 경로가 지정된 path와 일치하거나 path가 null인 경우에만 팝업 표시
+    if (!path || window.location.pathname === path) {
+      const config = {
+        options: {
+          waitFor: wait_for,
+          frequency: frequency,
+          duration: duration,
+        },
+        ...content,
+      };
+
+      setTimeout(() => {
+        switch (popup_type) {
+          case 'toast':
+            window.actionSpeak.showToast(config);
+            break;
+          case 'basicPopup':
+            window.actionSpeak.showBasicPopup(config);
+            break;
+          case 'macWindowPopup':
+            window.actionSpeak.showMacWindowPopup(config);
+            break;
+          default:
+            console.warn('Unknown popup type:', popup_type);
+        }
+      }, wait_for || 0);
+    }
+  };
+
   // Initialization
   const initialize = async () => {
     getVisitorId();
@@ -942,10 +975,14 @@
       const websiteData = await getWebsiteDataByDomain(domain);
       if (websiteData.website_id) {
         websiteId = websiteData.website_id;
-        popupOption = websiteData.popup_option;
         imageUrls = websiteData.image_urls;
 
         await Promise.all(Object.values(imageUrls).map(preloadImage));
+
+        // 팝업 옵션이 있는 경우 처리
+        if (websiteData.popup_option) {
+          handlePopupOption(websiteData.popup_option);
+        }
       } else {
         console.error('Website is not registered');
       }
