@@ -8,7 +8,7 @@
     /* Toast styles */
     .as-toast-container {
       position: fixed;
-      z-index: 2147483647;
+      z-index: 49;
       left: 1.5rem;
       right: 1.5rem;
       user-select: none;
@@ -44,7 +44,7 @@
       border-radius: 10px;
       font-size: 1rem;
       line-height: 1.5;
-      z-index: 50;
+      z-index: 48;
       color: rgb(47, 48, 60);
       box-sizing: border-box;
       text-align: left;
@@ -113,7 +113,7 @@
       font-size: 1.25rem;
       line-height: 1;
       padding: 0;
-      z-index: 1;
+      z-index: 48;
     }
 
     .as-toast-content-wrapper {
@@ -145,7 +145,7 @@
       width: 100%;
       height: 100%;
       pointer-events: none;
-      z-index: 2147483647;
+      z-47: 48;
     }
 
     .as-popup-overlay {
@@ -304,7 +304,7 @@
       width: 100%;
       height: 100%;
       pointer-events: none;
-      z-index: 2147483647;
+      z-index: 47;
     }
 
     .as-macwindow-overlay {

@@ -107,43 +107,43 @@ export type Database = {
       }
       website_popups: {
         Row: {
-          content: Json | null
+          content: Json
           created_at: string
           duration: number | null
-          frequency: number | null
+          frequency: number
           id: string
           path: string | null
           popup_type: string
-          wait_for: number | null
+          wait_for: number
           website_id: string
         }
         Insert: {
-          content?: Json | null
+          content: Json
           created_at?: string
           duration?: number | null
-          frequency?: number | null
+          frequency: number
           id?: string
           path?: string | null
           popup_type: string
-          wait_for?: number | null
+          wait_for: number
           website_id: string
         }
         Update: {
-          content?: Json | null
+          content?: Json
           created_at?: string
           duration?: number | null
-          frequency?: number | null
+          frequency?: number
           id?: string
           path?: string | null
           popup_type?: string
-          wait_for?: number | null
+          wait_for?: number
           website_id?: string
         }
         Relationships: [
           {
             foreignKeyName: "website_popups_website_id_fkey"
             columns: ["website_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "websites"
             referencedColumns: ["id"]
           },

@@ -1,6 +1,6 @@
-import ImageManagementSection from './ImageManagementSection';
-import InstallationSection from './InstallationSection';
-import PopupManagementSection from './PopupManagementSection';
+import ImageManagementSection from './imageManagement/ImageManagementSection';
+import InstallationSection from './installation/InstallationSection';
+import PopupManagementSection from './popupManagement/PopupManagementSection';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
