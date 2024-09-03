@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 
-import DashboardPage from '@/components/dashboard/DashboardPage';
+import DashboardPage from '@/components/dashboardPage';
 
 const Dashboard = () => {
   return (

@@ -2,7 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 
+import BasicPopupSettingsSection from './BasicPopupSettingsSection';
 import ToastSettingsSection from './ToastSettingsSection';
+import BasicPopup from '@/components/popups/basicPopup';
 import Toast from '@/components/popups/toast';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,9 +22,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useToast } from '@/components/ui/use-toast';
 import { useWebsiteImages } from '@/hook/useWebsiteImages';
 import { useWebsitePopups } from '@/hook/useWebsitePopups';
-import { PopupContent, PopupData, ToastContent } from '@/lib/types/popup';
+import { BasicPopupContent, PopupContent, PopupData, ToastContent } from '@/lib/types/popup';
 
 interface PopupManagementSectionProps {
   websiteId: string;
@@ -47,12 +50,12 @@ const initialPopupData = (websiteId: string): PopupData => ({
 const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ websiteId }) => {
   const { popup, upsertPopup, deletePopup } = useWebsitePopups(websiteId);
   const { deleteImage, addImage, getImageByName, images } = useWebsiteImages(websiteId);
-
   const [popupData, setPopupData] = useState<PopupData>(initialPopupData(websiteId));
   const [newImageFile, setNewImageFile] = useState<File | undefined>(undefined);
   const [isImageRemoved, setIsImageRemoved] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+
+  const { toast } = useToast();
 
   useEffect(() => {
     if (popup) {
@@ -73,7 +76,7 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
   // 팝업 저장 핸들러 (원본 로직 유지)
   const handleSave = async () => {
     setIsLoading(true);
-    setError(null);
+
     try {
       let updatedPopupData: PopupData = { ...popupData };
 
@@ -110,9 +113,19 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
       setPopupData(savedPopup);
       setNewImageFile(undefined);
       setIsImageRemoved(false);
+
+      toast({
+        title: '저장 성공',
+        description: '팝업이 성공적으로 저장되었습니다.',
+      });
     } catch (error) {
       console.error('Error saving popup:', error);
-      setError('팝업 저장 중 오류가 발생했습니다. 다시 시도해 주세요.');
+
+      toast({
+        variant: 'destructive',
+        title: '저장 실패',
+        description: '팝업 저장 중 오류가 발생했습니다. 다시 시도해 주세요.',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -121,7 +134,7 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
   // 팝업 삭제 핸들러
   const handleDelete = async () => {
     setIsLoading(true);
-    setError(null);
+
     try {
       if (popup?.content.imageName) {
         await deleteImage({ imageName: popup.content.imageName, websiteId });
@@ -130,18 +143,24 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
       setPopupData(initialPopupData(websiteId));
       setNewImageFile(undefined);
       setIsImageRemoved(false);
+
+      toast({
+        title: '삭제 성공',
+        description: '팝업이 성공적으로 삭제되었습니다.',
+      });
     } catch (error) {
       console.error('Error deleting popup:', error);
-      setError('팝업 삭제 중 오류가 발생했습니다. 다시 시도해 주세요.');
+      toast({
+        variant: 'destructive',
+        title: '삭제 실패',
+        description: '팝업 삭제 중 오류가 발생했습니다. 다시 시도해 주세요.',
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  // 팝업 미리보기 렌더링
   const renderPopupPreview = () => {
-    if (popupData.popup_type !== 'toast') return null;
-
     const imageData = popupData.content.imageName
       ? getImageByName(popupData.content.imageName)
       : null;
@@ -151,7 +170,34 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
         ? { image_url: imageData.image_url, name: imageData.name }
         : null;
 
-    return <Toast content={popupData.content as ToastContent} image={image} />;
+    switch (popupData.popup_type) {
+      case 'toast':
+        return <Toast content={popupData.content as ToastContent} image={image} />;
+      case 'basicPopup':
+        return <BasicPopup content={popupData.content as BasicPopupContent} image={image} />;
+      default:
+        return null;
+    }
+  };
+
+  const renderSettingsSection = () => {
+    const commonProps = {
+      popupData: popupData,
+      onPopupDataChange: handlePopupDataChange,
+      onImageChange: (file: File | undefined) => {
+        setNewImageFile(file);
+        setIsImageRemoved(!file);
+      },
+    };
+
+    switch (popupData.popup_type) {
+      case 'toast':
+        return <ToastSettingsSection {...commonProps} />;
+      case 'basicPopup':
+        return <BasicPopupSettingsSection {...commonProps} />;
+      default:
+        return null;
+    }
   };
 
   return (
@@ -174,6 +220,7 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value='toast'>푸시 팝업</SelectItem>
+                <SelectItem value='basicPopup'>기본 팝업</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -185,23 +232,20 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
         </div>
 
         <h2 className='mb-4 mt-8 text-xl font-bold'>설정</h2>
-        <ToastSettingsSection
-          popupData={popupData}
-          onPopupDataChange={handlePopupDataChange}
-          onImageChange={(file: File | undefined) => {
-            setNewImageFile(file);
-            setIsImageRemoved(!file);
-          }}
-        />
+        {renderSettingsSection()}
       </CardContent>
       <CardFooter className='flex justify-end space-x-2'>
-        {error && <p className='mr-auto text-red-500'>{error}</p>}
-        <Button variant='default' onClick={handleSave} disabled={isLoading}>
-          {isLoading ? '저장 중...' : '저장하기'}
+        <Button isLoading={isLoading} onClick={handleSave} loadingText='저장 중...'>
+          저장하기
         </Button>
         {popup && (
-          <Button variant='destructive' onClick={handleDelete} disabled={isLoading}>
-            {isLoading ? '삭제 중...' : '삭제하기'}
+          <Button
+            isLoading={isLoading}
+            variant='destructive'
+            onClick={handleDelete}
+            loadingText='삭제 중...'
+          >
+            삭제하기
           </Button>
         )}
       </CardFooter>

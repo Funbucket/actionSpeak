@@ -2,56 +2,70 @@ import React from 'react';
 
 import Image from 'next/image';
 
-import { Button } from '@/components/ui/button';
-import { useWebsiteImages } from '@/hook/useWebsiteImages';
 import { BasicPopupContent } from '@/lib/types/popup';
-import { ImagePlus } from 'lucide-react';
+import { ImageIcon, X } from 'lucide-react';
 
 interface BasicPopupProps {
   content: BasicPopupContent;
-  websiteId: string;
+  image: { image_url: string; name: string } | null;
+  tempImageUrl?: string;
 }
 
-const BasicPopup: React.FC<BasicPopupProps> = ({ content, websiteId }) => {
-  const { images } = useWebsiteImages(websiteId);
-
-  const image = images.find((img) => img.name === content.imageName);
+const BasicPopup: React.FC<BasicPopupProps> = ({ content, image, tempImageUrl }) => {
+  const handleClick = () => {
+    if (content.button?.link && content.button.link.includes('http')) {
+      window.open(content.button.link, '_blank');
+    }
+  };
 
   return (
-    <div className='as-basic-popup'>
-      <div className='as-basic-popup-content'>
-        <button className='as-basic-popup-close-btn' aria-label='Close'>
-          &times;
+    <div className='as-popup-overlay'>
+      <div className='as-popup'>
+        <button className='as-popup-close-btn' aria-label='Close'>
+          <X size={24} />
         </button>
-        <div className='as-basic-popup-content-wrapper'>
-          {image ? (
-            <div className='as-basic-popup-image-container'>
+        <div className='as-popup-content-wrapper'>
+          <div className='as-popup-image-container'>
+            {tempImageUrl ? (
+              <Image
+                src={tempImageUrl}
+                alt='Temporary image'
+                className='h-full w-full object-cover'
+                width={100}
+                height={100}
+              />
+            ) : image ? (
               <Image
                 src={image.image_url}
-                alt={content.imageName || 'Popup image'}
+                alt={image.name}
                 className='h-full w-full object-cover'
-                width={300}
-                height={200}
+                width={100}
+                height={100}
               />
-            </div>
-          ) : (
-            <div className='as-basic-popup-image-container'>
-              <div className='as-basic-popup-image-overlay'>
-                <Button variant='ghost' size='icon'>
-                  <ImagePlus />
-                </Button>
+            ) : (
+              <div className='flex h-full w-full items-center justify-center object-cover'>
+                <ImageIcon className='h-3/4 w-3/4' />
               </div>
+            )}
+          </div>
+          <div className='as-popup-content'>
+            <div className={`as-popup-content-title ${!content.title && 'as-popup-placeholder'}`}>
+              {content.title || '제목을 입력하세요'}
             </div>
-          )}
-          <div className='as-basic-popup-text-content'>
-            <h2 className='as-basic-popup-title'>{content.title}</h2>
-            <p className='as-basic-popup-description'>{content.description}</p>
-            <Button
-              className='as-basic-popup-button'
-              onClick={() => window.open(content.button.link, '_blank')}
+            <div
+              className={`as-popup-content-description ${!content.description && 'as-popup-placeholder'}`}
             >
-              {content.button.label}
-            </Button>
+              {content.description || '설명을 입력하세요'}
+            </div>
+            {content.button && (
+              <button
+                className='as-popup-btn-bottom'
+                onClick={handleClick}
+                style={{ cursor: content.button.link ? 'pointer' : 'default' }}
+              >
+                {content.button.label || '버튼 텍스트를 입력하세요'}
+              </button>
+            )}
           </div>
         </div>
       </div>

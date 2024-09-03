@@ -145,7 +145,7 @@
       width: 100%;
       height: 100%;
       pointer-events: none;
-      z-47: 48;
+      z-index: 48;
     }
 
     .as-popup-overlay {

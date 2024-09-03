@@ -1,29 +1,19 @@
-'use client';
-
 import React from 'react';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { PopupData, ToastContent } from '@/lib/types/popup';
+import { BasicPopupContent, PopupData } from '@/lib/types/popup';
 import { CircleHelp } from 'lucide-react';
 
-interface ToastSettingsSectionProps {
+interface BasicPopupSettingsSectionProps {
   popupData: PopupData;
   onPopupDataChange: (newData: Partial<PopupData>) => void;
   onImageChange: (file: File) => void;
 }
 
-const ToastSettingsSection: React.FC<ToastSettingsSectionProps> = ({
+const BasicPopupSettingsSection: React.FC<BasicPopupSettingsSectionProps> = ({
   popupData,
   onPopupDataChange,
   onImageChange,
@@ -31,6 +21,16 @@ const ToastSettingsSection: React.FC<ToastSettingsSectionProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     onPopupDataChange({ content: { ...popupData.content, [name]: value } });
+  };
+
+  const handleButtonChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    onPopupDataChange({
+      content: {
+        ...popupData.content,
+        button: { ...(popupData.content as BasicPopupContent).button, [name]: value },
+      },
+    });
   };
 
   const handleSettingsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,7 +45,7 @@ const ToastSettingsSection: React.FC<ToastSettingsSectionProps> = ({
     }
   };
 
-  const toastContent = popupData.content as ToastContent;
+  const basicPopupContent = popupData.content as BasicPopupContent;
 
   return (
     <div className='space-y-4'>
@@ -54,7 +54,7 @@ const ToastSettingsSection: React.FC<ToastSettingsSectionProps> = ({
         <Input
           id='title'
           name='title'
-          value={toastContent.title}
+          value={basicPopupContent.title}
           onChange={handleInputChange}
           placeholder='제목을 입력하세요'
         />
@@ -64,47 +64,30 @@ const ToastSettingsSection: React.FC<ToastSettingsSectionProps> = ({
         <Textarea
           id='description'
           name='description'
-          value={toastContent.description}
+          value={basicPopupContent.description}
           onChange={handleInputChange}
           placeholder='설명을 입력하세요'
         />
       </div>
       <div className='grid gap-2'>
-        <Label htmlFor='link'>링크</Label>
+        <Label htmlFor='button.label'>버튼 텍스트</Label>
         <Input
-          id='link'
-          name='link'
-          value={toastContent.link || ''}
-          onChange={handleInputChange}
-          placeholder='연결할 링크를 입력하세요.'
-        />
-      </div>
-      <div className='flex items-center space-x-2'>
-        <Label htmlFor='closeButton'>닫기 버튼 표시</Label>
-        <Switch
-          id='closeButton'
-          checked={toastContent.closeButton}
-          onCheckedChange={(checked) =>
-            onPopupDataChange({ content: { ...toastContent, closeButton: checked } })
-          }
+          id='button.label'
+          name='label'
+          value={basicPopupContent.button?.label || ''}
+          onChange={handleButtonChange}
+          placeholder='버튼 텍스트를 입력하세요'
         />
       </div>
       <div className='grid gap-2'>
-        <Label htmlFor='position'>위치</Label>
-        <Select
-          value={toastContent.position}
-          onValueChange={(value: 'top' | 'bottom') =>
-            onPopupDataChange({ content: { ...toastContent, position: value } })
-          }
-        >
-          <SelectTrigger id='position'>
-            <SelectValue placeholder='위치 선택' />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value='top'>상단</SelectItem>
-            <SelectItem value='bottom'>하단</SelectItem>
-          </SelectContent>
-        </Select>
+        <Label htmlFor='button.link'>버튼 링크</Label>
+        <Input
+          id='button.link'
+          name='link'
+          value={basicPopupContent.button?.link || ''}
+          onChange={handleButtonChange}
+          placeholder='버튼 링크를 입력하세요'
+        />
       </div>
       <div className='grid gap-2'>
         <Label htmlFor='image'>이미지</Label>
@@ -183,4 +166,4 @@ const ToastSettingsSection: React.FC<ToastSettingsSectionProps> = ({
   );
 };
 
-export default ToastSettingsSection;
+export default BasicPopupSettingsSection;

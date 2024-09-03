@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
       .from('website_popups')
       .select('popup_type, wait_for, frequency, duration, content, path')
       .eq('website_id', websiteId)
-      .single();
+      .maybeSingle();
 
     if (popupError) {
       throw popupError;
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
 
     return setCorsHeaders(
       NextResponse.json(
-        { website_id: websiteId, image_urls: imageUrls, popup_option: popupOption },
+        { website_id: websiteId, image_urls: imageUrls, popup_option: popupOption || null },
         { status: 200 }
       )
     );

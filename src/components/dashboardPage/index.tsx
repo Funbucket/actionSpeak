@@ -34,6 +34,7 @@ const RenderSkeletonCards = ({ count }: { count: number }) => (
 export default function DashboardPage() {
   const { toast } = useToast();
   const [domain, setDomain] = useState('');
+  const [isAddingWebsite, setIsAddingWebsite] = useState(false);
   const { websites, allWebsites, isLoading, addWebsite, deleteWebsite } = useWebsites();
   const router = useRouter();
 
@@ -71,6 +72,7 @@ export default function DashboardPage() {
       return;
     }
 
+    setIsAddingWebsite(true);
     try {
       await addWebsite(cleanDomain);
       toast({
@@ -92,15 +94,32 @@ export default function DashboardPage() {
       console.error('Error adding website:', error);
       if (error.message.includes('Non-premium users can only add up to 2 websites')) {
         router.push('/contact');
+      } else {
+        toast({
+          variant: 'destructive',
+          title: '웹사이트 추가 실패 😞',
+          description: '웹사이트를 추가하는 중 오류가 발생했습니다. 다시 시도해 주세요.',
+        });
       }
+    } finally {
+      setIsAddingWebsite(false);
     }
   };
 
   const handleDeleteWebsite = async (websiteId: string) => {
     try {
       await deleteWebsite(websiteId);
+      toast({
+        title: '프로젝트 제거 🗑️',
+        description: '웹사이트가 성공적으로 제거되었습니다.',
+      });
     } catch (error: any) {
       console.error('Error deleting website:', error);
+      toast({
+        variant: 'destructive',
+        title: '웹사이트 제거 실패 😞',
+        description: '웹사이트를 제거하는 중 오류가 발생했습니다. 다시 시도해 주세요.',
+      });
     }
   };
 
@@ -116,8 +135,15 @@ export default function DashboardPage() {
             className='flex-1 bg-background'
             value={domain}
             onChange={(e) => setDomain(e.target.value)}
+            disabled={isAddingWebsite}
           />
-          <Button type='submit' disabled={isLoading} className='w-full sm:w-auto'>
+          <Button
+            type='submit'
+            disabled={isLoading || isAddingWebsite}
+            className='w-full sm:w-auto'
+            isLoading={isAddingWebsite}
+            loadingText='추가 중...'
+          >
             추가하기
           </Button>
         </form>
@@ -147,14 +173,7 @@ export default function DashboardPage() {
                   <div className='grid gap-1'>
                     <CardTitle className='text-base sm:text-lg'>{site.domain}</CardTitle>
                   </div>
-                  <AlertDialogComponent
-                    onDelete={() => {
-                      handleDeleteWebsite(site.id);
-                      toast({
-                        title: '프로젝트 제거 🗑️',
-                      });
-                    }}
-                  />
+                  <AlertDialogComponent onDelete={() => handleDeleteWebsite(site.id)} />
                 </CardHeader>
                 <CardContent className='grid gap-2'>
                   <div className='flex items-center gap-1 text-sm'>
