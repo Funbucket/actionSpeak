@@ -48,8 +48,9 @@ const initialPopupData = (websiteId: string): PopupData => ({
     position: 'bottom',
     imageName: undefined,
   } as ToastContent,
-  wait_for: 1000,
+  duration: 10000,
   frequency: 2,
+  wait_for: 0,
 });
 
 const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ websiteId }) => {
