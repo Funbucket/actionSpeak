@@ -848,6 +848,18 @@
     });
   };
 
+  const closeMacWindowPopup = (popupId) => {
+    const overlay = document.getElementById(`${popupId}-overlay`);
+    const popup = document.getElementById(popupId);
+    if (overlay && popup) {
+      overlay.classList.remove('active');
+      popup.classList.remove('active');
+      setTimeout(() => {
+        overlay.remove();
+      }, 300);
+    }
+  };
+
   // API
   const getWebsiteDataByDomain = async (domain) => {
     const response = await fetch(`${CONFIG.endpoint}/get-website-data`, {

@@ -11,12 +11,6 @@ interface ToastProps {
 }
 
 const Toast: React.FC<ToastProps> = ({ content, image, tempImageUrl }) => {
-  const handleClick = () => {
-    if (content.link && content.link.includes('http')) {
-      window.open(content.link, '_blank');
-    }
-  };
-
   const ContentWrapper = content.link && content.link.includes('http') ? 'a' : 'div';
 
   return (

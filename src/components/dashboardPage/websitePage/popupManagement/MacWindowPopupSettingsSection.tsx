@@ -2,7 +2,6 @@ import React from 'react';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { MacWindowPopupContent, PopupData } from '@/lib/types/popup';
 import { CircleHelp } from 'lucide-react';
