@@ -582,7 +582,7 @@
   border-radius: 10px;
   font-size: 1rem;
   line-height: 1.5;
-  z-index: 999;
+  z-index: 49;
   color: rgb(47, 48, 60);
   box-sizing: border-box;
   text-align: left;
@@ -599,7 +599,7 @@
   font-size: 1.25rem;
   line-height: 1;
   padding: 0;
-  z-index: 999;
+  z-index: 49;
 }
 
 .preview-container {
