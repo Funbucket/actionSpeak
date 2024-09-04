@@ -16,12 +16,12 @@ const Toast: React.FC<ToastProps> = ({ content, image, tempImageUrl }) => {
   return (
     <div className='as-toast'>
       <ContentWrapper
-        className={`as-toast-content ${content.link ? 'as-toast-content-link' : ''}`}
+        className={`preview-as-toast-content ${content.link ? 'as-toast-content-link' : ''}`}
         role={content.link ? 'button' : undefined}
         style={{ cursor: content.link ? 'pointer' : 'default' }}
       >
         {content.closeButton && (
-          <button className='as-toast-close-btn' aria-label='Close'>
+          <button className='preview-as-toast-close-btn' aria-label='Close'>
             &times;
           </button>
         )}
