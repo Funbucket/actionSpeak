@@ -64,7 +64,7 @@ const InstallationSection: React.FC<InstallationSectionProps> = ({ websiteId }) 
     <section className='mx-auto mt-16 max-w-2xl px-6 py-8'>
       <Card>
         <CardHeader>
-          <CardTitle className='text-2xl font-bold'>actionSpeak 설치하기</CardTitle>
+          <CardTitle className='text-xl font-bold sm:text-2xl'>actionSpeak 설치하기</CardTitle>
           <CardDescription>
             웹사이트의 <code>&lt;head&gt;</code> 에 아래 코드를 붙여넣으세요.
           </CardDescription>

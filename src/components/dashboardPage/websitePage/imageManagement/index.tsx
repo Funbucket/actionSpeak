@@ -119,12 +119,12 @@ const ImageManagementSection: React.FC<{ websiteId: string }> = ({ websiteId }) 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className='text-2xl font-bold'>이미지 관리</CardTitle>
+        <CardTitle className='text-xl font-bold sm:text-2xl'>이미지 관리</CardTitle>
         <CardDescription>팝업에 사용할 이미지를 관리할 수 있어요.</CardDescription>
       </CardHeader>
       <CardContent>
         <ImageUploadForm onUpload={handleUpload} />
-        <h2 className='mb-4 mt-8 text-xl font-bold'>이미지 목록</h2>
+        <h2 className='mb-4 mt-8 text-base font-bold sm:text-xl'>이미지 목록</h2>
         {isLoading ? (
           <RenderSkeletonImages count={5} />
         ) : images.length === 0 ? (

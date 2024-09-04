@@ -208,7 +208,7 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
   return (
     <Card>
       <CardHeader>
-        <CardTitle className='text-2xl font-bold'>팝업 관리</CardTitle>
+        <CardTitle className='text-xl font-bold sm:text-2xl'>팝업 관리</CardTitle>
         <CardDescription>웹사이트의 팝업을 관리할 수 있어요.</CardDescription>
       </CardHeader>
       <CardContent>
@@ -232,12 +232,12 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
           </div>
         )}
 
-        <h2 className='mb-4 mt-8 text-xl font-bold'>미리보기</h2>
+        <h2 className='mb-4 mt-8 text-base font-bold sm:text-xl'>미리보기</h2>
         <div className='border-base-content/10 space-y-6 rounded-2xl border-2 border-dashed p-6'>
           {renderPopupPreview()}
         </div>
 
-        <h2 className='mb-4 mt-8 text-xl font-bold'>설정</h2>
+        <h2 className='mb-4 mt-8 text-base font-bold sm:text-xl'>설정</h2>
         {renderSettingsSection()}
       </CardContent>
       <CardFooter className='flex justify-end space-x-2'>

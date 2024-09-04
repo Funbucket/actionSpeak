@@ -16,7 +16,7 @@ const HeroSection = () => (
         </p>
         <div className='flex space-x-4'>
           <Button asChild>
-            <Link href='/dashboard'>바로 팝업 추가하기</Link>
+            <Link href='/dashboard'>팝업 추가하러 가기</Link>
           </Button>
         </div>
       </div>

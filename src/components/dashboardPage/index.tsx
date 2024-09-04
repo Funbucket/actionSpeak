@@ -76,18 +76,8 @@ export default function DashboardPage() {
     try {
       await addWebsite(cleanDomain);
       toast({
-        title: '성공적인 프로젝트 생성 🚀',
-        description: '이제 설치하러 가볼까요',
-        action: (
-          <ToastAction
-            altText='프로젝트 설치 및 설정하기'
-            onClick={() => {
-              router.push(`/dashboard/${cleanDomain}`);
-            }}
-          >
-            설치하기
-          </ToastAction>
-        ),
+        title: '웹사이트 추가 🚀',
+        description: '웹사이트를 성공적으로 추가되었습니다.',
       });
       setDomain('');
     } catch (error: any) {
@@ -126,7 +116,7 @@ export default function DashboardPage() {
   return (
     <section className='flex flex-1 flex-col gap-8 px-4 pb-8 pt-20 sm:px-8 md:px-16 lg:px-20'>
       <div className='text-center'>
-        <h1 className='text-2xl font-bold sm:text-3xl'>고객과 소통할 웹사이트를 추가하세요</h1>
+        <h1 className='text-xl font-bold sm:text-2xl'>고객과 소통할 웹사이트를 추가하세요</h1>
       </div>
       <div className='mx-auto w-full max-w-5xl'>
         <form className='flex flex-col items-center gap-4 sm:flex-row' onSubmit={handleAddWebsite}>
@@ -158,7 +148,7 @@ export default function DashboardPage() {
             <p className='text-base text-muted-foreground'>
               아직 웹사이트를 추가하지 않았네요!
               <br />
-              멋진 팝업으로 고객의 마음을 사로잡아 보세요 🚀
+              멋진 팝업으로 고객의 마음을 사로잡아 보세요
             </p>
           </div>
         ) : (

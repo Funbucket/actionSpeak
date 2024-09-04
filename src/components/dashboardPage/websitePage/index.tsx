@@ -13,11 +13,11 @@ const WebsiteMetrics = ({ params }: { params: { websiteId: string } }) => {
             <TabsTrigger value='popups'>팝업 관리</TabsTrigger>
             <TabsTrigger value='images'>이미지 관리</TabsTrigger>
           </TabsList>
-          <TabsContent value='images'>
-            <ImageManagementSection websiteId={params.websiteId} />
-          </TabsContent>
           <TabsContent value='popups'>
             <PopupManagementSection websiteId={params.websiteId} />
+          </TabsContent>
+          <TabsContent value='images'>
+            <ImageManagementSection websiteId={params.websiteId} />
           </TabsContent>
         </Tabs>
       </section>
