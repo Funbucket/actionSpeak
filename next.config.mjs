@@ -14,6 +14,10 @@ const nextConfig = {
         hostname: 'abmmugiauteczjxbhemo.supabase.co',
         protocol: 'https',
       },
+      {
+        hostname: 'via.placeholder.com',
+        protocol: 'https',
+      },
     ],
   },
 };

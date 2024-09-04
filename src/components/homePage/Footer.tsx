@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 const Footer = () => (
-  <footer className='w-full border-t bg-muted'>
+  <footer className='w-full border-t'>
     <div className='container flex flex-col items-center justify-between gap-4 py-8 md:flex-row md:gap-0'>
       <p className='text-sm text-muted-foreground'>&copy; 2024 acionSpeak. All Rights Reserved</p>
       <nav className='flex items-center gap-4'>

@@ -21,8 +21,8 @@ export interface BasicPopupContent extends Record<string, Json | undefined> {
 
 export interface MacWindowPopupContent extends Record<string, Json | undefined> {
   title: string;
-  description: string;
   imageName?: string;
+  link?: string;
 }
 
 export type PopupContent = ToastContent | BasicPopupContent | MacWindowPopupContent;

@@ -171,7 +171,7 @@
       text-align: center;
       width: 86%;
       max-width: 520px;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 15px 20px rgba(0, 0, 0, 0.25);
       color: rgb(47, 48, 60);
       overflow: hidden;
     }
@@ -784,7 +784,7 @@
             </div>
             <div class="title">${content.title}</div>
           </div>
-          <div class="window">
+          <div class="window" ${content.link ? `style="cursor: pointer;"` : ''}>
             ${imageHtml}
           </div>
         </div>
@@ -836,7 +836,6 @@
     });
 
     if (content.link) {
-      windowContent.style.cursor = 'pointer';
       windowContent.addEventListener('click', () => {
         window.open(content.link, '_blank');
       });
@@ -847,18 +846,6 @@
         closeMacWindowPopup(popupId);
       }
     });
-  };
-
-  const closeMacWindowPopup = (popupId) => {
-    const overlay = document.getElementById(`${popupId}-overlay`);
-    const popup = document.getElementById(popupId);
-    if (overlay && popup) {
-      overlay.classList.remove('active');
-      popup.classList.remove('active');
-      setTimeout(() => {
-        overlay.remove();
-      }, 300);
-    }
   };
 
   // API

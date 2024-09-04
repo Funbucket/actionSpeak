@@ -230,7 +230,7 @@
   text-align: center;
   width: 86%;
   max-width: 520px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 15px 20px rgba(0, 0, 0, 0.25);
   color: rgb(47, 48, 60);
   overflow: hidden;
 }
@@ -564,4 +564,23 @@
     transform: translate(-50%, 95%) scale(1);
     transition: all 0.5s;
   }
+}
+
+.preview-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.as-mac-window.preview-mode {
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+  opacity: 1;
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
 }

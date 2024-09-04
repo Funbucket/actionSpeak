@@ -3,8 +3,10 @@
 import React, { useEffect, useState } from 'react';
 
 import BasicPopupSettingsSection from './BasicPopupSettingsSection';
+import MacWindowPopupSettingsSection from './MacWindowPopupSettingsSection';
 import ToastSettingsSection from './ToastSettingsSection';
 import BasicPopup from '@/components/popups/basicPopup';
+import MacWindowPopup from '@/components/popups/macWindowPopup';
 import Toast from '@/components/popups/toast';
 import { Button } from '@/components/ui/button';
 import {
@@ -25,13 +27,17 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { useWebsiteImages } from '@/hook/useWebsiteImages';
 import { useWebsitePopups } from '@/hook/useWebsitePopups';
-import { BasicPopupContent, PopupContent, PopupData, ToastContent } from '@/lib/types/popup';
+import {
+  BasicPopupContent,
+  MacWindowPopupContent,
+  PopupData,
+  ToastContent,
+} from '@/lib/types/popup';
 
 interface PopupManagementSectionProps {
   websiteId: string;
 }
 
-// 초기 팝업 데이터 상태
 const initialPopupData = (websiteId: string): PopupData => ({
   website_id: websiteId,
   popup_type: 'toast',
@@ -42,9 +48,8 @@ const initialPopupData = (websiteId: string): PopupData => ({
     position: 'bottom',
     imageName: undefined,
   } as ToastContent,
-  duration: 10000,
+  wait_for: 1000,
   frequency: 2,
-  wait_for: 1,
 });
 
 const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ websiteId }) => {
@@ -64,7 +69,6 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
     }
   }, [popup]);
 
-  // 팝업 데이터 변경 핸들러
   const handlePopupDataChange = (newData: Partial<PopupData>) => {
     setPopupData((prev) => ({
       ...prev,
@@ -73,7 +77,6 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
     }));
   };
 
-  // 팝업 저장 핸들러 (원본 로직 유지)
   const handleSave = async () => {
     setIsLoading(true);
 
@@ -81,7 +84,6 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
       let updatedPopupData: PopupData = { ...popupData };
 
       if (newImageFile) {
-        // 새 이미지가 업로드된 경우
         const imageName = `image-${Date.now()}`;
         await addImage({ file: newImageFile, name: imageName });
         updatedPopupData = {
@@ -93,7 +95,6 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
           await deleteImage({ imageName: popup.content.imageName, websiteId });
         }
       } else if (isImageRemoved) {
-        // 이미지가 삭제된 경우
         if (popup?.content.imageName) {
           await deleteImage({ imageName: popup.content.imageName, websiteId });
           updatedPopupData = {
@@ -102,7 +103,6 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
           };
         }
       } else {
-        // 이미지 변경이 없는 경우
         updatedPopupData = {
           ...updatedPopupData,
           content: { ...updatedPopupData.content, imageName: popup?.content.imageName },
@@ -120,7 +120,6 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
       });
     } catch (error) {
       console.error('Error saving popup:', error);
-
       toast({
         variant: 'destructive',
         title: '저장 실패',
@@ -131,7 +130,6 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
     }
   };
 
-  // 팝업 삭제 핸들러
   const handleDelete = async () => {
     setIsLoading(true);
 
@@ -175,6 +173,10 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
         return <Toast content={popupData.content as ToastContent} image={image} />;
       case 'basicPopup':
         return <BasicPopup content={popupData.content as BasicPopupContent} image={image} />;
+      case 'macWindowPopup':
+        return (
+          <MacWindowPopup content={popupData.content as MacWindowPopupContent} image={image} />
+        );
       default:
         return null;
     }
@@ -195,6 +197,8 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
         return <ToastSettingsSection {...commonProps} />;
       case 'basicPopup':
         return <BasicPopupSettingsSection {...commonProps} />;
+      case 'macWindowPopup':
+        return <MacWindowPopupSettingsSection {...commonProps} />;
       default:
         return null;
     }
@@ -221,6 +225,7 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
               <SelectContent>
                 <SelectItem value='toast'>푸시 팝업</SelectItem>
                 <SelectItem value='basicPopup'>기본 팝업</SelectItem>
+                <SelectItem value='macWindowPopup'>맥 윈도우 팝업</SelectItem>
               </SelectContent>
             </Select>
           </div>

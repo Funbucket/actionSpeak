@@ -3,7 +3,6 @@ import React from 'react';
 import Image from 'next/image';
 
 import { ToastContent } from '@/lib/types/popup';
-import { ImageIcon } from 'lucide-react';
 
 interface ToastProps {
   content: ToastContent;
@@ -24,19 +23,11 @@ const Toast: React.FC<ToastProps> = ({ content, image, tempImageUrl }) => {
     <div className='as-toast'>
       <ContentWrapper
         className={`as-toast-content ${content.link ? 'as-toast-content-link' : ''}`}
-        onClick={handleClick}
-        href={content.link && content.link.includes('http') ? content.link : undefined}
-        target='_blank'
-        rel='noopener noreferrer'
         role={content.link ? 'button' : undefined}
         style={{ cursor: content.link ? 'pointer' : 'default' }}
       >
         {content.closeButton && (
-          <button
-            className='as-toast-close-btn'
-            aria-label='Close'
-            onClick={(e) => e.stopPropagation()}
-          >
+          <button className='as-toast-close-btn' aria-label='Close'>
             &times;
           </button>
         )}
@@ -59,9 +50,14 @@ const Toast: React.FC<ToastProps> = ({ content, image, tempImageUrl }) => {
                 height={100}
               />
             ) : (
-              <div className='flex h-full w-full items-center justify-center object-cover'>
-                <ImageIcon className='h-3/4 w-3/4' />
-              </div>
+              <Image
+                src='https://via.placeholder.com/100x100.png?text=Placeholder+Image'
+                alt='Placeholder image'
+                className='h-full w-full object-cover'
+                width={100}
+                height={100}
+                objectFit='cover'
+              />
             )}
           </div>
           <div style={{ width: '100%' }}>

@@ -4,16 +4,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { BasicPopupContent, PopupData } from '@/lib/types/popup';
+import { MacWindowPopupContent, PopupData } from '@/lib/types/popup';
 import { CircleHelp } from 'lucide-react';
 
-interface BasicPopupSettingsSectionProps {
+interface MacWindowSettingsSectionProps {
   popupData: PopupData;
   onPopupDataChange: (newData: Partial<PopupData>) => void;
   onImageChange: (file: File) => void;
 }
 
-const BasicPopupSettingsSection: React.FC<BasicPopupSettingsSectionProps> = ({
+const MacWindowPopupSettingsSection: React.FC<MacWindowSettingsSectionProps> = ({
   popupData,
   onPopupDataChange,
   onImageChange,
@@ -21,16 +21,6 @@ const BasicPopupSettingsSection: React.FC<BasicPopupSettingsSectionProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     onPopupDataChange({ content: { ...popupData.content, [name]: value } });
-  };
-
-  const handleButtonChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    onPopupDataChange({
-      content: {
-        ...popupData.content,
-        button: { ...(popupData.content as BasicPopupContent).button, [name]: value },
-      },
-    });
   };
 
   const handleSettingsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,7 +35,7 @@ const BasicPopupSettingsSection: React.FC<BasicPopupSettingsSectionProps> = ({
     }
   };
 
-  const basicPopupContent = popupData.content as BasicPopupContent;
+  const macWindowContent = popupData.content as MacWindowPopupContent;
 
   return (
     <div className='space-y-4'>
@@ -58,42 +48,21 @@ const BasicPopupSettingsSection: React.FC<BasicPopupSettingsSectionProps> = ({
         <Input
           id='title'
           name='title'
-          value={basicPopupContent.title}
+          value={macWindowContent.title}
           onChange={handleInputChange}
           placeholder='제목을 입력하세요'
         />
       </div>
       <div className='grid gap-2'>
-        <Label htmlFor='description'>설명</Label>
-        <Textarea
-          id='description'
-          name='description'
-          value={basicPopupContent.description}
-          onChange={handleInputChange}
-          placeholder='설명을 입력하세요'
-        />
-      </div>
-      <div className='grid gap-2'>
-        <Label htmlFor='button.label'>버튼 텍스트</Label>
+        <Label htmlFor='link'>링크</Label>
         <Input
-          id='button.label'
-          name='label'
-          value={basicPopupContent.button?.label || ''}
-          onChange={handleButtonChange}
-          placeholder='버튼 텍스트를 입력하세요'
-        />
-      </div>
-      <div className='grid gap-2'>
-        <Label htmlFor='button.link'>버튼 링크</Label>
-        <Input
-          id='button.link'
+          id='link'
           name='link'
-          value={basicPopupContent.button?.link || ''}
-          onChange={handleButtonChange}
-          placeholder='버튼 링크를 입력하세요'
+          value={macWindowContent.link || ''}
+          onChange={handleInputChange}
+          placeholder='연결할 링크를 입력하세요.'
         />
       </div>
-
       <div className='grid gap-2'>
         <div className='flex items-center gap-2'>
           <Label htmlFor='frequency'>빈도</Label>
@@ -144,4 +113,4 @@ const BasicPopupSettingsSection: React.FC<BasicPopupSettingsSectionProps> = ({
   );
 };
 
-export default BasicPopupSettingsSection;
+export default MacWindowPopupSettingsSection;
