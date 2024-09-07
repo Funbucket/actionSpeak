@@ -633,7 +633,7 @@
     return container;
   };
 
-  const createToastElement = (content) => {
+  const createToastElement = (content, duration) => {
     let image = '';
     if (content.imageName && imageUrls[content.imageName]) {
       image = `
@@ -644,10 +644,10 @@
     }
 
     let closeElement = '';
-    if (!content.timeLimit) {
-      closeElement = '<button class="as-toast-close-btn" aria-label="Close">&times;</button>';
-    } else {
+    if (content.timeLimit && duration) {
       closeElement = `<div class="as-toast-time-limit" id="as-toast-time-limit-${content.id}">${content.duration / 1000}s</div>`;
+    } else {
+      closeElement = '<button class="as-toast-close-btn" aria-label="Close">&times;</button>';
     }
 
     const contentHtml = `
@@ -687,7 +687,7 @@
     const toast = document.createElement('div');
     toast.id = toastId;
     toast.className = 'as-toast';
-    toast.innerHTML = createToastElement(content);
+    toast.innerHTML = createToastElement(content, duration);
 
     container.prepend(toast);
 
