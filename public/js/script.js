@@ -14,12 +14,6 @@
       user-select: none;
       pointer-events: none;
     }
-    @media (min-width: 640px) {
-      .as-toast-container {
-        left: 3rem;
-        right: 3rem;
-      }
-    }
 
     .as-toast {
       background: transparent;
@@ -102,10 +96,14 @@
       }
     }
 
-    .as-toast-close-btn {
+    .as-toast-close-btn,
+    .as-toast-time-limit {
       position: absolute;
       top: 10px;
       right: 10px;
+    }
+
+    .as-toast-close-btn {
       background: none;
       border: none;
       cursor: pointer;
@@ -115,12 +113,20 @@
       padding: 0;
       z-index: 999;
     }
+    
+    .as-toast-time-limit {
+      background-color: rgba(220, 220, 220, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 9999px;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.875rem;
+      color: rgb(55, 65, 81);
+    }
 
     .as-toast-content-wrapper {
-      gap: 14px;
-      display: flex;
-      align-items: center;
-      width: 100%;
+      flex: 1;
+      padding-right: 1rem;
     }
 
     .as-toast-content-title {
@@ -128,6 +134,7 @@
       font-weight: 600;
       color: rgb(3, 7, 18);
       margin-bottom: 0.25rem;
+      word-wrap: break-word;
     }
 
     .as-toast-content-description {
@@ -136,6 +143,43 @@
       line-height: 1.25;
       color: rgb(55, 65, 81);
     }
+
+    @media (max-width: 640px) {
+      .as-toast-content {
+        max-width: 100%;
+      }
+
+      .as-toast-container[style*="bottom: auto"] .as-toast {
+        animation: as-slide-down 0.3s ease-in-out;
+      }
+
+      .as-toast-container[style*="top: auto"] .as-toast {
+        animation: as-slide-up 0.3s ease-in-out;
+      }
+
+      @keyframes as-slide-up {
+        from {
+          opacity: 0.8;
+          transform: translateY(100%);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes as-slide-down {
+        from {
+          opacity: 0.8;
+          transform: translateY(-100%);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      } 
+    }
+
 
     /* Popup styles */
     .as-popup-container {
@@ -519,7 +563,9 @@
 
   let toastTimeout;
   let toastInterval;
-  let toastingQueue = [];
+  let topToastQueue = [];
+  let bottomToastQueue = [];
+  let activeToast = null;
   let visitorId;
   let imageUrls = {};
   let websiteId;
@@ -563,9 +609,9 @@
         if (type === 'toast') {
           showToast(content, duration);
         } else if (type === 'basicPopup') {
-          showBasicPopup(content);
+          showBasicPopup(content, duration);
         } else if (type === 'macWindowPopup') {
-          showMacWindowPopup(content);
+          showMacWindowPopup(content, duration);
         }
         incrementFrequency(content.id);
       }
@@ -574,15 +620,17 @@
 
   // Toast
   const createToastContainer = (position) => {
-    let container = document.querySelector('#as-toast-container');
+    let containerId = position === 'top' ? 'as-toast-container-top' : 'as-toast-container-bottom';
+    let container = document.querySelector(`#${containerId}`);
     if (!container) {
       container = document.createElement('div');
-      container.id = 'as-toast-container';
+      container.id = containerId;
       container.className = 'as-toast-container as-container';
       document.body.appendChild(container);
     }
     container.style.top = position === 'top' ? '1.5rem' : 'auto';
     container.style.bottom = position === 'bottom' ? '1.5rem' : 'auto';
+    return container;
   };
 
   const createToastElement = (content) => {
@@ -595,31 +643,31 @@
       `;
     }
 
-    const closeButton = content.closeButton
-      ? '<button class="as-toast-close-btn" aria-label="Close">&times;</button>'
-      : '';
+    let closeElement = '';
+    if (!content.timeLimit) {
+      closeElement = '<button class="as-toast-close-btn" aria-label="Close">&times;</button>';
+    } else {
+      closeElement = `<div class="as-toast-time-limit" id="as-toast-time-limit-${content.id}">${content.duration / 1000}s</div>`;
+    }
 
     const contentHtml = `
+      ${image}
       <div class="as-toast-content-wrapper">
-        ${image}
-        <div style="width: 100%;">
-          <div class="as-toast-content-title">${content.title}</div>
-          <div class="as-toast-content-description">${content.description}</div>
-        </div>
+        <div class="as-toast-content-title">${content.title}</div>
+        <div class="as-toast-content-description">${content.description}</div>
       </div>
+      ${closeElement}
     `;
 
     if (content.link && content.link.includes('http')) {
       return `
         <div role="button" class="as-toast-content as-toast-content-link" onclick="window.open('${content.link}', '_blank')">
-          ${closeButton}
           ${contentHtml}
         </div>
       `;
     } else {
       return `
         <div class="as-toast-content" style="pointer-events: auto;">
-          ${closeButton}
           ${contentHtml}
         </div>
       `;
@@ -627,32 +675,65 @@
   };
 
   const showToast = (content, duration) => {
-    createToastContainer(content.position);
+    const container = createToastContainer(content.position);
+
+    // 화면 너비가 640px 미만이고 이미 활성화된 토스트가 있다면 제거
+    if (window.innerWidth < 640 && activeToast) {
+      removeToast(activeToast.id, true);
+    }
 
     const toastId = `as-toast-${Date.now()}`;
+    content.id = toastId;
     const toast = document.createElement('div');
     toast.id = toastId;
     toast.className = 'as-toast';
     toast.innerHTML = createToastElement(content);
 
-    if (window.innerWidth < 640) {
-      toastingQueue.forEach((id) => removeToast(id, true));
+    container.prepend(toast);
+
+    // 현재 활성화된 토스트 정보 저장
+    activeToast = { id: toastId, position: content.position };
+
+    if (content.timeLimit && duration) {
+      const timeLimitElement = document.getElementById(`as-toast-time-limit-${toastId}`);
+      const startTime = Date.now();
+      const endTime = startTime + duration;
+
+      const updateTimeRemaining = () => {
+        const now = Date.now();
+        const timeRemaining = Math.max(0, Math.ceil((endTime - now) / 1000));
+        if (timeLimitElement) {
+          timeLimitElement.textContent = `${timeRemaining}s`;
+        }
+        if (timeRemaining <= 0) {
+          clearInterval(intervalId);
+          removeToast(toastId, false);
+        }
+      };
+
+      updateTimeRemaining();
+      const intervalId = setInterval(updateTimeRemaining, 1000);
+    } else if (!content.timeLimit) {
+      const closeButton = toast.querySelector('.as-toast-close-btn');
+      if (closeButton) {
+        closeButton.addEventListener('click', (event) => {
+          event.stopPropagation();
+          removeToast(toastId, true);
+        });
+      }
     }
 
-    document.querySelector('#as-toast-container').prepend(toast);
-    toastingQueue.push(toastId);
+    if (duration) {
+      setTimeout(() => {
+        removeToast(toastId, false);
+      }, duration);
+    }
 
-    const closeButton = toast.querySelector('.as-toast-close-btn');
-    if (closeButton) {
-      closeButton.addEventListener('click', (event) => {
-        event.stopPropagation();
-        removeToast(toastId, true);
+    if (content.link && content.link.includes('http')) {
+      toast.addEventListener('click', () => {
+        window.open(content.link, '_blank');
       });
     }
-
-    setTimeout(() => {
-      removeToast(toastId, false);
-    }, duration || 10000);
   };
 
   const removeToast = (toastId, force = false) => {
@@ -662,13 +743,17 @@
 
     if (force) {
       toast.remove();
-      toastingQueue = toastingQueue.filter((t) => t !== toastId);
+      if (activeToast && activeToast.id === toastId) {
+        activeToast = null;
+      }
     } else {
       toast.classList.add('as-toast-hide');
       setTimeout(() => {
         if (toast) {
           toast.remove();
-          toastingQueue = toastingQueue.filter((t) => t !== toastId);
+          if (activeToast && activeToast.id === toastId) {
+            activeToast = null;
+          }
         }
       }, 400);
     }
@@ -677,7 +762,9 @@
   const cleanupToasts = () => {
     if (toastTimeout) clearTimeout(toastTimeout);
     if (toastInterval) clearInterval(toastInterval);
-    toastingQueue.forEach((id) => removeToast(id));
+    [...topToastQueue, ...bottomToastQueue].forEach((id) => removeToast(id));
+    topToastQueue = [];
+    bottomToastQueue = [];
   };
 
   // Basic popup
@@ -700,7 +787,7 @@
 
     const buttonHtml = content.button
       ? `
-      <a href="${content.button.link}" target="_blank" class="as-popup-btn-bottom" onclick="window.actionSpeak.closePopup('${popupId}')">
+      <a href="${content.button.link}" target="_blank" class="as-popup-btn-bottom">
         ${content.button.label}
       </a>
     `
@@ -708,10 +795,10 @@
 
     return `
     <div class="as-popup-overlay" id="${popupId}-overlay">
-      <div class="as-popup">
+      <div class="as-popup" id="${popupId}">
         <div class="as-popup-image-container">
           ${imageHtml}
-          <button class="as-popup-close-btn" onclick="window.actionSpeak.closePopup('${popupId}')">
+          <button class="as-popup-close-btn">
             <svg class="as-popup-close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -728,7 +815,7 @@
     `;
   };
 
-  const showBasicPopup = (content) => {
+  const showBasicPopup = (content, duration) => {
     const container = createBasicPopupContainer();
     const popupId = `as-popup-${Date.now()}`;
     const basicPopupElement = createBasicPopupElement(content, popupId);
@@ -736,16 +823,47 @@
     container.insertAdjacentHTML('beforeend', basicPopupElement);
 
     const overlay = document.getElementById(`${popupId}-overlay`);
+    const popup = document.getElementById(popupId);
+
     overlay.style.display = 'flex';
 
     overlay.addEventListener('click', (event) => {
       if (event.target === overlay) {
-        window.actionSpeak.closePopup(popupId);
+        closeBasicPopup(popupId);
       }
     });
+
+    const closeButton = popup.querySelector('.as-popup-close-btn');
+    closeButton.addEventListener('click', () => closeBasicPopup(popupId));
+
+    const bottomButton = popup.querySelector('.as-popup-btn-bottom');
+    bottomButton.addEventListener('click', () => closeBasicPopup(popupId));
+
+    if (content.button && content.button.timeLimit && duration) {
+      const endTime = Date.now() + duration;
+
+      const updateButtonText = () => {
+        const remainingTime = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
+        bottomButton.textContent = `${content.button.label} (${remainingTime}s)`;
+
+        if (remainingTime <= 0) {
+          clearInterval(intervalId);
+          closeBasicPopup(popupId);
+        }
+      };
+
+      updateButtonText();
+      const intervalId = setInterval(updateButtonText, 1000);
+    }
+
+    if (duration) {
+      setTimeout(() => {
+        closeBasicPopup(popupId);
+      }, duration);
+    }
   };
 
-  const closePopup = (popupId) => {
+  const closeBasicPopup = (popupId) => {
     const overlay = document.getElementById(`${popupId}-overlay`);
     if (overlay) {
       overlay.style.display = 'none';
@@ -792,7 +910,7 @@
     `;
   };
 
-  const showMacWindowPopup = (content) => {
+  const showMacWindowPopup = (content, duration) => {
     const container = createMacWindowPopupContainer();
     const popupId = `as-macpopup-${Date.now()}`;
     const macPopupElement = createMacWindowPopupElement(content, popupId);
@@ -846,6 +964,12 @@
         closeMacWindowPopup(popupId);
       }
     });
+
+    if (duration) {
+      setTimeout(() => {
+        closeMacWindowPopup(popupId);
+      }, duration);
+    }
   };
 
   const closeMacWindowPopup = (popupId) => {
@@ -1007,9 +1131,6 @@
     await show('macWindowPopup', config);
   };
 
-  window.actionSpeak.closePopup = closePopup;
-  window.actionSpeak.closeMacWindowPopup = closeMacWindowPopup;
-
   window.actionSpeak.imageFetch = async () => {
     try {
       const websiteId = window.location.href.split('/').pop();
@@ -1020,6 +1141,12 @@
       console.error(error);
     }
   };
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 640 && activeToast) {
+      activeToast = null;
+    }
+  });
 
   initialize();
 })();
