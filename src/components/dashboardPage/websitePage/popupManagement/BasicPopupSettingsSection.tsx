@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -23,6 +23,7 @@ const BasicPopupSettingsSection: React.FC<BasicPopupSettingsSectionProps> = ({
     const { name, value } = e.target;
     onPopupDataChange({ content: { ...popupData.content, [name]: value } });
   };
+  const [fileError, setFileError] = useState<string | null>(null);
 
   const handleButtonChange = (
     e: React.ChangeEvent<HTMLInputElement> | { checked: boolean; name: string }
@@ -57,7 +58,12 @@ const BasicPopupSettingsSection: React.FC<BasicPopupSettingsSectionProps> = ({
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      onImageChange(file);
+      if (file.size > 1024 * 1024) {
+        setFileError('1MB 이하의 파일을 업로드해주세요');
+      } else {
+        setFileError(null);
+        onImageChange(file);
+      }
     }
   };
 
@@ -68,6 +74,7 @@ const BasicPopupSettingsSection: React.FC<BasicPopupSettingsSectionProps> = ({
       <div className='grid gap-2'>
         <Label htmlFor='image'>이미지</Label>
         <Input id='image' type='file' onChange={handleImageUpload} />
+        {fileError && <p className='text-sm text-red-500'>{fileError}</p>}
       </div>
       <div className='grid gap-2'>
         <Label htmlFor='title'>제목</Label>

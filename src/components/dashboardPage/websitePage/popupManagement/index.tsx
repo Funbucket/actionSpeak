@@ -57,17 +57,18 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
         wait_for: popup.wait_for / 1000,
       });
       setIsImageRemoved(false);
+    } else {
+      setPopupData(initialPopupData(websiteId, 'toast'));
     }
-  }, [popup]);
-
-  useEffect(() => {
-    setPopupData(initialPopupData(websiteId, popupData.popup_type));
-  }, [popupData.popup_type, websiteId]);
+  }, [popup, websiteId]);
 
   const handlePopupDataChange = (newData: Partial<PopupData>) => {
     setPopupData((prev) => {
       if (newData.popup_type && newData.popup_type !== prev.popup_type) {
-        return initialPopupData(websiteId, newData.popup_type);
+        return {
+          ...initialPopupData(websiteId, newData.popup_type),
+          id: prev.id,
+        };
       }
       return {
         ...prev,
@@ -83,7 +84,7 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
     try {
       let updatedPopupData: PopupData = {
         ...popupData,
-
+        duration: popupData.duration ? popupData.duration * 1000 : undefined,
         wait_for: popupData.wait_for * 1000,
       };
 

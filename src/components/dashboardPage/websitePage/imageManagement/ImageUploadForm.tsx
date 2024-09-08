@@ -12,15 +12,29 @@ const ImageUploadForm: React.FC<ImageUploadFormProps> = ({ onUpload }) => {
   const [file, setFile] = useState<File | null>(null);
   const [imageName, setImageName] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [fileError, setFileError] = useState<string | null>(null);
   const { toast } = useToast();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      if (selectedFile.size > 1024 * 1024) {
+        setFileError('1MB 이하의 파일을 업로드해주세요');
+        setFile(null);
+      } else {
+        setFileError(null);
+        setFile(selectedFile);
+      }
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!file || !imageName.trim()) {
+    if (!file || !imageName.trim() || fileError) {
       toast({
         variant: 'destructive',
         title: '업로드 실패',
-        description: '파일과 이미지 이름을 모두 입력해주세요.',
+        description: fileError || '파일과 이미지 이름을 모두 입력해주세요.',
       });
       return;
     }
@@ -34,6 +48,7 @@ const ImageUploadForm: React.FC<ImageUploadFormProps> = ({ onUpload }) => {
       });
       setFile(null);
       setImageName('');
+      setFileError(null);
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -48,12 +63,8 @@ const ImageUploadForm: React.FC<ImageUploadFormProps> = ({ onUpload }) => {
   return (
     <form className='grid gap-4' onSubmit={handleSubmit}>
       <div className='grid gap-2'>
-        <Input
-          id='image'
-          type='file'
-          onChange={(e) => e.target.files && setFile(e.target.files[0])}
-          disabled={isLoading}
-        />
+        <Input id='image' type='file' onChange={handleFileChange} disabled={isLoading} />
+        {fileError && <p className='text-sm text-red-500'>{fileError}</p>}
       </div>
       <div className='grid gap-2'>
         <Input
@@ -65,13 +76,8 @@ const ImageUploadForm: React.FC<ImageUploadFormProps> = ({ onUpload }) => {
           disabled={isLoading}
         />
       </div>
-      <Button
-        type='submit'
-        className='justify-self-end'
-        isLoading={isLoading}
-        loadingText='추가 중...'
-      >
-        추가하기
+      <Button type='submit' className='justify-self-end' disabled={isLoading || !!fileError}>
+        {isLoading ? '추가 중...' : '추가하기'}
       </Button>
     </form>
   );
