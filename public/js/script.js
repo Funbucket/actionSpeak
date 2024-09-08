@@ -1062,9 +1062,9 @@
     const { popup_type, wait_for, frequency, duration, content, path } = popupOption;
     let popupElement;
 
-    const showPopup = () => {
+    const showPopup = async () => {
       if (path === window.location.pathname || (!path && window.location.pathname === '/')) {
-        const popupId = generateHash(content);
+        const popupId = await generateHash(content);
         if (shouldShowBasedOnFrequency(popupId, frequency)) {
           setTimeout(() => {
             switch (popup_type) {
