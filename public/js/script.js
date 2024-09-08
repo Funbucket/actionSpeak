@@ -646,7 +646,7 @@
 
     let closeElement = '';
     if (content.timeLimit && duration) {
-      closeElement = `<div class="as-toast-time-limit" id="as-toast-time-limit-${content.id}">${content.duration / 1000}s</div>`;
+      closeElement = `<div class="as-toast-time-limit" id="as-toast-time-limit-${content.id}">${duration / 1000}s</div>`;
     } else {
       closeElement = '<button class="as-toast-close-btn" aria-label="Close">&times;</button>';
     }
@@ -662,7 +662,7 @@
 
     if (content.link && content.link.includes('http')) {
       return `
-        <div role="button" class="as-toast-content as-toast-content-link" onclick="window.open('${content.link}', '_blank')">
+        <div class="as-toast-content as-toast-content-link">
           ${contentHtml}
         </div>
       `;
@@ -729,9 +729,14 @@
     }
 
     if (content.link && content.link.includes('http')) {
-      toast.addEventListener('click', () => {
-        window.open(content.link, '_blank');
-      });
+      const linkElement = toast.querySelector('.as-toast-content-link');
+      if (linkElement) {
+        linkElement.addEventListener('click', (event) => {
+          if (!event.target.closest('.as-toast-close-btn')) {
+            window.open(content.link, '_blank');
+          }
+        });
+      }
     }
   };
 
@@ -1052,37 +1057,32 @@
     });
   };
 
-  // Handle Popup Opion
+  // Handle Popup Option
   const handlePopupOption = (popupOption) => {
     const { popup_type, wait_for, frequency, duration, content, path } = popupOption;
     let popupElement;
 
     const showPopup = () => {
       if (path === window.location.pathname || (!path && window.location.pathname === '/')) {
-        const config = {
-          options: {
-            waitFor: wait_for,
-            frequency: frequency,
-            duration: duration,
-          },
-          ...content,
-        };
-
-        setTimeout(() => {
-          switch (popup_type) {
-            case 'toast':
-              popupElement = showToast(config);
-              break;
-            case 'basicPopup':
-              popupElement = showBasicPopup(config);
-              break;
-            case 'macWindowPopup':
-              popupElement = showMacWindowPopup(config);
-              break;
-            default:
-              console.warn('Unknown popup type:', popup_type);
-          }
-        }, wait_for || 0);
+        const popupId = generateHash(content);
+        if (shouldShowBasedOnFrequency(popupId, frequency)) {
+          setTimeout(() => {
+            switch (popup_type) {
+              case 'toast':
+                popupElement = showToast(content, duration);
+                break;
+              case 'basicPopup':
+                popupElement = showBasicPopup(content, duration);
+                break;
+              case 'macWindowPopup':
+                popupElement = showMacWindowPopup(content, duration);
+                break;
+              default:
+                console.warn('Unknown popup type:', popup_type);
+            }
+            incrementFrequency(popupId);
+          }, wait_for || 0);
+        }
       }
     };
 
