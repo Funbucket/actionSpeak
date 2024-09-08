@@ -83,16 +83,6 @@ const ToastSettingsSection: React.FC<ToastSettingsSectionProps> = ({
           placeholder='연결할 링크를 입력하세요.'
         />
       </div>
-      <div className='flex items-center space-x-2'>
-        <Label htmlFor='closeButton'>닫기 버튼 표시</Label>
-        <Switch
-          id='closeButton'
-          checked={toastContent.closeButton}
-          onCheckedChange={(checked) =>
-            onPopupDataChange({ content: { ...toastContent, closeButton: checked } })
-          }
-        />
-      </div>
       <div className='grid gap-2'>
         <Label htmlFor='position'>위치</Label>
         <Select
@@ -113,14 +103,14 @@ const ToastSettingsSection: React.FC<ToastSettingsSectionProps> = ({
 
       <div className='grid gap-2'>
         <div className='flex items-center gap-2'>
-          <Label htmlFor='duration'>지속 시간 (ms)</Label>
+          <Label htmlFor='duration'>지속 시간 (초)</Label>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
                 <CircleHelp className='h-4 w-4' />
               </TooltipTrigger>
               <TooltipContent>
-                <p>팝업이 화면에 표시되는 시간을 밀리초 단위로 설정합니다.</p>
+                <p>팝업이 화면에 표시되는 시간을 초 단위로 설정합니다.</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -131,7 +121,17 @@ const ToastSettingsSection: React.FC<ToastSettingsSectionProps> = ({
           type='number'
           value={popupData.duration || ''}
           onChange={handleSettingsChange}
-          placeholder='지속 시간을 입력하세요 (ms)'
+          placeholder='지속 시간을 입력하세요 (초)'
+        />
+      </div>
+      <div className='flex items-center space-x-2'>
+        <Label htmlFor='timeLimit'>제한 시간 표시</Label>
+        <Switch
+          id='timeLimit'
+          checked={toastContent.timeLimit}
+          onCheckedChange={(checked) =>
+            onPopupDataChange({ content: { ...toastContent, timeLimit: checked } })
+          }
         />
       </div>
       <div className='grid gap-2'>
@@ -159,14 +159,14 @@ const ToastSettingsSection: React.FC<ToastSettingsSectionProps> = ({
       </div>
       <div className='grid gap-2'>
         <div className='flex items-center gap-2'>
-          <Label htmlFor='wait_for'>대기 시간 (ms)</Label>
+          <Label htmlFor='wait_for'>대기 시간 (초)</Label>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
                 <CircleHelp className='h-4 w-4' />
               </TooltipTrigger>
               <TooltipContent>
-                <p>팝업이 표시되기 전 대기 시간을 밀리초 단위로 설정합니다.</p>
+                <p>팝업이 표시되기 전 대기 시간을 초 단위로 설정합니다.</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -177,7 +177,7 @@ const ToastSettingsSection: React.FC<ToastSettingsSectionProps> = ({
           type='number'
           value={popupData.wait_for}
           onChange={handleSettingsChange}
-          placeholder='대기 시간을 입력하세요 (ms)'
+          placeholder='대기 시간을 입력하세요 (초)'
         />
       </div>
     </div>

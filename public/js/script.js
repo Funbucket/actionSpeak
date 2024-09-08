@@ -28,8 +28,9 @@
       width: 100%;
       max-width: 350px;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
+      gap: 14px;
       padding: 14px;
       background-color: rgba(220, 220, 220, 0.7);
       backdrop-filter: blur(8px);
@@ -677,7 +678,6 @@
   const showToast = (content, duration) => {
     const container = createToastContainer(content.position);
 
-    // 화면 너비가 640px 미만이고 이미 활성화된 토스트가 있다면 제거
     if (window.innerWidth < 640 && activeToast) {
       removeToast(activeToast.id, true);
     }
@@ -691,7 +691,6 @@
 
     container.prepend(toast);
 
-    // 현재 활성화된 토스트 정보 저장
     activeToast = { id: toastId, position: content.position };
 
     if (content.timeLimit && duration) {

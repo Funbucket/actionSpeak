@@ -27,6 +27,7 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { useWebsiteImages } from '@/hook/useWebsiteImages';
 import { useWebsitePopups } from '@/hook/useWebsitePopups';
+import { initialPopupData } from '@/lib/popup';
 import {
   BasicPopupContent,
   MacWindowPopupContent,
@@ -38,25 +39,10 @@ interface PopupManagementSectionProps {
   websiteId: string;
 }
 
-const initialPopupData = (websiteId: string): PopupData => ({
-  website_id: websiteId,
-  popup_type: 'toast',
-  content: {
-    title: '',
-    description: '',
-    closeButton: true,
-    position: 'bottom',
-    imageName: undefined,
-  } as ToastContent,
-  duration: 10000,
-  frequency: 2,
-  wait_for: 0,
-});
-
 const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ websiteId }) => {
   const { popup, upsertPopup, deletePopup } = useWebsitePopups(websiteId);
-  const { deleteImage, addImage, getImageByName, images } = useWebsiteImages(websiteId);
-  const [popupData, setPopupData] = useState<PopupData>(initialPopupData(websiteId));
+  const { deleteImage, addImage, getImageByName } = useWebsiteImages(websiteId);
+  const [popupData, setPopupData] = useState<PopupData>(() => initialPopupData(websiteId, 'toast'));
   const [newImageFile, setNewImageFile] = useState<File | undefined>(undefined);
   const [isImageRemoved, setIsImageRemoved] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -65,24 +51,41 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
 
   useEffect(() => {
     if (popup) {
-      setPopupData(popup);
+      setPopupData({
+        ...popup,
+        duration: popup.duration ? popup.duration / 1000 : undefined,
+        wait_for: popup.wait_for / 1000,
+      });
       setIsImageRemoved(false);
     }
   }, [popup]);
 
+  useEffect(() => {
+    setPopupData(initialPopupData(websiteId, popupData.popup_type));
+  }, [popupData.popup_type, websiteId]);
+
   const handlePopupDataChange = (newData: Partial<PopupData>) => {
-    setPopupData((prev) => ({
-      ...prev,
-      ...newData,
-      content: { ...prev.content, ...newData.content },
-    }));
+    setPopupData((prev) => {
+      if (newData.popup_type && newData.popup_type !== prev.popup_type) {
+        return initialPopupData(websiteId, newData.popup_type);
+      }
+      return {
+        ...prev,
+        ...newData,
+        content: { ...prev.content, ...newData.content },
+      };
+    });
   };
 
   const handleSave = async () => {
     setIsLoading(true);
 
     try {
-      let updatedPopupData: PopupData = { ...popupData };
+      let updatedPopupData: PopupData = {
+        ...popupData,
+
+        wait_for: popupData.wait_for * 1000,
+      };
 
       if (newImageFile) {
         const imageName = `image-${Date.now()}`;
@@ -111,7 +114,13 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
       }
 
       const savedPopup = await upsertPopup(updatedPopupData);
-      setPopupData(savedPopup);
+
+      setPopupData({
+        ...savedPopup,
+        duration: savedPopup.duration ? savedPopup.duration / 1000 : undefined,
+        wait_for: savedPopup.wait_for / 1000,
+      });
+
       setNewImageFile(undefined);
       setIsImageRemoved(false);
 
@@ -139,7 +148,7 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
         await deleteImage({ imageName: popup.content.imageName, websiteId });
       }
       await deletePopup();
-      setPopupData(initialPopupData(websiteId));
+      setPopupData(initialPopupData(websiteId, 'toast'));
       setNewImageFile(undefined);
       setIsImageRemoved(false);
 
@@ -171,9 +180,21 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
 
     switch (popupData.popup_type) {
       case 'toast':
-        return <Toast content={popupData.content as ToastContent} image={image} />;
+        return (
+          <Toast
+            content={popupData.content as ToastContent}
+            duration={popupData.duration}
+            image={image}
+          />
+        );
       case 'basicPopup':
-        return <BasicPopup content={popupData.content as BasicPopupContent} image={image} />;
+        return (
+          <BasicPopup
+            content={popupData.content as BasicPopupContent}
+            duration={popupData.duration}
+            image={image}
+          />
+        );
       case 'macWindowPopup':
         return (
           <MacWindowPopup content={popupData.content as MacWindowPopupContent} image={image} />
@@ -231,7 +252,6 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
             </Select>
           </div>
         )}
-
         <h2 className='mb-4 mt-8 text-base font-bold sm:text-xl'>미리보기</h2>
         <div className='border-base-content/10 space-y-6 rounded-2xl border-2 border-dashed p-6'>
           {renderPopupPreview()}

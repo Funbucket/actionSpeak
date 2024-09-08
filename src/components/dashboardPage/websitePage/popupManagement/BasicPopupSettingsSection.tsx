@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { BasicPopupContent, PopupData } from '@/lib/types/popup';
@@ -23,12 +24,27 @@ const BasicPopupSettingsSection: React.FC<BasicPopupSettingsSectionProps> = ({
     onPopupDataChange({ content: { ...popupData.content, [name]: value } });
   };
 
-  const handleButtonChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleButtonChange = (
+    e: React.ChangeEvent<HTMLInputElement> | { checked: boolean; name: string }
+  ) => {
+    let key: string;
+    let value: string | boolean;
+
+    if ('target' in e) {
+      key = e.target.name;
+      value = e.target.value;
+    } else {
+      key = e.name;
+      value = e.checked;
+    }
+
     onPopupDataChange({
       content: {
         ...popupData.content,
-        button: { ...(popupData.content as BasicPopupContent).button, [name]: value },
+        button: {
+          ...((popupData.content as BasicPopupContent).button ?? {}),
+          [key]: value,
+        },
       },
     });
   };
@@ -94,6 +110,37 @@ const BasicPopupSettingsSection: React.FC<BasicPopupSettingsSectionProps> = ({
         />
       </div>
 
+      <div className='grid gap-2'>
+        <div className='flex items-center gap-2'>
+          <Label htmlFor='duration'>지속 시간 (초)</Label>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <CircleHelp className='h-4 w-4' />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>팝업이 화면에 표시되는 시간을 초 단위로 설정합니다.</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <Input
+          id='duration'
+          name='duration'
+          type='number'
+          value={popupData.duration || ''}
+          onChange={handleSettingsChange}
+          placeholder='지속 시간을 입력하세요 (초)'
+        />
+      </div>
+      <div className='flex items-center space-x-2'>
+        <Label htmlFor='timeLimit'>제한 시간 표시</Label>
+        <Switch
+          id='timeLimit'
+          checked={basicPopupContent.button?.timeLimit ?? false}
+          onCheckedChange={(checked) => handleButtonChange({ checked, name: 'timeLimit' })}
+        />
+      </div>
       <div className='grid gap-2'>
         <div className='flex items-center gap-2'>
           <Label htmlFor='frequency'>빈도</Label>

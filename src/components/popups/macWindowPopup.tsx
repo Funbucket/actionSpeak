@@ -11,22 +11,12 @@ interface MacWindowPopupProps {
 }
 
 const MacWindowPopup: React.FC<MacWindowPopupProps> = ({ content, image, tempImageUrl }) => {
-  const handleClick = () => {
-    if (content.link && content.link.includes('http')) {
-      window.open(content.link, '_blank');
-    }
-  };
-
   const WindowWrapper = content.link ? 'a' : 'div';
 
   return (
     <div className='preview-container flex items-center justify-center'>
       <WindowWrapper
         className={`as-mac-window preview-mode ${content.link ? 'cursor-pointer' : ''}`}
-        onClick={handleClick}
-        href={content.link}
-        target='_blank'
-        rel='noopener noreferrer'
       >
         <div className='title-bar'>
           <div className='buttons'>

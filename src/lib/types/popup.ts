@@ -5,7 +5,7 @@ export interface ToastContent extends Record<string, Json | undefined> {
   description: string;
   link?: string;
   imageName?: string;
-  closeButton: boolean;
+  timeLimit: boolean;
   position: 'top' | 'bottom';
 }
 
@@ -16,6 +16,7 @@ export interface BasicPopupContent extends Record<string, Json | undefined> {
   button: {
     label: string;
     link: string;
+    timeLimit: boolean;
   };
 }
 
@@ -36,7 +37,7 @@ export interface PopupData {
   content: JsonCompatiblePopupContent;
   path?: string | null;
   wait_for: number;
-  duration?: number | null;
+  duration?: number;
   frequency: number;
   created_at?: string;
 }

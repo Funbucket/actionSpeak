@@ -8,10 +8,11 @@ import { X } from 'lucide-react';
 interface BasicPopupProps {
   content: BasicPopupContent;
   image: { image_url: string; name: string } | null;
+  duration?: number;
   tempImageUrl?: string;
 }
 
-const BasicPopup: React.FC<BasicPopupProps> = ({ content, image, tempImageUrl }) => {
+const BasicPopup: React.FC<BasicPopupProps> = ({ content, image, tempImageUrl, duration }) => {
   return (
     <div className='flex items-center justify-center'>
       <div className='as-popup'>
@@ -53,6 +54,7 @@ const BasicPopup: React.FC<BasicPopupProps> = ({ content, image, tempImageUrl })
             rel='noopener noreferrer'
           >
             {content.button?.label || '버튼 텍스트를 입력하세요'}
+            {content.button?.timeLimit && duration ? ` (${duration}s)` : ''}
           </a>
         </div>
       </div>
