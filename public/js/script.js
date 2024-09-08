@@ -1055,34 +1055,63 @@
   // Handle Popup Opion
   const handlePopupOption = (popupOption) => {
     const { popup_type, wait_for, frequency, duration, content, path } = popupOption;
+    let popupElement;
 
-    // 현재 페이지 경로가 지정된 path와 일치하거나 path가 null인 경우에만 팝업 표시
-    if (!path || window.location.pathname === path) {
-      const config = {
-        options: {
-          waitFor: wait_for,
-          frequency: frequency,
-          duration: duration,
-        },
-        ...content,
-      };
+    const showPopup = () => {
+      if (path === window.location.pathname || (!path && window.location.pathname === '/')) {
+        const config = {
+          options: {
+            waitFor: wait_for,
+            frequency: frequency,
+            duration: duration,
+          },
+          ...content,
+        };
 
-      setTimeout(() => {
+        setTimeout(() => {
+          switch (popup_type) {
+            case 'toast':
+              popupElement = showToast(config);
+              break;
+            case 'basicPopup':
+              popupElement = showBasicPopup(config);
+              break;
+            case 'macWindowPopup':
+              popupElement = showMacWindowPopup(config);
+              break;
+            default:
+              console.warn('Unknown popup type:', popup_type);
+          }
+        }, wait_for || 0);
+      }
+    };
+
+    const hidePopup = () => {
+      if (popupElement) {
         switch (popup_type) {
           case 'toast':
-            window.actionSpeak.showToast(config);
+            removeToast(popupElement.id);
             break;
           case 'basicPopup':
-            window.actionSpeak.showBasicPopup(config);
+            closeBasicPopup(popupElement.id);
             break;
           case 'macWindowPopup':
-            window.actionSpeak.showMacWindowPopup(config);
+            closeMacWindowPopup(popupElement.id);
             break;
-          default:
-            console.warn('Unknown popup type:', popup_type);
         }
-      }, wait_for || 0);
-    }
+        popupElement = null;
+      }
+    };
+
+    showPopup();
+
+    window.addEventListener('popstate', () => {
+      if (path === window.location.pathname || (!path && window.location.pathname === '/')) {
+        showPopup();
+      } else {
+        hidePopup();
+      }
+    });
   };
 
   // Initialization
