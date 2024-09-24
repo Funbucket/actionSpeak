@@ -9,15 +9,15 @@
     .as-toast-container {
       position: fixed;
       z-index: 999;
-      left: 1.5rem;
-      right: 1.5rem;
+      left: 24px;
+      right: 24px;
       user-select: none;
       pointer-events: none;
     }
 
     .as-toast {
       background: transparent;
-      padding: 0 0 1rem;
+      padding: 0 0 16px;
       display: flex;
       justify-content: flex-end;
       animation: as-slide-in 0.3s ease-in-out;
@@ -37,7 +37,7 @@
       -webkit-backdrop-filter: blur(8px);
       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
       border-radius: 10px;
-      font-size: 1rem;
+      font-size: 16px;
       line-height: 1.5;
       z-index: 999;
       color: rgb(47, 48, 60);
@@ -109,7 +109,7 @@
       border: none;
       cursor: pointer;
       color: rgb(55, 65, 81);
-      font-size: 1.25rem;
+      font-size: 20px;
       line-height: 1;
       padding: 0;
       z-index: 999;
@@ -120,26 +120,26 @@
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       border-radius: 9999px;
-      padding: 0.25rem 0.5rem;
-      font-size: 0.875rem;
+      padding: 4px 8px;
+      font-size: 14px;
       color: rgb(55, 65, 81);
     }
 
     .as-toast-content-wrapper {
       flex: 1;
-      padding-right: 1rem;
+      padding-right: 16px;
     }
 
     .as-toast-content-title {
-      font-size: 1rem;
+      font-size: 16px;
       font-weight: 600;
       color: rgb(3, 7, 18);
-      margin-bottom: 0.25rem;
+      margin-bottom: 4px;
       word-wrap: break-word;
     }
 
     .as-toast-content-description {
-      font-size: 1rem;
+      font-size: 16px;
       font-weight: 400;
       line-height: 1.25;
       color: rgb(55, 65, 81);
@@ -234,8 +234,8 @@
 
     .as-popup-close-btn {
       position: absolute;
-      top: 0.5rem;
-      right: 0.5rem;
+      top: 8px;
+      right: 8px;
       background: rgba(220, 220, 220, 0.7);
       color: rgb(55, 65, 81);
       border: none;
@@ -260,8 +260,8 @@
 
     @media (min-width: 640px) {
       .as-popup-close-btn {
-        top: 1rem;
-        right: 1rem;
+        top: 16px;
+        right: 16px;
         width: 36px;
         height: 36px;
       }
@@ -282,7 +282,7 @@
       color: rgb(3, 7, 18);
       margin-top: 0;
       margin-bottom: 9px;
-      font-size: 1.5rem;
+      font-size: 24px;
       font-weight: 600;
     }
 
@@ -290,7 +290,7 @@
       color: rgb(55, 65, 81);
       margin-top: 0;
       margin-bottom: 20px;
-      font-size: 1rem;
+      font-size: 16px;
       line-height: 1.4;
     }
 
@@ -303,7 +303,7 @@
       cursor: pointer;
       display: block;
       text-decoration: none;
-      font-size: 1rem;
+      font-size: 16px;
       font-weight: 500;
       transition: background-color 0.2s ease-in-out;
       margin: 0 auto;
@@ -318,8 +318,8 @@
         width: 520px;
       }
       .as-popup-close-btn {
-        top: 1rem;
-        right: 1rem;
+        top: 16px;
+        right: 16px;
         width: 36px;
         height: 36px;
         font-size: 24px;
@@ -328,16 +328,16 @@
         padding: 20px;
       }
       .as-popup h2 {
-        font-size: 1.25rem;
+        font-size: 20px;
       }
       .as-popup p {
-        font-size: 1rem;
+        font-size: 16px;
         line-height: 1.5;
         margin-bottom: 24px;
       }
       .as-popup-btn-bottom {
         padding: 14px 20px;
-        font-size: 1rem;
+        font-size: 16px;
       }
     }
 
@@ -414,21 +414,21 @@
 
     .as-mac-window .title-bar {
       background: linear-gradient(to top, rgb(200,197,200), rgb(234,231,234));
-      height: 29px; /* Updated height */
+      height: 29px;
       border-bottom: 1px solid rgb(180, 180, 180);
       width: 100%;
       overflow: hidden;
       position: relative;
-      display: flex; /* Added for vertical centering */
-      align-items: center; /* Added for vertical centering */
+      display: flex;
+      align-items: center;
     }
 
     .as-mac-window .title-bar .buttons {
       position: absolute;
       left: 8px;
       height: 12px;
-      display: flex; /* Added for vertical centering */
-      align-items: center; /* Added for vertical centering */
+      display: flex;
+      align-items: center;
     }
 
     .as-mac-window .title-bar .buttons div {
@@ -527,7 +527,7 @@
       font-size: 13px;
       font-weight: 400;
       color: rgb(34,32,34);
-      width: 100%; /* Added to ensure title takes full width */
+      width: 100%;
     }
 
     .as-mac-window .window {
