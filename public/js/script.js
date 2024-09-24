@@ -1,7 +1,7 @@
 (() => {
   const STYLE = `
     /* Global styles */
-    .as-container {
+    :host {
       font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Roboto, "system-ui", "sans-serif";
     }
 
@@ -570,6 +570,7 @@
   let visitorId;
   let imageUrls = {};
   let websiteId;
+  let globalShadowRoot;
   const domain = document.currentScript.getAttribute('data-domain');
 
   // Util
@@ -622,12 +623,12 @@
   // Toast
   const createToastContainer = (position) => {
     let containerId = position === 'top' ? 'as-toast-container-top' : 'as-toast-container-bottom';
-    let container = document.querySelector(`#${containerId}`);
+    let container = globalShadowRoot.getElementById(containerId);
     if (!container) {
       container = document.createElement('div');
       container.id = containerId;
       container.className = 'as-toast-container as-container';
-      document.body.appendChild(container);
+      globalShadowRoot.appendChild(container);
     }
     container.style.top = position === 'top' ? '1.5rem' : 'auto';
     container.style.bottom = position === 'bottom' ? '1.5rem' : 'auto';
@@ -694,7 +695,7 @@
     activeToast = { id: toastId, position: content.position };
 
     if (content.timeLimit && duration) {
-      const timeLimitElement = document.getElementById(`as-toast-time-limit-${toastId}`);
+      const timeLimitElement = globalShadowRoot.getElementById(`as-toast-time-limit-${toastId}`);
       const startTime = Date.now();
       const endTime = startTime + duration;
 
@@ -741,7 +742,7 @@
   };
 
   const removeToast = (toastId, force = false) => {
-    const toast = document.getElementById(toastId);
+    const toast = globalShadowRoot.getElementById(toastId);
 
     if (!toast) return;
 
@@ -766,19 +767,22 @@
   const cleanupToasts = () => {
     if (toastTimeout) clearTimeout(toastTimeout);
     if (toastInterval) clearInterval(toastInterval);
-    [...topToastQueue, ...bottomToastQueue].forEach((id) => removeToast(id));
+    [...topToastQueue, ...bottomToastQueue].forEach((id) => {
+      const toast = globalShadowRoot.getElementById(id);
+      if (toast) toast.remove();
+    });
     topToastQueue = [];
     bottomToastQueue = [];
   };
 
   // Basic popup
   const createBasicPopupContainer = () => {
-    let container = document.querySelector('#as-popup-container');
+    let container = globalShadowRoot.getElementById('as-popup-container');
     if (!container) {
       container = document.createElement('div');
       container.id = 'as-popup-container';
       container.className = 'as-popup-container as-container';
-      document.body.appendChild(container);
+      globalShadowRoot.appendChild(container);
     }
     return container;
   };
@@ -826,8 +830,8 @@
 
     container.insertAdjacentHTML('beforeend', basicPopupElement);
 
-    const overlay = document.getElementById(`${popupId}-overlay`);
-    const popup = document.getElementById(popupId);
+    const overlay = globalShadowRoot.getElementById(`${popupId}-overlay`);
+    const popup = globalShadowRoot.getElementById(popupId);
 
     overlay.style.display = 'flex';
 
@@ -868,7 +872,7 @@
   };
 
   const closeBasicPopup = (popupId) => {
-    const overlay = document.getElementById(`${popupId}-overlay`);
+    const overlay = globalShadowRoot.getElementById(`${popupId}-overlay`);
     if (overlay) {
       overlay.style.display = 'none';
       setTimeout(() => {
@@ -879,12 +883,12 @@
 
   // Mac window popup
   const createMacWindowPopupContainer = () => {
-    let container = document.querySelector('#as-macwindow-container');
+    let container = globalShadowRoot.getElementById('as-macwindow-container');
     if (!container) {
       container = document.createElement('div');
       container.id = 'as-macwindow-container';
       container.className = 'as-macwindow-container';
-      document.body.appendChild(container);
+      globalShadowRoot.appendChild(container);
     }
     return container;
   };
@@ -921,8 +925,8 @@
 
     container.insertAdjacentHTML('beforeend', macPopupElement);
 
-    const overlay = document.getElementById(`${popupId}-overlay`);
-    const popup = document.getElementById(popupId);
+    const overlay = globalShadowRoot.getElementById(`${popupId}-overlay`);
+    const popup = globalShadowRoot.getElementById(popupId);
     const windowContent = popup.querySelector('.window');
     const image = windowContent.querySelector('img');
 
@@ -977,8 +981,8 @@
   };
 
   const closeMacWindowPopup = (popupId) => {
-    const overlay = document.getElementById(`${popupId}-overlay`);
-    const popup = document.getElementById(popupId);
+    const overlay = globalShadowRoot.getElementById(`${popupId}-overlay`);
+    const popup = globalShadowRoot.getElementById(popupId);
     if (overlay && popup) {
       overlay.classList.remove('active');
       popup.classList.remove('active');
@@ -1114,13 +1118,32 @@
     });
   };
 
+  // ShadowDOM Initialization
+  const initializeShadowDOM = () => {
+    const shadowHost = document.createElement('div');
+    globalShadowRoot = shadowHost.attachShadow({ mode: 'open' });
+    document.body.appendChild(shadowHost);
+
+    const styleEl = document.createElement('style');
+    styleEl.textContent = STYLE;
+    globalShadowRoot.appendChild(styleEl);
+
+    // Toast 컨테이너 초기화
+    createToastContainer('top');
+    createToastContainer('bottom');
+
+    // Basic 팝업 컨테이너 초기화
+    createBasicPopupContainer();
+
+    // Mac Window 팝업 컨테이너 초기화
+    createMacWindowPopupContainer();
+  };
+
   // Initialization
   const initialize = async () => {
     getVisitorId();
 
-    const styleEl = document.createElement('style');
-    styleEl.innerHTML = STYLE;
-    document.head.appendChild(styleEl);
+    initializeShadowDOM();
 
     try {
       const websiteData = await getWebsiteDataByDomain(domain);
@@ -1176,5 +1199,9 @@
     }
   });
 
-  initialize();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initialize);
+  } else {
+    initialize();
+  }
 })();
