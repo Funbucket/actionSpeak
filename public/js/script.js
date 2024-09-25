@@ -560,6 +560,9 @@
     endpoint: 'https://www.actionspeak.kr/api',
     frequencyPrefix: 'as-frequency-',
     maxFrequencyPrefix: 'as-max-frequency-',
+    localStorageVisitCountName: 'as-visit-count',
+    localStorageLastVisitName: 'as-last-visit',
+    revisitThreshold: 30 * 60 * 1000, // 재방문 기준: 30분
   };
 
   let toastTimeout;
@@ -583,12 +586,48 @@
     return hashHex;
   };
 
+  const getVisitCount = () => {
+    const count = localStorage.getItem(CONFIG.localStorageVisitCountName);
+    return count ? parseInt(count, 10) : 0;
+  };
+
+  const incrementVisitCount = () => {
+    const count = getVisitCount();
+    localStorage.setItem(CONFIG.localStorageVisitCountName, (count + 1).toString());
+  };
+
+  const updateLastVisit = () => {
+    const now = new Date().toISOString();
+    localStorage.setItem(CONFIG.localStorageLastVisitName, now);
+  };
+
+  const isRevisit = () => {
+    const lastVisit = localStorage.getItem(CONFIG.localStorageLastVisitName);
+    if (!lastVisit) return false;
+
+    const lastVisitTime = new Date(lastVisit).getTime();
+    const currentTime = new Date().getTime();
+
+    return currentTime - lastVisitTime > CONFIG.revisitThreshold;
+  };
+
+  const updateVisitInfo = () => {
+    if (isRevisit()) {
+      incrementVisitCount();
+    }
+    updateLastVisit();
+  };
+
   const getVisitorId = () => {
     visitorId = localStorage.getItem(CONFIG.localStorageVisitorIdName);
 
     if (!visitorId) {
       visitorId = Date.now().toString(36) + Math.random().toString(36).substr(2);
       localStorage.setItem(CONFIG.localStorageVisitorIdName, visitorId);
+      localStorage.setItem(CONFIG.localStorageVisitCountName, '1');
+      updateLastVisit();
+    } else {
+      updateVisitInfo();
     }
 
     return visitorId;
