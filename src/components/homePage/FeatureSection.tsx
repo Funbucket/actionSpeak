@@ -34,20 +34,7 @@ const FeaturesSection = () => (
         <p className='text-lg text-muted-foreground md:text-xl lg:text-2xl'>
           actionSpeak는 효과적인 팝업을 생성하는데 빠르고 강력합니다.
         </p>
-        <div className='grid gap-4 sm:grid-cols-7'>
-          <div className='sm:col-span-4'>
-            <div className='relative'>
-              <Image
-                width='400'
-                height='300'
-                unoptimized
-                src='/imgs/toast_preview.gif'
-                alt='Toast Preview'
-                className='h-auto w-full rounded-lg border border-gray-200'
-              />
-              <p className='mt-1 text-center text-sm text-muted-foreground'>푸시 팝업 예시</p>
-            </div>
-          </div>
+        <div className='grid gap-4 sm:grid-cols-6'>
           <div className='sm:col-span-3'>
             <div className='relative'>
               <Image
@@ -59,6 +46,19 @@ const FeaturesSection = () => (
                 className='h-auto w-full rounded-lg border border-gray-200'
               />
               <p className='mt-1 text-center text-sm text-muted-foreground'>기본 팝업 예시</p>
+            </div>
+          </div>
+          <div className='sm:col-span-3'>
+            <div className='relative'>
+              <Image
+                width='400'
+                height='300'
+                unoptimized
+                src='/imgs/toast_preview.gif'
+                alt='Toast Preview'
+                className='h-auto w-full rounded-lg border border-gray-200'
+              />
+              <p className='mt-1 text-center text-sm text-muted-foreground'>푸시 팝업 예시</p>
             </div>
           </div>
         </div>
