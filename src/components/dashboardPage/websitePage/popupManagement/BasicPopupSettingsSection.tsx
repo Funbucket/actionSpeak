@@ -173,7 +173,7 @@ const BasicPopupSettingsSection: React.FC<BasicPopupSettingsSectionProps> = ({
       </div>
       <div className='grid gap-2'>
         <div className='flex items-center gap-2'>
-          <Label htmlFor='wait_for'>대기 시간 (ms)</Label>
+          <Label htmlFor='wait_for'>대기 시간 (초)</Label>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
