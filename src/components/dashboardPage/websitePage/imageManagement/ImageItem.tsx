@@ -52,9 +52,9 @@ const ImageItem: React.FC<ImageItemProps> = ({
           <SelectValue placeholder='미리보기 타입' />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value='toast'>Toast</SelectItem>
-          <SelectItem value='basicPopup'>BasicPopup</SelectItem>
-          <SelectItem value='macWindowPopup'>MacWindowPopup</SelectItem>
+          <SelectItem value='toast'>푸시 팝업</SelectItem>
+          <SelectItem value='basicPopup'>기본 팝업</SelectItem>
+          <SelectItem value='macWindowPopup'>맥 윈도우 팝업</SelectItem>
         </SelectContent>
       </Select>
       <Button variant='ghost' size='icon' onClick={() => onPreview(image.name)}>
