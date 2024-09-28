@@ -17,7 +17,7 @@ export const dynamicParams = false;
 export async function generateMetadata({ params: { category, slug } }: Props): Promise<Metadata> {
   const post = await getPostDetail(category, slug);
 
-  const title = `${post.title} | D5BL5G`;
+  const title = `${post.title} | actionSpeak`;
   const imageURL = `${META.url}${post.thumbnail}`;
 
   return {
