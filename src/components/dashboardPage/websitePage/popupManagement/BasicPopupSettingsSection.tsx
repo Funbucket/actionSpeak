@@ -180,7 +180,7 @@ const BasicPopupSettingsSection: React.FC<BasicPopupSettingsSectionProps> = ({
                 <CircleHelp className='h-4 w-4' />
               </TooltipTrigger>
               <TooltipContent>
-                <p>팝업이 표시되기 전 대기 시간을 밀리초 단위로 설정합니다.</p>
+                <p>팝업이 표시되기 전 대기 시간을 초 단위로 설정합니다.</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -191,7 +191,7 @@ const BasicPopupSettingsSection: React.FC<BasicPopupSettingsSectionProps> = ({
           type='number'
           value={popupData.wait_for}
           onChange={handleSettingsChange}
-          placeholder='대기 시간을 입력하세요 (ms)'
+          placeholder='대기 시간을 입력하세요 (초)'
         />
       </div>
     </div>
