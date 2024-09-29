@@ -78,13 +78,15 @@ export default function Navbar() {
           )}
         </div>
         <div className='flex items-center space-x-2 md:hidden'>
-          <Button variant='ghost' onClick={() => router.push('/blog')}>
-            블로그
-          </Button>
           {!data?.id ? (
-            <Link href='/auth' className='animate-fade'>
-              <Button variant='outline'>로그인</Button>
-            </Link>
+            <>
+              <Button variant='ghost' onClick={() => router.push('/blog')}>
+                블로그
+              </Button>
+              <Link href='/auth' className='animate-fade'>
+                <Button variant='outline'>로그인</Button>
+              </Link>
+            </>
           ) : (
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <SheetTrigger asChild>
