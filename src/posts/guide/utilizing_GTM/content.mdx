@@ -1,0 +1,160 @@
+---
+title: GTM과 actionSpeak 활용하여 고객에게 말 걸기
+date: 2024-09-28
+desc: GTM과 actionSpeak 활용 가이드
+thumbnail: /posts/guide/utilizing_GTM/thumbnail.png
+---
+## Introduction
+구매까지는 여러 단계의 퍼널이 존재합니다. 각 단계의 전환률을 높여 구매로 이어지게 하는 것이 중요한데, 이를 위해 무엇을 할 수 있을까요?
+
+GTM(Google Tag Manager)과 actionSpeak를 함께 사용하면 팝업을 통해 고객의 여정에 적극적으로 참여하여 전환률 향상을 기대할 수 있습니다.
+
+예를 들어
+  - 첫 사용자를 위한 회원가입 혜택 안내 팝업 → **회원가입 전환률 향상**
+  - 상품을 장바구니에 담지 않고 망설이는 고객에게 할인 쿠폰을 제공하는 팝업 → **장바구니 전환률 향상**
+  - 상품을 장바구니에 담고 구매를 망설이는 고객에게 시간 제한이 있는 특별 할인 쿠폰을 제공하는 팝업 → **구매 전환률  향상**
+  - 재방문 고객을 위한 환영 메세지와 상품 추천 팝업 → **재구매률 향상**
+
+이러한 전략들은 구매 퍼널의 각 단계별 전환율을 높이고, 결과적으로 전반적인 구매 전환율 향상에 기여할 수 있습니다.
+
+이 글에서는 구체적인 예시로, 재방문 고객을 위한 환영 메세지와 상품 추천 팝업을 보여주는 방법에 대해 알아보겠습니다.
+
+
+## GTM이란?
+
+![제한 속도: 트리거, 차량 번호: 변수, 담당 공무원에게 보고: 태그](/posts/guide/utilizing_GTM/1.png)
+
+GTM(Google Tag Manager)는 홈페이지의 감시카메라입니다. 고객이 웹사이트에서 **어떤 행동**을 했는지 감시하고, 제 3자(GA4, actionSpeak, 페이스북 픽셀 등)에게 **알리고 싶은 정보**와 함께 **보고**하는 역할을 합니다.
+
+감시카메라에 빗대어 다시 설명하자면, **특정 차량이 제한 속도를 넘었을 때**(트리거), **차량 번호**(변수)를 **담당 공무원에게 보고**(태그)하는 것입니다.
+
+이 글의 예시로는 사용자의 재방문을 트리거로 하고, actionSpeak에 보고하여 팝업을 보여주는 것을 태그로 하곘습니다.
+
+
+## GTM 설치
+1. [GTM(Google Tag Manager)](https://tagmanager.google.com/)에 로그인하여 [계정 만들기]를 클릭합니다.
+
+![](/posts/guide/utilizing_GTM/2.png)
+
+2. 계정 및 컨테이너 정보를 입력하여 [만들기]를 클릭합니다.
+  - 계정 이름: 회사나 브랜드 이름을 입력합니다.
+  - 컨테이너 이름: 웹사이트 주소를 입력합니다.
+  - 타겟 플랫폼: 웹을 선택합니다.
+
+![](/posts/guide/utilizing_GTM/3.png)
+
+3. 설치 코드를 복사하여 웹사이트의 head 태그와 body 태그에 붙여넣습니다.
+  - 아임웹 사용자 팁: 복사한 설치 코드를 ‘사이트 관리 > 환경설정 > SEO(검색엔진최적화)’ 에서 추가할 수 있습니다. 
+
+![](/posts/guide/utilizing_GTM/4.png)
+
+4. 설치 확인
+  - 설치한 웹사이트의 URL을 붙여넣고 [테스트]를 클릭하여 설치를 확인합니다.
+
+![](/posts/guide/utilizing_GTM/5.png)
+
+
+## 변수 설정
+사용자의 웹사이트 방문 횟수를 알기 위한 변수를 만들겠습니다.
+1. ‘변수 > 사용자 정의 변수’ 에서 [새로 만들기]를 클릭합니다.
+
+![](/posts/guide/utilizing_GTM/6.png)
+
+2. 변수 유형으로 [맞춤 자바스크립트]를 선택합니다.
+
+![](/posts/guide/utilizing_GTM/7.png)
+
+3. 맞춤 자바스크립트에 하단 코드를 붙여넣고 저장합니다.
+
+```js
+function() {
+  return localStorage.getItem('as-visit-count');
+}
+```
+
+![](/posts/guide/utilizing_GTM/8.png)
+
+4. 변수가 추가된 것을 확인합니다.
+
+![](/posts/guide/utilizing_GTM/9.png)
+
+## 트리거 설정
+트리거는 태그가 실행되는 조건입니다.
+
+이번 예시는
+  - 트리거: 웹사이트 방문 횟수 2회 이상일 때
+  - 태그: 회원가입 유도 팝업 노출
+
+입니다.
+
+1. ‘트리거 메뉴’ 에서 [새로 만들기]를 클릭합니다.
+
+![](/posts/guide/utilizing_GTM/10.png)
+
+2. 트리거의 유형으로 [페이지뷰]를 선택합니다.
+
+![](/posts/guide/utilizing_GTM/11.png)
+
+3. 트리거의 실행 조건으로 [일부 페이지뷰]를 선택하고, 위에서 만든 방문 횟수 변수를 2 이상으로 설정한 후 저장합니다.
+
+![](/posts/guide/utilizing_GTM/12.png)
+
+4. 트리거가 추가된 것을 확인합니다.
+
+![](/posts/guide/utilizing_GTM/13.png)
+
+
+## 태그 설정
+### 이미지 추가
+태그를 만들기 전에 팝업에 사용할 이미지를 추가하겠습니다.
+
+1. [actionSpeak](https://www.actionspeak.kr/dashboard)에 로그인하여 ‘웹사이트 관리 > 이미지 관리’에서 이미지를 추가합니다.
+  - 이미지 이름: 태그 설정 시 추가한 이미지의 구분 값
+
+![](/posts/guide/utilizing_GTM/14.png)
+
+2. 추가한 이미지가 팝업에서 어떻게 보여지는지 미리보기를 클릭하여 확인합니다.
+
+![](/posts/guide/utilizing_GTM/15.png)
+
+
+### actionSpeak 템플릿 추가
+1. ‘템플릿 > 태그 템플릿’ 에서 [갤러리 검색]을 클릭합니다.
+
+![](/posts/guide/utilizing_GTM/16.png)
+
+2. ‘ActionSpeak Show Popup Tag’를 찾아 [작업공간에 추가]를 클릭합니다.
+
+![](/posts/guide/utilizing_GTM/17.png)
+
+3. 태그 템플릿에 추가된 것을 확인합니다.
+
+![](/posts/guide/utilizing_GTM/18.png)
+
+
+### 태그 추가
+1. ‘태그 메뉴’ 에서 [새로 만들기]를 클릭합니다.
+
+![](/posts/guide/utilizing_GTM/19.png)
+
+2. 태그 유형으로 [ActionSpeak Show Popup Tag]를 선택합니다.
+
+![](/posts/guide/utilizing_GTM/20.png)
+
+3. 설정 값을 입력합니다.
+  - 이미지 이름: actionSpeak에서 설정한 이미지의 고유 이름
+  - 링크: 클릭 시 이동할 페이지의 URL
+  - 지속 시간: 팝업이 지속되는 시간
+  - 제한 시간 표시: 팝업의 남은 시간을 보여줄지 여부
+  - 빈도: 동일 고객에게 팝업이 노출되는 횟수
+  - 대기 시간: 팝업이 나타나기 전 대기 시간
+
+![](/posts/guide/utilizing_GTM/21.png)
+
+4. 태그의 트리거로 [재방문]을 선택하고 저장합니다.
+
+![](/posts/guide/utilizing_GTM/22.png)
+
+5. 태그에 추가된 것을 확인하고 [제출]을 클릭합니다.
+
+![](/posts/guide/utilizing_GTM/23.png)
