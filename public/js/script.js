@@ -576,16 +576,7 @@
   let globalShadowRoot;
   const domain = document.currentScript.getAttribute('data-domain');
 
-  // Util
-  const generateHash = async (message) => {
-    const msgStr = JSON.stringify(message);
-    const msgUint8 = new TextEncoder().encode(msgStr);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-    return hashHex;
-  };
-
+  // User
   const getVisitCount = () => {
     const count = localStorage.getItem(CONFIG.localStorageVisitCountName);
     return count ? parseInt(count, 10) : 0;
@@ -631,32 +622,6 @@
     }
 
     return visitorId;
-  };
-
-  const show = async (type, config) => {
-    if (!websiteId) {
-      console.error(`Your website is not registered. Cannot show ${type}.`);
-      return;
-    }
-
-    const { options, ...content } = config;
-    const { waitFor, duration, frequency } = options || {};
-
-    content.id = await generateHash(content);
-    setMaxFrequency(content.id, frequency);
-
-    setTimeout(() => {
-      if (shouldShowBasedOnFrequency(content.id, frequency)) {
-        if (type === 'toast') {
-          showToast(content, duration);
-        } else if (type === 'basicPopup') {
-          showBasicPopup(content, duration);
-        } else if (type === 'macWindowPopup') {
-          showMacWindowPopup(content, duration);
-        }
-        incrementFrequency(content.id);
-      }
-    }, waitFor || 0);
   };
 
   // Toast
@@ -773,6 +738,7 @@
       if (linkElement) {
         linkElement.addEventListener('click', (event) => {
           if (!event.target.closest('.as-toast-close-btn')) {
+            removeToast(toastId, true);
             window.open(content.link, '_blank');
           }
         });
@@ -1002,6 +968,7 @@
 
     if (content.link) {
       windowContent.addEventListener('click', () => {
+        closeMacWindowPopup(popupId);
         window.open(content.link, '_blank');
       });
     }
@@ -1063,6 +1030,15 @@
   };
 
   // Frequency
+  const generateHash = async (message) => {
+    const msgStr = JSON.stringify(message);
+    const msgUint8 = new TextEncoder().encode(msgStr);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+  };
+
   const getFrequency = (id) => {
     const frequency = localStorage.getItem(CONFIG.frequencyPrefix + id);
     return frequency ? parseInt(frequency, 10) : 0;
@@ -1107,7 +1083,7 @@
 
     const showPopup = async () => {
       if (path === window.location.pathname || (!path && window.location.pathname === '/')) {
-        const popupId = await generateHash(content);
+        const popupId = await generateHash({ type: popup_type, content: content });
         if (shouldShowBasedOnFrequency(popupId, frequency)) {
           setTimeout(() => {
             switch (popup_type) {
@@ -1128,7 +1104,6 @@
         }
       }
     };
-
     const hidePopup = () => {
       if (popupElement) {
         switch (popup_type) {
@@ -1155,6 +1130,33 @@
         hidePopup();
       }
     });
+  };
+
+  // show popup
+  const show = async (type, config) => {
+    if (!websiteId) {
+      console.error(`Your website is not registered. Cannot show ${type}.`);
+      return;
+    }
+
+    const { options, ...content } = config;
+    const { waitFor, duration, frequency } = options || {};
+
+    const popupId = await generateHash({ type, content });
+    setMaxFrequency(popupId, frequency);
+
+    setTimeout(() => {
+      if (shouldShowBasedOnFrequency(popupId, frequency)) {
+        if (type === 'toast') {
+          showToast(content, duration);
+        } else if (type === 'basicPopup') {
+          showBasicPopup(content, duration);
+        } else if (type === 'macWindowPopup') {
+          showMacWindowPopup(content, duration);
+        }
+        incrementFrequency(popupId);
+      }
+    }, waitFor || 0);
   };
 
   // ShadowDOM Initialization
