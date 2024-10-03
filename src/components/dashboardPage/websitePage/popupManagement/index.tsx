@@ -129,12 +129,12 @@ const PopupManagementSection: React.FC<PopupManagementSectionProps> = ({ website
         title: '저장 성공',
         description: '팝업이 성공적으로 저장되었습니다.',
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving popup:', error);
       toast({
         variant: 'destructive',
         title: '저장 실패',
-        description: '팝업 저장 중 오류가 발생했습니다. 다시 시도해 주세요.',
+        description: error.message,
       });
     } finally {
       setIsLoading(false);

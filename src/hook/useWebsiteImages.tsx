@@ -57,15 +57,19 @@ const addWebsiteImage = async (file: File, name: string, websiteId: string) => {
 
   if (userError) throw new Error(userError.message);
 
-  const { data: imageCount, error: countError } = await supabase
+  const { data: existingImages, error: existingImagesError } = await supabase
     .from('website_images')
-    .select('id', { count: 'exact' })
+    .select('name')
     .eq('website_id', websiteId);
 
-  if (countError) throw new Error(countError.message);
+  if (existingImagesError) throw new Error(existingImagesError.message);
 
-  if (!userData.is_premium && imageCount.length >= 2) {
-    throw new Error('Non-premium users can only upload up to 2 images per website');
+  if (existingImages.some((img) => img.name === name)) {
+    throw new Error('동일한 이름의 이미지가 이미 존재합니다.');
+  }
+
+  if (!userData.is_premium && existingImages.length >= 2) {
+    throw new Error('무료 회원은 웹사이트당 최대 2개의 이미지만 업로드할 수 있습니다.');
   }
 
   const { publicUrl, imageId } = await uploadImage(file, websiteId);
