@@ -682,13 +682,13 @@
   const pushDataLayerEvent = (event, popupId, popupTitle, popupType, bucket, visitorId) => {
     if (window.dataLayer) {
       window.dataLayer.push({
-        event: event,
-        popupId: popupId,
-        popupTitle: popupTitle,
-        popupType: popupType,
-        bucket: bucket,
-        timestamp: new Date().toISOString(),
-        visitorId: visitorId,
+        as_event: event,
+        as_popupId: popupId,
+        as_popupTitle: popupTitle,
+        as_popupType: popupType,
+        as_bucket: bucket,
+        as_timestamp: new Date().toISOString(),
+        as_visitorId: visitorId,
       });
     }
   };
