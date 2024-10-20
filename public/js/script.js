@@ -1159,8 +1159,6 @@
         if (path !== window.location.pathname && window.location.pathname !== '/') {
           return;
         }
-      } else if (window.location.pathname !== '/') {
-        return;
       }
 
       setMaxFrequency(popupId, frequency);
