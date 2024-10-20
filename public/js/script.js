@@ -682,7 +682,7 @@
   const pushDataLayerEvent = (event, popupId, popupTitle, popupType, bucket, visitorId) => {
     if (window.dataLayer) {
       window.dataLayer.push({
-        asEvent: event,
+        event: event,
         asPopupId: popupId,
         asPopupTitle: popupTitle,
         asPopupType: popupType,
