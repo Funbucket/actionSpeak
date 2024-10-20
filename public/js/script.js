@@ -576,7 +576,7 @@
   let globalShadowRoot;
   const domain = document.currentScript.getAttribute('data-domain');
 
-  // User
+  // User identification
   const getVisitCount = () => {
     const count = localStorage.getItem(CONFIG.localStorageVisitCountName);
     return count ? parseInt(count, 10) : 0;
@@ -609,11 +609,13 @@
     updateLastVisit();
   };
 
-  const getVisitorId = () => {
-    visitorId = localStorage.getItem(CONFIG.localStorageVisitorIdName);
+  const initializeVisitorAndVisitInfo = () => {
+    let visitorId = localStorage.getItem(CONFIG.localStorageVisitorIdName);
 
     if (!visitorId) {
-      visitorId = Date.now().toString(36) + Math.random().toString(36).substr(2);
+      visitorId = ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
+        (c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16)
+      );
       localStorage.setItem(CONFIG.localStorageVisitorIdName, visitorId);
       localStorage.setItem(CONFIG.localStorageVisitCountName, '1');
       updateLastVisit();
@@ -622,6 +624,72 @@
     }
 
     return visitorId;
+  };
+
+  // AB test bucketing
+  const assignBucket = async (visitorId, testId) => {
+    const combinedId = `${visitorId}:${testId}`;
+    const msgUint8 = new TextEncoder().encode(combinedId);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashInt = hashArray.reduce(
+      (acc, curr) => (acc * 256 + curr) % Number.MAX_SAFE_INTEGER,
+      0
+    );
+    const variant = hashInt % 2;
+    return variant === 0 ? 'control' : 'test';
+  };
+
+  // Popup Frequency
+  const generateHash = async (message) => {
+    const msgStr = JSON.stringify(message);
+    const msgUint8 = new TextEncoder().encode(msgStr);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+  };
+
+  const getFrequency = (id) => {
+    const frequency = localStorage.getItem(CONFIG.frequencyPrefix + id);
+    return frequency ? parseInt(frequency, 10) : 0;
+  };
+
+  const incrementFrequency = (id) => {
+    const frequency = getFrequency(id);
+    localStorage.setItem(CONFIG.frequencyPrefix + id, frequency + 1);
+  };
+
+  const getMaxFrequency = (id) => {
+    const maxFrequency = localStorage.getItem(CONFIG.maxFrequencyPrefix + id);
+    return maxFrequency ? parseInt(maxFrequency, 10) : 0;
+  };
+
+  const setMaxFrequency = (id, maxFrequency) => {
+    if (localStorage.getItem(CONFIG.maxFrequencyPrefix + id) === null) {
+      localStorage.setItem(CONFIG.maxFrequencyPrefix + id, maxFrequency);
+    }
+  };
+
+  const shouldShowBasedOnFrequency = (id, maxFrequency) => {
+    setMaxFrequency(id, maxFrequency);
+    const frequency = getFrequency(id);
+    return frequency < getMaxFrequency(id);
+  };
+
+  // dataLayer Event Push
+  const pushDataLayerEvent = (popupId, popupTitle, popupType, bucket, visitorId) => {
+    if (window.dataLayer) {
+      window.dataLayer.push({
+        event: 'actionSpeak_impression',
+        popupId: popupId,
+        popupTitle: popupTitle,
+        popupType: popupType,
+        bucket: bucket,
+        timestamp: new Date().toISOString(),
+        visitorId: visitorId,
+      });
+    }
   };
 
   // Toast
@@ -639,7 +707,7 @@
     return container;
   };
 
-  const createToastElement = (content, duration) => {
+  const createToastElement = (content, duration, popupId) => {
     let image = '';
     if (content.imageName && imageUrls[content.imageName]) {
       image = `
@@ -651,7 +719,7 @@
 
     let closeElement = '';
     if (content.timeLimit && duration) {
-      closeElement = `<div class="as-toast-time-limit" id="as-toast-time-limit-${content.id}">${duration / 1000}s</div>`;
+      closeElement = `<div class="as-toast-time-limit" id="as-toast-time-limit-${popupId}">${duration / 1000}s</div>`;
     } else {
       closeElement = '<button class="as-toast-close-btn" aria-label="Close">&times;</button>';
     }
@@ -680,26 +748,24 @@
     }
   };
 
-  const showToast = (content, duration) => {
+  const showToast = (content, duration, popupId) => {
     const container = createToastContainer(content.position);
 
     if (window.innerWidth < 640 && activeToast) {
       removeToast(activeToast.id, true);
     }
 
-    const toastId = `as-toast-${Date.now()}`;
-    content.id = toastId;
     const toast = document.createElement('div');
-    toast.id = toastId;
+    toast.id = popupId;
     toast.className = 'as-toast';
-    toast.innerHTML = createToastElement(content, duration);
+    toast.innerHTML = createToastElement(content, duration, popupId);
 
     container.prepend(toast);
 
-    activeToast = { id: toastId, position: content.position };
+    activeToast = { id: popupId, position: content.position };
 
     if (content.timeLimit && duration) {
-      const timeLimitElement = globalShadowRoot.getElementById(`as-toast-time-limit-${toastId}`);
+      const timeLimitElement = globalShadowRoot.getElementById(`as-toast-time-limit-${popupId}`);
       const startTime = Date.now();
       const endTime = startTime + duration;
 
@@ -711,7 +777,7 @@
         }
         if (timeRemaining <= 0) {
           clearInterval(intervalId);
-          removeToast(toastId, false);
+          removeToast(popupId, false);
         }
       };
 
@@ -722,14 +788,14 @@
       if (closeButton) {
         closeButton.addEventListener('click', (event) => {
           event.stopPropagation();
-          removeToast(toastId, true);
+          removeToast(popupId, true);
         });
       }
     }
 
     if (duration) {
       setTimeout(() => {
-        removeToast(toastId, false);
+        removeToast(popupId, false);
       }, duration);
     }
 
@@ -738,7 +804,7 @@
       if (linkElement) {
         linkElement.addEventListener('click', (event) => {
           if (!event.target.closest('.as-toast-close-btn')) {
-            removeToast(toastId, true);
+            removeToast(popupId, true);
             window.open(content.link, '_blank');
           }
         });
@@ -746,14 +812,14 @@
     }
   };
 
-  const removeToast = (toastId, force = false) => {
-    const toast = globalShadowRoot.getElementById(toastId);
+  const removeToast = (popupId, force = false) => {
+    const toast = globalShadowRoot.getElementById(popupId);
 
     if (!toast) return;
 
     if (force) {
       toast.remove();
-      if (activeToast && activeToast.id === toastId) {
+      if (activeToast && activeToast.id === popupId) {
         activeToast = null;
       }
     } else {
@@ -761,7 +827,7 @@
       setTimeout(() => {
         if (toast) {
           toast.remove();
-          if (activeToast && activeToast.id === toastId) {
+          if (activeToast && activeToast.id === popupId) {
             activeToast = null;
           }
         }
@@ -828,9 +894,8 @@
     `;
   };
 
-  const showBasicPopup = (content, duration) => {
+  const showBasicPopup = (content, duration, popupId) => {
     const container = createBasicPopupContainer();
-    const popupId = `as-popup-${Date.now()}`;
     const basicPopupElement = createBasicPopupElement(content, popupId);
 
     container.insertAdjacentHTML('beforeend', basicPopupElement);
@@ -923,26 +988,25 @@
     `;
   };
 
-  const showMacWindowPopup = (content, duration) => {
+  const showMacWindowPopup = (content, duration, popupId) => {
     const container = createMacWindowPopupContainer();
-    const popupId = `as-macpopup-${Date.now()}`;
     const macPopupElement = createMacWindowPopupElement(content, popupId);
 
     container.insertAdjacentHTML('beforeend', macPopupElement);
 
     const overlay = globalShadowRoot.getElementById(`${popupId}-overlay`);
     const popup = globalShadowRoot.getElementById(popupId);
-    const windowContent = popup.querySelector('.window');
-    const image = windowContent.querySelector('img');
+    const image = popup.querySelector('.window img');
 
-    if (image) {
-      image.onload = () => {
-        overlay.classList.add('active');
-        popup.classList.add('active');
-      };
-    } else {
+    const activatePopup = () => {
       overlay.classList.add('active');
       popup.classList.add('active');
+    };
+
+    if (image) {
+      image.onload = activatePopup;
+    } else {
+      activatePopup();
     }
 
     const closeButton = popup.querySelector('.close');
@@ -967,10 +1031,13 @@
     });
 
     if (content.link) {
-      windowContent.addEventListener('click', () => {
-        closeMacWindowPopup(popupId);
-        window.open(content.link, '_blank');
-      });
+      const windowElement = popup.querySelector('.window');
+      if (windowElement) {
+        windowElement.addEventListener('click', () => {
+          closeMacWindowPopup(popupId);
+          window.open(content.link, '_blank');
+        });
+      }
     }
 
     overlay.addEventListener('click', (event) => {
@@ -1029,43 +1096,6 @@
     throw new Error('Failed to get images');
   };
 
-  // Frequency
-  const generateHash = async (message) => {
-    const msgStr = JSON.stringify(message);
-    const msgUint8 = new TextEncoder().encode(msgStr);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-    return hashHex;
-  };
-
-  const getFrequency = (id) => {
-    const frequency = localStorage.getItem(CONFIG.frequencyPrefix + id);
-    return frequency ? parseInt(frequency, 10) : 0;
-  };
-
-  const incrementFrequency = (id) => {
-    const frequency = getFrequency(id);
-    localStorage.setItem(CONFIG.frequencyPrefix + id, frequency + 1);
-  };
-
-  const getMaxFrequency = (id) => {
-    const maxFrequency = localStorage.getItem(CONFIG.maxFrequencyPrefix + id);
-    return maxFrequency ? parseInt(maxFrequency, 10) : 0;
-  };
-
-  const setMaxFrequency = (id, maxFrequency) => {
-    if (localStorage.getItem(CONFIG.maxFrequencyPrefix + id) === null) {
-      localStorage.setItem(CONFIG.maxFrequencyPrefix + id, maxFrequency);
-    }
-  };
-
-  const shouldShowBasedOnFrequency = (id, maxFrequency) => {
-    setMaxFrequency(id, maxFrequency);
-    const frequency = getFrequency(id);
-    return frequency < getMaxFrequency(id);
-  };
-
   // Image load
   const preloadImage = (src) => {
     return new Promise((resolve, reject) => {
@@ -1076,87 +1106,81 @@
     });
   };
 
-  // Handle Popup Option
-  const handlePopupOption = (popupOption) => {
-    const { popup_type, wait_for, frequency, duration, content, path } = popupOption;
-    let popupElement;
-
-    const showPopup = async () => {
-      if (path === window.location.pathname || (!path && window.location.pathname === '/')) {
-        const popupId = await generateHash({ type: popup_type, content: content });
-        if (shouldShowBasedOnFrequency(popupId, frequency)) {
-          setTimeout(() => {
-            switch (popup_type) {
-              case 'toast':
-                popupElement = showToast(content, duration);
-                break;
-              case 'basicPopup':
-                popupElement = showBasicPopup(content, duration);
-                break;
-              case 'macWindowPopup':
-                popupElement = showMacWindowPopup(content, duration);
-                break;
-              default:
-                console.warn('Unknown popup type:', popup_type);
-            }
-            incrementFrequency(popupId);
-          }, wait_for || 0);
-        }
-      }
-    };
-    const hidePopup = () => {
-      if (popupElement) {
-        switch (popup_type) {
-          case 'toast':
-            removeToast(popupElement.id);
-            break;
-          case 'basicPopup':
-            closeBasicPopup(popupElement.id);
-            break;
-          case 'macWindowPopup':
-            closeMacWindowPopup(popupElement.id);
-            break;
-        }
-        popupElement = null;
-      }
-    };
-
-    showPopup();
-
-    window.addEventListener('popstate', () => {
-      if (path === window.location.pathname || (!path && window.location.pathname === '/')) {
-        showPopup();
-      } else {
-        hidePopup();
-      }
-    });
-  };
-
   // show popup
-  const show = async (type, config) => {
+  const showPopup = async (config) => {
     if (!websiteId) {
-      console.error(`Your website is not registered. Cannot show ${type}.`);
+      console.error(`Your website is not registered. Cannot show popup.`);
       return;
     }
 
-    const { options, ...content } = config;
-    const { waitFor, duration, frequency } = options || {};
+    const { type, options, abTest, ...content } = config;
+    const { waitFor, duration, frequency, path } = options || {};
+    const visitorId = initializeVisitorAndVisitInfo();
+    const popupId = await generateHash({ type, domain, content });
+    let popupElementId = popupId;
 
-    const popupId = await generateHash({ type, content });
-    setMaxFrequency(popupId, frequency);
-
-    setTimeout(() => {
-      if (shouldShowBasedOnFrequency(popupId, frequency)) {
-        if (type === 'toast') {
-          showToast(content, duration);
-        } else if (type === 'basicPopup') {
-          showBasicPopup(content, duration);
-        } else if (type === 'macWindowPopup') {
-          showMacWindowPopup(content, duration);
+    const show = async () => {
+      if (path) {
+        if (path !== window.location.pathname && window.location.pathname !== '/') {
+          return;
         }
-        incrementFrequency(popupId);
+      } else if (window.location.pathname !== '/') {
+        return;
       }
-    }, waitFor || 0);
+
+      setMaxFrequency(popupId, frequency);
+
+      if (shouldShowBasedOnFrequency(popupId, frequency)) {
+        const bucket = abTest ? await assignBucket(visitorId, popupId) : 'default';
+
+        // AB 테스트 처리
+        if (abTest && bucket === 'control') {
+          return; // control 그룹인 경우 팝업을 보여주지 않음
+        }
+
+        setTimeout(() => {
+          switch (type) {
+            case 'toast':
+              showToast(content, duration, popupId);
+              break;
+            case 'basicPopup':
+              showBasicPopup(content, duration, popupId);
+              break;
+            case 'macWindowPopup':
+              showMacWindowPopup(content, duration, popupId);
+              break;
+            default:
+              console.warn('Unknown popup type:', type);
+          }
+          pushDataLayerEvent(popupId, content.title, type, bucket, visitorId);
+          incrementFrequency(popupId);
+        }, waitFor || 0);
+      }
+    };
+
+    const hide = () => {
+      switch (type) {
+        case 'toast':
+          removeToast(popupElementId);
+          break;
+        case 'basicPopup':
+          closeBasicPopup(popupElementId);
+          break;
+        case 'macWindowPopup':
+          closeMacWindowPopup(popupElementId);
+          break;
+      }
+    };
+
+    show();
+
+    window.addEventListener('popstate', () => {
+      if (path === window.location.pathname || (!path && window.location.pathname === '/')) {
+        show();
+      } else {
+        hide();
+      }
+    });
   };
 
   // ShadowDOM Initialization
@@ -1182,8 +1206,7 @@
 
   // Initialization
   const initialize = async () => {
-    getVisitorId();
-
+    initializeVisitorAndVisitInfo();
     initializeShadowDOM();
 
     try {
@@ -1196,13 +1219,13 @@
 
         // 팝업 옵션이 있는 경우 처리
         if (websiteData.popup_option) {
-          handlePopupOption(websiteData.popup_option);
+          showPopup({ ...websiteData.popup_option, abTest: false });
         }
       } else {
         console.error('Website is not registered');
       }
     } catch (error) {
-      console.error('Error during initialization:', error);
+      console.error('Failed to initialize popups:', error);
     }
 
     window.actionSpeak.isReady = true;
@@ -1212,15 +1235,15 @@
   window.actionSpeak = window.actionSpeak || {};
 
   window.actionSpeak.showToast = async (config) => {
-    await show('toast', config);
+    await showPopup({ type: 'toast', ...config });
   };
 
   window.actionSpeak.showBasicPopup = async (config) => {
-    await show('basicPopup', config);
+    await showPopup({ type: 'basicPopup', ...config });
   };
 
   window.actionSpeak.showMacWindowPopup = async (config) => {
-    await show('macWindowPopup', config);
+    await showPopup({ type: 'macWindowPopup', ...config });
   };
 
   window.actionSpeak.imageFetch = async () => {
