@@ -570,7 +570,6 @@
   let topToastQueue = [];
   let bottomToastQueue = [];
   let activeToast = null;
-  let visitorId;
   let imageUrls = {};
   let websiteId;
   let globalShadowRoot;
@@ -637,7 +636,9 @@
       0
     );
     const variant = hashInt % 2;
-    return variant === 0 ? 'control' : 'test';
+    const bucket = variant === 0 ? 'control' : 'test';
+    localStorage.setItem(`as-bucket-${testId}`, bucket);
+    return bucket;
   };
 
   // Popup Frequency
@@ -678,10 +679,10 @@
   };
 
   // dataLayer Event Push
-  const pushDataLayerEvent = (popupId, popupTitle, popupType, bucket, visitorId) => {
+  const pushDataLayerEvent = (event, popupId, popupTitle, popupType, bucket, visitorId) => {
     if (window.dataLayer) {
       window.dataLayer.push({
-        event: 'actionSpeak_impression',
+        event: event,
         popupId: popupId,
         popupTitle: popupTitle,
         popupType: popupType,
@@ -805,7 +806,17 @@
         linkElement.addEventListener('click', (event) => {
           if (!event.target.closest('.as-toast-close-btn')) {
             removeToast(popupId, true);
+            const visitorId = localStorage.getItem(CONFIG.localStorageVisitorIdName);
+            const bucket = localStorage.getItem(`as-bucket-${popupId}`) || 'default';
             window.open(content.link, '_blank');
+            pushDataLayerEvent(
+              'actionSpeak_click',
+              popupId,
+              content.title,
+              'toast',
+              bucket,
+              visitorId
+            );
           }
         });
       }
@@ -915,7 +926,21 @@
     closeButton.addEventListener('click', () => closeBasicPopup(popupId));
 
     const bottomButton = popup.querySelector('.as-popup-btn-bottom');
-    bottomButton.addEventListener('click', () => closeBasicPopup(popupId));
+    if (bottomButton) {
+      bottomButton.addEventListener('click', () => {
+        closeBasicPopup(popupId);
+        const visitorId = localStorage.getItem(CONFIG.localStorageVisitorIdName);
+        const bucket = localStorage.getItem(`as-bucket-${popupId}`) || 'default';
+        pushDataLayerEvent(
+          'actionSpeak_click',
+          popupId,
+          content.title,
+          'basicPopup',
+          bucket,
+          visitorId
+        );
+      });
+    }
 
     if (content.button && content.button.timeLimit && duration) {
       const endTime = Date.now() + duration;
@@ -1036,6 +1061,16 @@
         windowElement.addEventListener('click', () => {
           closeMacWindowPopup(popupId);
           window.open(content.link, '_blank');
+          const visitorId = localStorage.getItem(CONFIG.localStorageVisitorIdName);
+          const bucket = localStorage.getItem(`as-bucket-${popupId}`) || 'default';
+          pushDataLayerEvent(
+            'actionSpeak_click',
+            popupId,
+            content.title,
+            'macWindowPopup',
+            bucket,
+            visitorId
+          );
         });
       }
     }
@@ -1152,7 +1187,14 @@
             default:
               console.warn('Unknown popup type:', type);
           }
-          pushDataLayerEvent(popupId, content.title, type, bucket, visitorId);
+          pushDataLayerEvent(
+            'actionSpeak_impression',
+            popupId,
+            content.title,
+            type,
+            bucket,
+            visitorId
+          );
           incrementFrequency(popupId);
         }, waitFor || 0);
       }
