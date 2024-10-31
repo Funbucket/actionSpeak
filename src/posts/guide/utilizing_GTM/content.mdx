@@ -4,7 +4,7 @@ date: 2024-10-01
 desc: GTM과 actionSpeak 활용 가이드
 thumbnail: /posts/guide/utilizing_GTM/thumbnail.png
 ---
-## Introduction
+# Introduction
 구매까지는 여러 단계의 퍼널이 존재합니다. 각 단계의 전환률을 높여 구매로 이어지게 하는 것이 중요한데, 이를 위해 무엇을 할 수 있을까요?
 
 GTM(Google Tag Manager)과 actionSpeak를 함께 사용하면 팝업을 통해 고객의 여정에 적극적으로 참여하여 전환률 향상을 기대할 수 있습니다.
@@ -20,7 +20,7 @@ GTM(Google Tag Manager)과 actionSpeak를 함께 사용하면 팝업을 통해 �
 이 글에서는 구체적인 예시로, 재방문 고객을 위한 환영 메세지와 상품 추천 팝업을 보여주는 방법에 대해 알아보겠습니다.
 
 
-## GTM이란?
+# GTM이란?
 
 ![차량 속도 및 번호: 변수, 속도 위반: 트리거, 담당 공무원에게 보고: 태그](/posts/guide/utilizing_GTM/1.png)
 
@@ -34,109 +34,89 @@ GTM(Google Tag Manager)는 홈페이지의 감시카메라입니다. 고객이 �
   - 태그: actionSpeak에 보고하여 팝업 노출
 
 
-## GTM 설치
+# GTM 설치
 1. [GTM(Google Tag Manager)](https://tagmanager.google.com/)에 로그인하여 [계정 만들기]를 클릭합니다.
-
-![](/posts/guide/utilizing_GTM/2.png)
+  ![](/posts/guide/utilizing_GTM/2.png)
 
 2. 계정 및 컨테이너 정보를 입력하여 [만들기]를 클릭합니다.
   - 계정 이름: 회사나 브랜드 이름을 입력합니다.
   - 컨테이너 이름: 웹사이트 주소를 입력합니다.
   - 타겟 플랫폼: 웹을 선택합니다.
-
-![](/posts/guide/utilizing_GTM/3.png)
+  ![](/posts/guide/utilizing_GTM/3.png)
 
 3. 설치 코드를 복사하여 웹사이트의 head 태그와 body 태그에 붙여넣습니다.
   - 아임웹 사용자 팁: 복사한 설치 코드를 ‘사이트 관리 > 환경설정 > SEO(검색엔진최적화)’ 에서 추가할 수 있습니다. 
-
-![](/posts/guide/utilizing_GTM/4.png)
+  ![](/posts/guide/utilizing_GTM/4.png)
 
 4. 설치 확인
   - 설치한 웹사이트의 URL을 붙여넣고 [테스트]를 클릭하여 설치를 확인합니다.
+  ![](/posts/guide/utilizing_GTM/5.png)
 
-![](/posts/guide/utilizing_GTM/5.png)
 
-
-## 변수 설정
+# 변수 설정
 고객의 웹사이트 방문 횟수를 알기 위한 변수를 만들겠습니다.
 1. ‘변수 > 사용자 정의 변수’ 에서 [새로 만들기]를 클릭합니다.
-
-![](/posts/guide/utilizing_GTM/6.png)
+  ![](/posts/guide/utilizing_GTM/6.png)
 
 2. 변수 유형으로 [맞춤 자바스크립트]를 선택합니다.
-
-![](/posts/guide/utilizing_GTM/7.png)
+  ![](/posts/guide/utilizing_GTM/7.png)
 
 3. 맞춤 자바스크립트에 하단 코드를 붙여넣고 저장합니다.
-
-```js
-function() {
-  return localStorage.getItem('as-visit-count');
-}
-```
-
-![](/posts/guide/utilizing_GTM/8.png)
+    ```js
+    function() {
+      return localStorage.getItem('as-visit-count');
+    }
+    ```
+    ![](/posts/guide/utilizing_GTM/8.png)
 
 4. 변수가 추가된 것을 확인합니다.
+  ![](/posts/guide/utilizing_GTM/9.png)
 
-![](/posts/guide/utilizing_GTM/9.png)
-
-## 트리거 설정
+# 트리거 설정
 고객의 웹사이트 방문 횟수가 2회 이상일 때 작동하는 트리거를 만들겠습니다.
 1. ‘트리거 메뉴’ 에서 [새로 만들기]를 클릭합니다.
-
-![](/posts/guide/utilizing_GTM/10.png)
+  ![](/posts/guide/utilizing_GTM/10.png)
 
 2. 트리거의 유형으로 [페이지뷰]를 선택합니다.
-
-![](/posts/guide/utilizing_GTM/11.png)
+  ![](/posts/guide/utilizing_GTM/11.png)
 
 3. 트리거의 실행 조건으로 [일부 페이지뷰]를 선택하고, 위에서 만든 방문 횟수 변수를 2 이상으로 설정한 후 저장합니다.
-
-![](/posts/guide/utilizing_GTM/12.png)
+  ![](/posts/guide/utilizing_GTM/12.png)
 
 4. 트리거가 추가된 것을 확인합니다.
+  ![](/posts/guide/utilizing_GTM/13.png)
 
-![](/posts/guide/utilizing_GTM/13.png)
 
-
-## 태그 설정
-### 이미지 추가
+# 태그 설정
+## 이미지 추가
 태그를 만들기 전에 팝업에 사용할 이미지를 추가하겠습니다.
 > 📌 만약 actionSpeak를 웹사이트에 설치 전이라면 설치해주세요. [설치가이드](https://www.actionspeak.kr/blog/guide/installing_actionSpeak)
 
 1. [actionSpeak](https://www.actionspeak.kr/dashboard)에 로그인하여 ‘웹사이트 관리 > 이미지 관리’에서 이미지를 추가합니다.
   - 이미지 이름: 태그 설정 시 추가할 이미지의 구분 값
-
-![](/posts/guide/utilizing_GTM/14.png)
+  ![](/posts/guide/utilizing_GTM/14.png)
 
 2. 추가한 이미지가 팝업에서 어떻게 보여지는지 미리보기를 클릭하여 확인합니다.
+  ![](/posts/guide/utilizing_GTM/15.png)
 
-![](/posts/guide/utilizing_GTM/15.png)
 
-
-### actionSpeak 템플릿 추가
+## actionSpeak 템플릿 추가
 1. ‘템플릿 > 태그 템플릿’ 에서 [갤러리 검색]을 클릭합니다.
-
-![](/posts/guide/utilizing_GTM/16.png)
+  ![](/posts/guide/utilizing_GTM/16.png)
 
 2. ‘ActionSpeak Show Popup Tag’를 찾아 [작업공간에 추가]를 클릭합니다.
-
-![](/posts/guide/utilizing_GTM/17.png)
+  ![](/posts/guide/utilizing_GTM/17.png)
 
 3. 태그 템플릿에 추가된 것을 확인합니다.
+  ![](/posts/guide/utilizing_GTM/18.png)
 
-![](/posts/guide/utilizing_GTM/18.png)
 
-
-### 태그 추가
+## 태그 추가
 1. ‘태그 메뉴’ 에서 [새로 만들기]를 클릭합니다.
-
-![](/posts/guide/utilizing_GTM/19.png)
+  ![](/posts/guide/utilizing_GTM/19.png)
 
 2. 태그 유형으로 [ActionSpeak Show Popup Tag]를 선택합니다.
-
-![](/posts/guide/utilizing_GTM/20.png)
+  ![](/posts/guide/utilizing_GTM/20.png)
 
 3. 설정 값을 입력합니다.
   - 이미지 이름: actionSpeak에서 설정한 이미지의 고유 이름
@@ -145,51 +125,41 @@ function() {
   - 제한 시간 표시: 팝업의 남은 시간을 보여줄지 여부
   - 빈도: 동일 고객에게 팝업이 노출되는 횟수
   - 대기 시간: 팝업이 나타나기 전 대기 시간
-
-![](/posts/guide/utilizing_GTM/21.png)
+  ![](/posts/guide/utilizing_GTM/21.png)
 
 4. 태그의 트리거로 [재방문]을 선택하고 저장합니다.
-
-![](/posts/guide/utilizing_GTM/22.png)
+  ![](/posts/guide/utilizing_GTM/22.png)
 
 5. 태그가 추가된 것을 확인합니다.
+  ![](/posts/guide/utilizing_GTM/23.png)
 
-![](/posts/guide/utilizing_GTM/23.png)
-
-## 미리보기 및 제출
-### 미리보기
+# 미리보기 및 제출
+## 미리보기
 1. [미리보기]를 클릭합니다.
-
-![](/posts/guide/utilizing_GTM/24.png)
+  ![](/posts/guide/utilizing_GTM/24.png)
 
 2. 웹사이트 URL을 입력하고 [연결]을 클릭합니다.
-
-![](/posts/guide/utilizing_GTM/25.png)
+  ![](/posts/guide/utilizing_GTM/25.png)
 
 > 📌 재방문 기준인 30분을 기다리지 않고, 직접 방문 횟수를 2회로 올리겠습니다.
 
 3. 화면에서 마우스 우측 클릭 또는 아래 단축키로 개발자 도구를 엽니다.
   - MacOs 단축키: Cmd + Option + i
   - Windows 단축키: Ctrl + Shift + i
-
-![](/posts/guide/utilizing_GTM/26.png)
+  ![](/posts/guide/utilizing_GTM/26.png)
 
 4. [Application]을 클릭합니다.
-
-![](/posts/guide/utilizing_GTM/27.png)
+  ![](/posts/guide/utilizing_GTM/27.png)
 
 5. 'LocalStorage > 웹사이트URL'에서 as-visit-count의 값을 2로 설정합니다.
-
-![](/posts/guide/utilizing_GTM/28.png)
+  ![](/posts/guide/utilizing_GTM/28.png)
 
 6. 화면을 새로고침하고 팝업을 확인합니다.
   - MacOs 단축키: Cmd + r
   - Windows 단축키: Ctrl + F5
+  ![](/posts/guide/utilizing_GTM/29.png)
 
-![](/posts/guide/utilizing_GTM/29.png)
 
-
-### 제출
+## 제출
 1. [제출]을 클릭합니다.
-
-![](/posts/guide/utilizing_GTM/30.png)
+  ![](/posts/guide/utilizing_GTM/30.png)

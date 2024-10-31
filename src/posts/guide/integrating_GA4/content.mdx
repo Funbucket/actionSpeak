@@ -4,7 +4,7 @@ date: 2024-10-22
 desc: GTM과 GA4 연동 가이드
 thumbnail: /posts/guide/integrating_GA4/thumbnail.png
 ---
-## Introduction
+# Introduction
 GTM(Google Tag Manager)을 사용하여 사용자 행동 로그를 수집하고 이를 다양한 작업에 활용할 수 있습니다.
 
 예를 들어:
@@ -13,85 +13,67 @@ GTM(Google Tag Manager)을 사용하여 사용자 행동 로그를 수집하고 
 - GA4와 연동하여 데이터를 분석할 수 있습니다.
 
 이번 글에서 이커머스 웹사이트인 '웹컴샵'을 예시로 GA4와 GTM을 연동하는 방법에 대해 알이보겠습니다.
+  ![](/posts/guide/integrating_GA4/1.png)
 
-![](/posts/guide/integrating_GA4/1.png)
 
-
-## GA4 계정 생성
+# GA4 계정 생성
 1. [GA4(Google Analytics 4)](https://analytics.google.com/)에 접속한 후, [측정 시작]을 클릭합니다.
-
-![](/posts/guide/integrating_GA4/2.png)
+  ![](/posts/guide/integrating_GA4/2.png)
 
 2. 계정 이름을 입력하고 [다음]을 클릭합니다.
   - 계정 이름: 회사나 브랜드 이름을 입력합니다.
-
-![](/posts/guide/integrating_GA4/3.png)
+  ![](/posts/guide/integrating_GA4/3.png)
 
 3. 속성 이름, 보고 시간대, 통화를 입력하고 [다음]을 클릭합니다.
   - 속성 이름: 사용하는 서비스를 입력합니다.
   - 보고 시간대: 대한민국
   - 통화: 대한민국 원
-
-![](/posts/guide/integrating_GA4/4.png)
+  ![](/posts/guide/integrating_GA4/4.png)
 
 4. 비즈니스 세부정보를 입력하고 [다음]을 클릭합니다.
-
-![](/posts/guide/integrating_GA4/5.png)
+  ![](/posts/guide/integrating_GA4/5.png)
 
 5. 원하는 비즈니스 목표를 선택하고 [만들기]를 클릭합니다.
-
-![](/posts/guide/integrating_GA4/6.png)
+  ![](/posts/guide/integrating_GA4/6.png)
 
 6. 약관 동의후 [동의함]을 클릭합니다.
-
-![](/posts/guide/integrating_GA4/7.png)
+  ![](/posts/guide/integrating_GA4/7.png)
 
 7. 웹 플랫폼을 선택합니다.
-
-![](/posts/guide/integrating_GA4/8.png)
+  ![](/posts/guide/integrating_GA4/8.png)
 
 8. 웹사이트 URL과 스트림 이름을 입력하고 [만들고 계속하기]를 클릭합니다.
-
-![](/posts/guide/integrating_GA4/9.png)
+  ![](/posts/guide/integrating_GA4/9.png)
 
 9. GTM과 연동할 예정이므로 직접 설치는 생략하고, 웹 스트림 세부정보에서 측정ID를 복사합니다.
 만약 아직 GTM을 설치하지 않았다면, [GTM과 actionSpeak 활용하여 고객에게 말 걸기](https://www.actionspeak.kr/blog/guide/utilizing_GTM)의 GTM 설치를 참고해 먼저 설치해 주세요.
+  ![](/posts/guide/integrating_GA4/10.png)
 
-![](/posts/guide/integrating_GA4/10.png)
 
-
-## GTM과 연결
+# GTM과 연결
 1. [GTM(Google Tag Manager)](https://tagmanager.google.com/)에 접속하여, GA4와 연동할 컨테이너를 선택합니다.
-
-![](/posts/guide/integrating_GA4/11.png)
+  ![](/posts/guide/integrating_GA4/11.png)
 
 2. 태그 메뉴에서 [새로 만들기]를 클릭합니다.
-
-![](/posts/guide/integrating_GA4/12.png)
+  ![](/posts/guide/integrating_GA4/12.png)
 
 3. [태그 구성]을 클릭하고, [Google 애널리틱스] > [Google 태그]를 순서대로 클릭합니다.
-
-![](/posts/guide/integrating_GA4/13.png)
+  ![](/posts/guide/integrating_GA4/13.png)
 
 4. 위에서 복사한 GA4 측정ID를 태그ID에 붙여넣습니다.
-
-![](/posts/guide/integrating_GA4/14.png)
+  ![](/posts/guide/integrating_GA4/14.png)
 
 5. [트리거]를 클릭하고, [Initialization - All Pages]를 클릭합니다.
-
-![](/posts/guide/integrating_GA4/15.png)
+  ![](/posts/guide/integrating_GA4/15.png)
 
 6. 태그를 저장하고, 정상적으로 추가되었는지 확인합니다.
-
-![](/posts/guide/integrating_GA4/16.png)
+  ![](/posts/guide/integrating_GA4/16.png)
 
 7. [제출]과 [게시]를 차례로 클릭합니다.
+  ![](/posts/guide/integrating_GA4/17.png)
 
-![](/posts/guide/integrating_GA4/17.png)
-
-## GA4 연결 확인
+# GA4 연결 확인
 
 1. 본인의 웹사이트를 방문한 후 잠시 기다린 후, 다시 [GA4(Google Analytics 4)](https://analytics.google.com/)에 접속하여, 데이터 수집이 활성화되었는지 확인합니다.
-
-![](/posts/guide/integrating_GA4/18.png)
+  ![](/posts/guide/integrating_GA4/18.png)
 

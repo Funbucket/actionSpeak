@@ -32,7 +32,7 @@ export const PostBody = ({ post }: Props) => {
               // @ts-ignore
               rehypePrettyCode,
               {
-                theme: { dark: 'github-dark-dimmed', light: 'github-light' },
+                theme: 'slack-dark',
               },
             ],
             // toc id를 추가하고 제목을 연결
