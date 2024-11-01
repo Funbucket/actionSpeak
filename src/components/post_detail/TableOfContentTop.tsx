@@ -14,7 +14,15 @@ const TableOfContentTop = ({ toc }: Props) => {
     <nav className='xl:hidden'>
       <ul>
         {toc.map((item) => (
-          <li key={item.link} className={cn(item.indent === 1 && 'ml-4', 'my-0 py-1')}>
+          <li
+            key={item.link}
+            className={cn(
+              item.indent === 1 && 'ml-4',
+              item.indent === 2 && 'ml-8',
+              item.indent === 3 && 'ml-12',
+              'my-0 py-1'
+            )}
+          >
             <Link href={item.link} className='underline-offset-4 hover:text-[#1E90FF]'>
               {item.text}
             </Link>
