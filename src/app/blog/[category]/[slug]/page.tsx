@@ -23,7 +23,7 @@ export async function generateMetadata({ params: { category, slug } }: Props): P
   return {
     title,
     description: post.desc,
-
+    authors: [{ name: '조해창', url: 'outofchng@gmail.com' }],
     openGraph: {
       title,
       description: post.desc,
