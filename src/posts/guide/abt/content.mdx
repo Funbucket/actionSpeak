@@ -326,7 +326,7 @@ BigQuery로 저장된 데이터를 가공하여 A/B 테스트 분석에 적합�
     -- OLAP Cube 생성
     SELECT datestamp, variant_id,
         'impression' category,
-        COUNT(1) AS n,    -- number of sessions
+        COUNT(1) AS n,
         SUM(actionSpeak_impressions) AS sum, SUM(actionSpeak_impressions * actionSpeak_impressions) AS sum2
     FROM variant_daily_summary vds
     GROUP BY 1, 2, 3
@@ -357,7 +357,7 @@ BigQuery로 저장된 데이터를 가공하여 A/B 테스트 분석에 적합�
         COUNT(1) AS n,
         SUM(revenue) AS sum, SUM(revenue * revenue) AS sum2
     FROM variant_daily_summary vds
-    WHERE revenue > 0   -- Only include when there is revenue
+    WHERE revenue > 0
     GROUP BY 1, 2, 3
     
     ORDER BY
