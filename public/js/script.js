@@ -637,7 +637,11 @@
     );
     const variant = hashInt % 2;
     const bucket = variant === 0 ? 'control' : 'test';
-    localStorage.setItem(`as-bucket-${testId}`, bucket);
+
+    const bucketData = JSON.parse(localStorage.getItem('as-buckets')) || {};
+    bucketData[testId] = bucket;
+    localStorage.setItem('as-buckets', JSON.stringify(bucketData));
+
     return bucket;
   };
 
